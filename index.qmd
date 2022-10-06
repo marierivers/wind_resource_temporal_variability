@@ -1,5 +1,15 @@
 ---
-title: "wind_resource_temporal_variability"
+title: "Wind Resource Temporal Variability"
+editor: visual
+toc-title: Contents
+toc-location: left
+toc-depth: 2
+code-tools: 
+  source: true
+  toggle: true
+  caption: view source code
+code-block-bg: true
+code-block-border-left: "#31BAE9"
 ---
 
 This is a Quarto website.

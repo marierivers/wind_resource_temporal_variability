@@ -1,20 +1,27 @@
 project:
   type: website
+  output-dir: docs
 
 website:
-  title: "wind_resource_temporal_variability"
+  title: "Wind Resource Temporal Variability"
   navbar:
     background: primary
     left:
       - href: index.qmd
         text: Home
       - about.qmd
+    right:
+      - icon: github
+        href: https://github.com/marierivers/wind_resource_temporal_variability
+        aria-label: GitHub
 
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
+    
+editor: visual
 
 
 
