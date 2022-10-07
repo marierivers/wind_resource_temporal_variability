@@ -8,8 +8,11 @@ website:
     background: primary
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: Data Analysis
+      - href: report.qmd
+        text: Report
+      - href: mrivers_presentation.qmd
+        text: Presentation
     right:
       - icon: github
         href: https://github.com/marierivers/wind_resource_temporal_variability

@@ -3,6 +3,8 @@
   <meta charset="utf-8">
   <meta name="generator" content="quarto-0.9.243">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Marie Rivers">
+  <meta name="dcterms.date" content="2022-10-13">
   <title>Wind Resource Temporal Variability</title>
   <style>
     code{white-space: pre-wrap;}
@@ -130,7 +132,13 @@
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page">Home</a>
+    <a class="nav-link active" href="./index.html" aria-current="page">Data Analysis</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./report.pdf">Report</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./mrivers_presentation.html">Presentation</a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./about.html">About</a>
@@ -152,29 +160,346 @@
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#about-the-data" id="toc-about-the-data" class="nav-link active" data-scroll-target="#about-the-data">About the data</a></li>
+<li><a href="#access-data" id="toc-access-data" class="nav-link" data-scroll-target="#access-data">Access data</a>
+<ul class="collapse">
+<li><a href="#determine-nearest-timeseries-for-given-latlon" id="toc-determine-nearest-timeseries-for-given-latlon" class="nav-link" data-scroll-target="#determine-nearest-timeseries-for-given-latlon">Determine nearest timeseries for given Lat/Lon</a></li>
+<li><a href="#map" id="toc-map" class="nav-link" data-scroll-target="#map">Map</a></li>
+</ul></li>
+<li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis">Statistical analysis</a>
+<ul class="collapse">
+<li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration">Data exploration</a></li>
+<li><a href="#diurnal-variability" id="toc-diurnal-variability" class="nav-link" data-scroll-target="#diurnal-variability">Diurnal variability</a></li>
+<li><a href="#monthly-variability" id="toc-monthly-variability" class="nav-link" data-scroll-target="#monthly-variability">Monthly variability</a></li>
+</ul></li>
+<li><a href="#insights" id="toc-insights" class="nav-link" data-scroll-target="#insights">Insights</a></li>
+<li><a href="#conclusions-insights" id="toc-conclusions-insights" class="nav-link" data-scroll-target="#conclusions-insights">Conclusions / insights</a></li>
+<li><a href="#expanded-geographic-scale" id="toc-expanded-geographic-scale" class="nav-link" data-scroll-target="#expanded-geographic-scale">Expanded geographic scale</a></li>
+<li><a href="#citations" id="toc-citations" class="nav-link" data-scroll-target="#citations">Citations</a></li>
+</ul>
+</nav>
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 <header id="title-block-header" class="quarto-title-block default">
 
-<div class="quarto-title"><div class="quarto-title-block"><div><h1 class="title">Wind Resource Temporal Variability</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> view source code</button></div></div></div></header>
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+
+
+
+<div class="quarto-title"><div class="quarto-title-block"><div><h1 class="title">Wind Resource Temporal Variability</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> view source code</button></div></div><p class="subtitle lead">Diurnal and monthly variability of NREL Wind Toolkit Data</p></div><div class="quarto-title-meta"><div><div class="quarto-title-meta-heading">Author</div><div class="quarto-title-meta-contents"><div class="quarto-title-authors"><div><div>
+<p>Marie Rivers</p>
+</div></div></div></div></div><div><div class="quarto-title-meta-heading">Published</div><div class="quarto-title-meta-contents"><p class="date">October 13, 2022</p></div></div></div></header>
+
+<p>This tool quantifies and visualizes the diurnal and monthly variability of wind resources</p>
+<section id="about-the-data" class="level1">
+<h1>About the data</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> h5pyd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.image <span class="im">as</span> mpimg</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyproj <span class="im">import</span> Proj</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dateutil</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> folium</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#from IPython.display import display, Markdown</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="access-data" class="level1 page-columns page-full">
+<h1>Access data</h1>
+<div class="cell column-page-right">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> h5pyd.File(<span class="st">"/nrel/wtk-us.h5"</span>, <span class="st">'r'</span>, bucket<span class="op">=</span><span class="st">"nrel-pds-hsds"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>windspeed_100m_dset <span class="op">=</span> f[<span class="st">'windspeed_100m'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>datetime_df <span class="op">=</span> f[<span class="st">"datetime"</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>datetime_df <span class="op">=</span> pd.DataFrame({<span class="st">"datetime"</span>: datetime_df[:]},index<span class="op">=</span><span class="bu">range</span>(<span class="dv">0</span>,datetime_df.shape[<span class="dv">0</span>]))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>datetime_df[<span class="st">'datetime'</span>] <span class="op">=</span> datetime_df[<span class="st">'datetime'</span>].<span class="bu">apply</span>(dateutil.parser.parse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># datetime range for 2012</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2012-01-01'</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2013-01-01'</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>datetime_range <span class="op">=</span> datetime_df.loc[(datetime_df.datetime <span class="op">&gt;=</span> start_date) <span class="op">&amp;</span> (datetime_df.datetime <span class="op">&lt;</span> end_date)].index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="determine-nearest-timeseries-for-given-latlon" class="level2">
+<h2 class="anchored" data-anchor-id="determine-nearest-timeseries-for-given-latlon">Determine nearest timeseries for given Lat/Lon</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This function finds the nearest x/y indices for a given lat/lon.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Rather than fetching the entire coordinates database, which is 500+ MB, this</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># uses the Proj4 library to find a nearby point and then converts to x/y indices</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> indicesForCoord(f, lat_index, lon_index):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    dset_coords <span class="op">=</span> f[<span class="st">'coordinates'</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    projstring <span class="op">=</span> <span class="st">"""+proj=lcc +lat_1=30 +lat_2=60 </span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    +lat_0=38.47240422490422 +lon_0=-96.0 </span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">                    +x_0=0 +y_0=0 +ellps=sphere </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="st">                    +units=m +no_defs """</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    projectLcc <span class="op">=</span> Proj(projstring)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    origin_ll <span class="op">=</span> <span class="bu">reversed</span>(dset_coords[<span class="dv">0</span>][<span class="dv">0</span>])  <span class="co"># Grab origin directly from database</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    origin <span class="op">=</span> projectLcc(<span class="op">*</span>origin_ll)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> (lon_index,lat_index)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> projectLcc(<span class="op">*</span>coords)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    delta <span class="op">=</span> np.subtract(coords, origin)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    ij <span class="op">=</span> [<span class="bu">int</span>(<span class="bu">round</span>(x<span class="op">/</span><span class="dv">2000</span>)) <span class="cf">for</span> x <span class="kw">in</span> delta]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(<span class="bu">reversed</span>(ij))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>lake_wyola <span class="op">=</span> (<span class="fl">42.501587</span>, <span class="op">-</span><span class="fl">72.429984</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>lake_wyola_idx <span class="op">=</span> indicesForCoord(f, lake_wyola[<span class="dv">0</span>], lake_wyola[<span class="dv">1</span>] )</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"y,x indices for Lake Wyola: </span><span class="ch">\t\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(lake_wyola_idx))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>y,x indices for Lake Wyola:          (1154, 2409)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Coordinates of Lake Wyola: </span><span class="ch">\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(lake_wyola))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinates of Lake Wyola:   (42.501587, -72.429984)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Coordinates of nearest point: </span><span class="ch">\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(f[<span class="st">"coordinates"</span>][lake_wyola_idx[<span class="dv">0</span>]][lake_wyola_idx[<span class="dv">1</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinates of nearest point:    (42.494087, -72.414062)</code></pre>
 </div>
 </div>
+</section>
+<section id="map" class="level2">
+<h2 class="anchored" data-anchor-id="map">Map</h2>
+<p>map of site and nearest point</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nearest_site_coords <span class="op">=</span> f[<span class="st">"coordinates"</span>][lake_wyola_idx[<span class="dv">0</span>]][lake_wyola_idx[<span class="dv">1</span>]]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>site_map <span class="op">=</span> folium.Map(location <span class="op">=</span> lake_wyola, zoom_start <span class="op">=</span> <span class="dv">12</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>folium.Marker(lake_wyola, popup <span class="op">=</span> <span class="st">'Lake Wyola'</span>).add_to(site_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;folium.map.Marker object at 0x7fe1204764f0&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>folium.Marker(nearest_site_coords, popup <span class="op">=</span> <span class="st">'Nearest Site'</span>).add_to(site_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;folium.map.Marker object at 0x7fe1204769a0&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>site_map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -&gt; Trust Notebook</span><iframe srcdoc="<!DOCTYPE html>
+<head>    
+    <meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js&quot;></script>
+    <script src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;></script>
+    <script src=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js&quot;></script>
+    <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;></script>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/>
+    
+            <meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; />
+            <style>
+                #map_23e88679e60d9b6eabe9b0db1db6ce66 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class=&quot;folium-map&quot; id=&quot;map_23e88679e60d9b6eabe9b0db1db6ce66&quot; ></div>
+        
+</body>
+<script>    
+    
+            var map_23e88679e60d9b6eabe9b0db1db6ce66 = L.map(
+                &quot;map_23e88679e60d9b6eabe9b0db1db6ce66&quot;,
+                {
+                    center: [42.501587, -72.429984],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 12,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_4cfb4fe4fd878514eea1086576ac2430 = L.tileLayer(
+                &quot;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
+                {&quot;attribution&quot;: &quot;Data by \u0026copy; \u003ca href=\&quot;http://openstreetmap.org\&quot;\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\&quot;http://www.openstreetmap.org/copyright\&quot;\u003eODbL\u003c/a\u003e.&quot;, &quot;detectRetina&quot;: false, &quot;maxNativeZoom&quot;: 18, &quot;maxZoom&quot;: 18, &quot;minZoom&quot;: 0, &quot;noWrap&quot;: false, &quot;opacity&quot;: 1, &quot;subdomains&quot;: &quot;abc&quot;, &quot;tms&quot;: false}
+            ).addTo(map_23e88679e60d9b6eabe9b0db1db6ce66);
+        
+    
+            var marker_b301b4b62bd725613da51b752b34ffd7 = L.marker(
+                [42.501587, -72.429984],
+                {}
+            ).addTo(map_23e88679e60d9b6eabe9b0db1db6ce66);
+        
+    
+        var popup_b3851b0bd4249fe8eb561fe70b0095af = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            var html_70a4135f83bed6e16dfd41ec12973683 = $(`<div id=&quot;html_70a4135f83bed6e16dfd41ec12973683&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>Lake Wyola</div>`)[0];
+            popup_b3851b0bd4249fe8eb561fe70b0095af.setContent(html_70a4135f83bed6e16dfd41ec12973683);
+        
+
+        marker_b301b4b62bd725613da51b752b34ffd7.bindPopup(popup_b3851b0bd4249fe8eb561fe70b0095af)
+        ;
+
+        
+    
+    
+            var marker_dd214a9aee881b227c10b386b294bd3d = L.marker(
+                [42.494087, -72.414062],
+                {}
+            ).addTo(map_23e88679e60d9b6eabe9b0db1db6ce66);
+        
+    
+        var popup_7f05b8d8b6de3ca443e97ecc52c439cc = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            var html_98b1001c055482854bf5672889e09f27 = $(`<div id=&quot;html_98b1001c055482854bf5672889e09f27&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>Nearest Site</div>`)[0];
+            popup_7f05b8d8b6de3ca443e97ecc52c439cc.setContent(html_98b1001c055482854bf5672889e09f27);
+        
+
+        marker_dd214a9aee881b227c10b386b294bd3d.bindPopup(popup_7f05b8d8b6de3ca443e97ecc52c439cc)
+        ;
+
+        
+    
+</script>" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen=""></iframe></div></div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the entire 2012 timeseries data for a point near Lake Wyola</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tseries <span class="op">=</span> windspeed_100m_dset[<span class="bu">min</span>(datetime_range):<span class="bu">max</span>(datetime_range)<span class="op">+</span><span class="dv">1</span>, lake_wyola_idx[<span class="dv">0</span>], lake_wyola_idx[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert numpy array to pandas dataframe</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df <span class="op">=</span> pd.DataFrame(tseries, columns <span class="op">=</span> [<span class="st">"windspeed_100m"</span>], index <span class="op">=</span> datetime_df.iloc[datetime_range,].datetime)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"year"</span>] <span class="op">=</span> windspeed_100m_df.index.year</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"month"</span>] <span class="op">=</span> windspeed_100m_df.index.month</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"day"</span>] <span class="op">=</span> windspeed_100m_df.index.day</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"hour"</span>] <span class="op">=</span> windspeed_100m_df.index.hour</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"day_of_year"</span>] <span class="op">=</span> windspeed_100m_df.index.dayofyear</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="statistical-analysis" class="level1">
+<h1>Statistical analysis</h1>
+<section id="data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration">Data exploration</h2>
+<p>Start with graph of entire year</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># #site_coord_list = [(42.501587), (-72.429984)]</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># site_name_list = ["Lake Wyola", "New York City"]</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># site_dict = {"Lake Wyola":("42.501587", "-72.429984"), "New York City":("40.7128", "-74.0059")}</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># for site in site_dict:</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   print(site, " is located at ", site_dict[site])</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   lat = float(site_dict[site][0])</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   lon = float(site_dict[site][1])</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   nearest_point_idx = indicesForCoord(f, lat, lon)</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   display(Markdown("{site}"))</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   print("The site nearest to ", site, " is located at ", f["coordinates"][nearest_point_idx[0]][nearest_point_idx[1]])</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["year"] = windspeed_100m_df.index.year</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["month"] = windspeed_100m_df.index.month</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["day"] = windspeed_100m_df.index.day</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["hour"] = windspeed_100m_df.index.hour</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co">#   #windspeed_100m_df.head()</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   fig, ax = plt.subplots()</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co">#   ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"])</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">#   plt.show()</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co">#   #display(Markdown(f'&lt;/div&gt;'))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>histogram (with line for mean and median) to get skew</p>
+<p>Calculate the variance and standard deviation of <code>windspeed_100m</code> for each month by grouping and aggregating</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"windspeed_100m"</span>].hist()</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="diurnal-variability" class="level2">
+<h2 class="anchored" data-anchor-id="diurnal-variability">Diurnal variability</h2>
+<p>graph with for loop</p>
+</section>
+<section id="monthly-variability" class="level2">
+<h2 class="anchored" data-anchor-id="monthly-variability">Monthly variability</h2>
+<p>which months how the greatest variability (spread) and which have the smallest spread</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df.groupby(<span class="st">'month'</span>)[<span class="st">'windspeed_100m'</span>].agg([np.var, np.std])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             var       std
+month                     
+1      12.102011  3.478794
+2      12.350611  3.514344
+3      13.478157  3.671261
+4       8.707105  2.950780
+5       9.559426  3.091832
+6       8.445230  2.906068
+7       7.129603  2.670132
+8       6.476707  2.544937
+9      10.720469  3.274213
+10     18.704758  4.324900
+11     12.345001  3.513545
+12     16.031414  4.003925</code></pre>
+</div>
+</div>
+<p>what month has the most outliers (get count of outliers by month)</p>
+</section>
+</section>
+<section id="insights" class="level1">
+<h1>Insights</h1>
+<p>When planning utility scale wind power plants, you may not be so concerned with variability and outliers as long as the wind is within the operating range of your turbines.</p>
+<ul>
+<li>if the annual average wind speed is at least 13 mph (5.8 m/s) *footnote 1</li>
+<li>how often the wind is below the cut-in speed - 8 mph (3.6 m/s) *footnote 2</li>
+<li>how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2</li>
+<li>does the diurnal pattern match daily electricity demands</li>
+<li>does the monthly pattern match seasonal electricity demands</li>
+</ul>
+</section>
+<section id="conclusions-insights" class="level1">
+<h1>Conclusions / insights</h1>
+</section>
+<section id="expanded-geographic-scale" class="level1">
+<h1>Expanded geographic scale</h1>
+</section>
+<section id="citations" class="level1">
+<h1>Citations</h1>
+<p><a href="https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48" class="uri">https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48</a></p>
 
 
 
 <!-- -->
 
+</section>
 </main> <!-- /main -->
 <script type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -303,27 +628,198 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Wind Resource Temporal Variability"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc-title:</span><span class="co"> Contents</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc-location:</span><span class="co"> left</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="an">code-tools:</span><span class="co"> </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">  source: true</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">  toggle: true</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">  caption: view source code</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="an">code-block-bg:</span><span class="co"> true</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="an">code-block-border-left:</span><span class="co"> "#31BAE9"</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>This is a Quarto website.</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>To learn more about Quarto websites visit <span class="ot">&lt;https://quarto.org/docs/websites&gt;</span>.</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb23" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Wind Resource Temporal Variability"</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Diurnal and monthly variability of NREL Wind Toolkit Data"</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "October 13, 2022"</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Marie Rivers"</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="an">toc-title:</span><span class="co"> Contents</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="an">toc-location:</span><span class="co"> left</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="an">code-tools:</span><span class="co"> </span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co">  source: true</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">  toggle: true</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co">  caption: view source code</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="an">code-block-bg:</span><span class="co"> true</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="an">code-block-border-left:</span><span class="co"> "#31BAE9"</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>This tool quantifies and visualizes the diurnal and monthly variability of wind resources</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="fu"># About the data</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> h5pyd</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.image <span class="im">as</span> mpimg</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyproj <span class="im">import</span> Proj</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dateutil</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> folium</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a><span class="co">#from IPython.display import display, Markdown</span></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a><span class="fu"># Access data</span></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page-right</span></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> h5pyd.File(<span class="st">"/nrel/wtk-us.h5"</span>, <span class="st">'r'</span>, bucket<span class="op">=</span><span class="st">"nrel-pds-hsds"</span>)</span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>windspeed_100m_dset <span class="op">=</span> f[<span class="st">'windspeed_100m'</span>]</span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>datetime_df <span class="op">=</span> f[<span class="st">"datetime"</span>]</span>
+<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>datetime_df <span class="op">=</span> pd.DataFrame({<span class="st">"datetime"</span>: datetime_df[:]},index<span class="op">=</span><span class="bu">range</span>(<span class="dv">0</span>,datetime_df.shape[<span class="dv">0</span>]))</span>
+<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>datetime_df[<span class="st">'datetime'</span>] <span class="op">=</span> datetime_df[<span class="st">'datetime'</span>].<span class="bu">apply</span>(dateutil.parser.parse)</span>
+<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a><span class="co"># datetime range for 2012</span></span>
+<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2012-01-01'</span></span>
+<span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2013-01-01'</span></span>
+<span id="cb23-66"><a href="#cb23-66" aria-hidden="true" tabindex="-1"></a>datetime_range <span class="op">=</span> datetime_df.loc[(datetime_df.datetime <span class="op">&gt;=</span> start_date) <span class="op">&amp;</span> (datetime_df.datetime <span class="op">&lt;</span> end_date)].index</span>
+<span id="cb23-67"><a href="#cb23-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-68"><a href="#cb23-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-69"><a href="#cb23-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## Determine nearest timeseries for given Lat/Lon</span></span>
+<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-73"><a href="#cb23-73" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-74"><a href="#cb23-74" aria-hidden="true" tabindex="-1"></a><span class="co"># This function finds the nearest x/y indices for a given lat/lon.</span></span>
+<span id="cb23-75"><a href="#cb23-75" aria-hidden="true" tabindex="-1"></a><span class="co"># Rather than fetching the entire coordinates database, which is 500+ MB, this</span></span>
+<span id="cb23-76"><a href="#cb23-76" aria-hidden="true" tabindex="-1"></a><span class="co"># uses the Proj4 library to find a nearby point and then converts to x/y indices</span></span>
+<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> indicesForCoord(f, lat_index, lon_index):</span>
+<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a>    dset_coords <span class="op">=</span> f[<span class="st">'coordinates'</span>]</span>
+<span id="cb23-79"><a href="#cb23-79" aria-hidden="true" tabindex="-1"></a>    projstring <span class="op">=</span> <span class="st">"""+proj=lcc +lat_1=30 +lat_2=60 </span></span>
+<span id="cb23-80"><a href="#cb23-80" aria-hidden="true" tabindex="-1"></a><span class="st">                    +lat_0=38.47240422490422 +lon_0=-96.0 </span></span>
+<span id="cb23-81"><a href="#cb23-81" aria-hidden="true" tabindex="-1"></a><span class="st">                    +x_0=0 +y_0=0 +ellps=sphere </span></span>
+<span id="cb23-82"><a href="#cb23-82" aria-hidden="true" tabindex="-1"></a><span class="st">                    +units=m +no_defs """</span></span>
+<span id="cb23-83"><a href="#cb23-83" aria-hidden="true" tabindex="-1"></a>    projectLcc <span class="op">=</span> Proj(projstring)</span>
+<span id="cb23-84"><a href="#cb23-84" aria-hidden="true" tabindex="-1"></a>    origin_ll <span class="op">=</span> <span class="bu">reversed</span>(dset_coords[<span class="dv">0</span>][<span class="dv">0</span>])  <span class="co"># Grab origin directly from database</span></span>
+<span id="cb23-85"><a href="#cb23-85" aria-hidden="true" tabindex="-1"></a>    origin <span class="op">=</span> projectLcc(<span class="op">*</span>origin_ll)</span>
+<span id="cb23-86"><a href="#cb23-86" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-87"><a href="#cb23-87" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> (lon_index,lat_index)</span>
+<span id="cb23-88"><a href="#cb23-88" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> projectLcc(<span class="op">*</span>coords)</span>
+<span id="cb23-89"><a href="#cb23-89" aria-hidden="true" tabindex="-1"></a>    delta <span class="op">=</span> np.subtract(coords, origin)</span>
+<span id="cb23-90"><a href="#cb23-90" aria-hidden="true" tabindex="-1"></a>    ij <span class="op">=</span> [<span class="bu">int</span>(<span class="bu">round</span>(x<span class="op">/</span><span class="dv">2000</span>)) <span class="cf">for</span> x <span class="kw">in</span> delta]</span>
+<span id="cb23-91"><a href="#cb23-91" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(<span class="bu">reversed</span>(ij))</span>
+<span id="cb23-92"><a href="#cb23-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-93"><a href="#cb23-93" aria-hidden="true" tabindex="-1"></a>lake_wyola <span class="op">=</span> (<span class="fl">42.501587</span>, <span class="op">-</span><span class="fl">72.429984</span>)</span>
+<span id="cb23-94"><a href="#cb23-94" aria-hidden="true" tabindex="-1"></a>lake_wyola_idx <span class="op">=</span> indicesForCoord(f, lake_wyola[<span class="dv">0</span>], lake_wyola[<span class="dv">1</span>] )</span>
+<span id="cb23-95"><a href="#cb23-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-96"><a href="#cb23-96" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"y,x indices for Lake Wyola: </span><span class="ch">\t\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(lake_wyola_idx))</span>
+<span id="cb23-97"><a href="#cb23-97" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Coordinates of Lake Wyola: </span><span class="ch">\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(lake_wyola))</span>
+<span id="cb23-98"><a href="#cb23-98" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Coordinates of nearest point: </span><span class="ch">\t</span><span class="st"> </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(f[<span class="st">"coordinates"</span>][lake_wyola_idx[<span class="dv">0</span>]][lake_wyola_idx[<span class="dv">1</span>]]))</span>
+<span id="cb23-99"><a href="#cb23-99" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-100"><a href="#cb23-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-101"><a href="#cb23-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Map</span></span>
+<span id="cb23-102"><a href="#cb23-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-103"><a href="#cb23-103" aria-hidden="true" tabindex="-1"></a>map of site and nearest point</span>
+<span id="cb23-104"><a href="#cb23-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-107"><a href="#cb23-107" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-108"><a href="#cb23-108" aria-hidden="true" tabindex="-1"></a>nearest_site_coords <span class="op">=</span> f[<span class="st">"coordinates"</span>][lake_wyola_idx[<span class="dv">0</span>]][lake_wyola_idx[<span class="dv">1</span>]]</span>
+<span id="cb23-109"><a href="#cb23-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-110"><a href="#cb23-110" aria-hidden="true" tabindex="-1"></a>site_map <span class="op">=</span> folium.Map(location <span class="op">=</span> lake_wyola, zoom_start <span class="op">=</span> <span class="dv">12</span>)</span>
+<span id="cb23-111"><a href="#cb23-111" aria-hidden="true" tabindex="-1"></a>folium.Marker(lake_wyola, popup <span class="op">=</span> <span class="st">'Lake Wyola'</span>).add_to(site_map)</span>
+<span id="cb23-112"><a href="#cb23-112" aria-hidden="true" tabindex="-1"></a>folium.Marker(nearest_site_coords, popup <span class="op">=</span> <span class="st">'Nearest Site'</span>).add_to(site_map)</span>
+<span id="cb23-113"><a href="#cb23-113" aria-hidden="true" tabindex="-1"></a>site_map</span>
+<span id="cb23-114"><a href="#cb23-114" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-115"><a href="#cb23-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-118"><a href="#cb23-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-119"><a href="#cb23-119" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the entire 2012 timeseries data for a point near Lake Wyola</span></span>
+<span id="cb23-120"><a href="#cb23-120" aria-hidden="true" tabindex="-1"></a>tseries <span class="op">=</span> windspeed_100m_dset[<span class="bu">min</span>(datetime_range):<span class="bu">max</span>(datetime_range)<span class="op">+</span><span class="dv">1</span>, lake_wyola_idx[<span class="dv">0</span>], lake_wyola_idx[<span class="dv">1</span>]]</span>
+<span id="cb23-121"><a href="#cb23-121" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-122"><a href="#cb23-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-125"><a href="#cb23-125" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-126"><a href="#cb23-126" aria-hidden="true" tabindex="-1"></a><span class="co"># convert numpy array to pandas dataframe</span></span>
+<span id="cb23-127"><a href="#cb23-127" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df <span class="op">=</span> pd.DataFrame(tseries, columns <span class="op">=</span> [<span class="st">"windspeed_100m"</span>], index <span class="op">=</span> datetime_df.iloc[datetime_range,].datetime)</span>
+<span id="cb23-128"><a href="#cb23-128" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-129"><a href="#cb23-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-132"><a href="#cb23-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-133"><a href="#cb23-133" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"year"</span>] <span class="op">=</span> windspeed_100m_df.index.year</span>
+<span id="cb23-134"><a href="#cb23-134" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"month"</span>] <span class="op">=</span> windspeed_100m_df.index.month</span>
+<span id="cb23-135"><a href="#cb23-135" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"day"</span>] <span class="op">=</span> windspeed_100m_df.index.day</span>
+<span id="cb23-136"><a href="#cb23-136" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"hour"</span>] <span class="op">=</span> windspeed_100m_df.index.hour</span>
+<span id="cb23-137"><a href="#cb23-137" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"day_of_year"</span>] <span class="op">=</span> windspeed_100m_df.index.dayofyear</span>
+<span id="cb23-138"><a href="#cb23-138" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-139"><a href="#cb23-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-140"><a href="#cb23-140" aria-hidden="true" tabindex="-1"></a><span class="fu"># Statistical analysis</span></span>
+<span id="cb23-141"><a href="#cb23-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-142"><a href="#cb23-142" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data exploration</span></span>
+<span id="cb23-143"><a href="#cb23-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-144"><a href="#cb23-144" aria-hidden="true" tabindex="-1"></a>Start with graph of entire year</span>
+<span id="cb23-145"><a href="#cb23-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-148"><a href="#cb23-148" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-149"><a href="#cb23-149" aria-hidden="true" tabindex="-1"></a><span class="co"># site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]</span></span>
+<span id="cb23-150"><a href="#cb23-150" aria-hidden="true" tabindex="-1"></a><span class="co"># #site_coord_list = [(42.501587), (-72.429984)]</span></span>
+<span id="cb23-151"><a href="#cb23-151" aria-hidden="true" tabindex="-1"></a><span class="co"># site_name_list = ["Lake Wyola", "New York City"]</span></span>
+<span id="cb23-152"><a href="#cb23-152" aria-hidden="true" tabindex="-1"></a><span class="co"># site_dict = {"Lake Wyola":("42.501587", "-72.429984"), "New York City":("40.7128", "-74.0059")}</span></span>
+<span id="cb23-153"><a href="#cb23-153" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb23-154"><a href="#cb23-154" aria-hidden="true" tabindex="-1"></a><span class="co"># for site in site_dict:</span></span>
+<span id="cb23-155"><a href="#cb23-155" aria-hidden="true" tabindex="-1"></a><span class="co">#   print(site, " is located at ", site_dict[site])</span></span>
+<span id="cb23-156"><a href="#cb23-156" aria-hidden="true" tabindex="-1"></a><span class="co">#   lat = float(site_dict[site][0])</span></span>
+<span id="cb23-157"><a href="#cb23-157" aria-hidden="true" tabindex="-1"></a><span class="co">#   lon = float(site_dict[site][1])</span></span>
+<span id="cb23-158"><a href="#cb23-158" aria-hidden="true" tabindex="-1"></a><span class="co">#   nearest_point_idx = indicesForCoord(f, lat, lon)</span></span>
+<span id="cb23-159"><a href="#cb23-159" aria-hidden="true" tabindex="-1"></a><span class="co">#   display(Markdown("{site}"))</span></span>
+<span id="cb23-160"><a href="#cb23-160" aria-hidden="true" tabindex="-1"></a><span class="co">#   print("The site nearest to ", site, " is located at ", f["coordinates"][nearest_point_idx[0]][nearest_point_idx[1]])</span></span>
+<span id="cb23-161"><a href="#cb23-161" aria-hidden="true" tabindex="-1"></a><span class="co">#   tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]</span></span>
+<span id="cb23-162"><a href="#cb23-162" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)</span></span>
+<span id="cb23-163"><a href="#cb23-163" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["year"] = windspeed_100m_df.index.year</span></span>
+<span id="cb23-164"><a href="#cb23-164" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["month"] = windspeed_100m_df.index.month</span></span>
+<span id="cb23-165"><a href="#cb23-165" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["day"] = windspeed_100m_df.index.day</span></span>
+<span id="cb23-166"><a href="#cb23-166" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["hour"] = windspeed_100m_df.index.hour</span></span>
+<span id="cb23-167"><a href="#cb23-167" aria-hidden="true" tabindex="-1"></a><span class="co">#   windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear</span></span>
+<span id="cb23-168"><a href="#cb23-168" aria-hidden="true" tabindex="-1"></a><span class="co">#   #windspeed_100m_df.head()</span></span>
+<span id="cb23-169"><a href="#cb23-169" aria-hidden="true" tabindex="-1"></a><span class="co">#   fig, ax = plt.subplots()</span></span>
+<span id="cb23-170"><a href="#cb23-170" aria-hidden="true" tabindex="-1"></a><span class="co">#   ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"])</span></span>
+<span id="cb23-171"><a href="#cb23-171" aria-hidden="true" tabindex="-1"></a><span class="co">#   plt.show()</span></span>
+<span id="cb23-172"><a href="#cb23-172" aria-hidden="true" tabindex="-1"></a><span class="co">#   #display(Markdown(f'&lt;/div&gt;'))</span></span>
+<span id="cb23-173"><a href="#cb23-173" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-174"><a href="#cb23-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-175"><a href="#cb23-175" aria-hidden="true" tabindex="-1"></a>histogram (with line for mean and median) to get skew</span>
+<span id="cb23-176"><a href="#cb23-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-177"><a href="#cb23-177" aria-hidden="true" tabindex="-1"></a>Calculate the variance and standard deviation of <span class="in">`windspeed_100m`</span> for each month by grouping and aggregating</span>
+<span id="cb23-178"><a href="#cb23-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-181"><a href="#cb23-181" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-182"><a href="#cb23-182" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df[<span class="st">"windspeed_100m"</span>].hist()</span>
+<span id="cb23-183"><a href="#cb23-183" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb23-184"><a href="#cb23-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-185"><a href="#cb23-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-186"><a href="#cb23-186" aria-hidden="true" tabindex="-1"></a><span class="fu">## Diurnal variability</span></span>
+<span id="cb23-187"><a href="#cb23-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-188"><a href="#cb23-188" aria-hidden="true" tabindex="-1"></a>graph with for loop</span>
+<span id="cb23-189"><a href="#cb23-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-190"><a href="#cb23-190" aria-hidden="true" tabindex="-1"></a><span class="fu">## Monthly variability</span></span>
+<span id="cb23-191"><a href="#cb23-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-192"><a href="#cb23-192" aria-hidden="true" tabindex="-1"></a>which months how the greatest variability (spread) and which have the smallest spread</span>
+<span id="cb23-193"><a href="#cb23-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-196"><a href="#cb23-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-197"><a href="#cb23-197" aria-hidden="true" tabindex="-1"></a>windspeed_100m_df.groupby(<span class="st">'month'</span>)[<span class="st">'windspeed_100m'</span>].agg([np.var, np.std])</span>
+<span id="cb23-198"><a href="#cb23-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb23-199"><a href="#cb23-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-200"><a href="#cb23-200" aria-hidden="true" tabindex="-1"></a>what month has the most outliers (get count of outliers by month)</span>
+<span id="cb23-201"><a href="#cb23-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-202"><a href="#cb23-202" aria-hidden="true" tabindex="-1"></a><span class="fu"># Insights</span></span>
+<span id="cb23-203"><a href="#cb23-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-204"><a href="#cb23-204" aria-hidden="true" tabindex="-1"></a>When planning utility scale wind power plants, you may not be so concerned with variability and outliers as long as the wind is within the operating range of your turbines.</span>
+<span id="cb23-205"><a href="#cb23-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-206"><a href="#cb23-206" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>if the annual average wind speed is at least 13 mph (5.8 m/s) <span class="sc">\*</span>footnote 1</span>
+<span id="cb23-207"><a href="#cb23-207" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>how often the wind is below the cut-in speed - 8 mph (3.6 m/s) <span class="sc">\*</span>footnote 2</span>
+<span id="cb23-208"><a href="#cb23-208" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) <span class="sc">\*</span>footnote 2</span>
+<span id="cb23-209"><a href="#cb23-209" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>does the diurnal pattern match daily electricity demands</span>
+<span id="cb23-210"><a href="#cb23-210" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>does the monthly pattern match seasonal electricity demands</span>
+<span id="cb23-211"><a href="#cb23-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-212"><a href="#cb23-212" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusions / insights</span></span>
+<span id="cb23-213"><a href="#cb23-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-214"><a href="#cb23-214" aria-hidden="true" tabindex="-1"></a><span class="fu"># Expanded geographic scale</span></span>
+<span id="cb23-215"><a href="#cb23-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-216"><a href="#cb23-216" aria-hidden="true" tabindex="-1"></a><span class="fu"># Citations</span></span>
+<span id="cb23-217"><a href="#cb23-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-218"><a href="#cb23-218" aria-hidden="true" tabindex="-1"></a><span class="ot">&lt;https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48&gt;</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

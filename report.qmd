@@ -1,0 +1,100 @@
+---
+title: "Wind Resource Temporal Variability Report"
+subtitle: "Diurnal and monthly variability of wind resources based on data from the NREL Wind Toolkit"
+date: "`r Sys.Date()`"
+author: "Marie Rivers"
+format: pdf
+editor: visual
+toc-title: Contents
+toc-location: left
+toc-depth: 2
+---
+```{r}
+#| include: false
+```
+
+# Introduction
+
+This report provides an overview of wind resources for xxx...location. This analysis is based on data from the NREL Wind Toolkit, in particular the dataset for wind speed at 100 meters.
+
+xxx...add more text about the data
+
+# Map
+xxx...map
+
+The map below shows the target location as well as the location of the nearest data point in the NREL Wind Toolkit.
+
+# Analysis
+
+```{python}
+#| echo: false
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+xxx...if I have time, add the h5pyd to read in the data using input params. If I have time, index.html is for my 1 individual site and the report is / could be for expanding to other areas and times
+
+```{python}
+#| echo: false
+data = pd.read_csv("data/windspeed_100m_df.csv")
+```
+
+```{python}
+#| echo: false
+annual_average_windspeed = round(data["windspeed_100m"].mean(), 2)
+
+if (annual_average_windspeed >= 5.8):
+  above_below = "ABOVE"
+else:
+  above_below = "BELOW"
+
+print("The annual average wind speed for xxx...location in 2012 was " + str(annual_average_windspeed) + " m/s.")
+print("This is", above_below, "the value recommended by the U.S. Energy Information Administration.")
+```
+
+```{python}
+#| echo: false
+hours_below_cutin_speed = data[data["windspeed_100m"] < 3.6].shape[0]
+
+percent_below_cutin_speed = round((hours_below_cutin_speed / data.shape[0]) * 100, 2)
+
+print("In 2012, wind speed was below the cut-in speed of 3.6 m/s for", f'{hours_below_cutin_speed:,}', "hours.")
+print("Therefore, wind turbines could not operate", percent_below_cutin_speed, "percent of the time due to lack of wind.")
+```
+
+```{python}
+#| echo: false
+hours_above_cutout_speed = data[data["windspeed_100m"] > 24.6].shape[0]
+
+percent_above_cutout_speed = round((hours_above_cutout_speed/ data.shape[0]) * 100, 2)
+
+print("In 2012, wind speed exceeded the out-out speed of 24.6 m/s for", f'{hours_above_cutout_speed:,}', "hours.")
+print("Therefore, wind turbines could operate", percent_above_cutout_speed, "percent of the time due to strong wind.")
+```
+
+```{python}
+#| echo: false
+operating_hours = data.shape[0] - hours_below_cutin_speed - hours_above_cutout_speed
+operating_percent = 100 - percent_below_cutin_speed - percent_above_cutout_speed
+
+print("In 2012, wind speeds at this location would be within the acceptable operating range of")
+print("3.6 m/s to 24.6 m/s for", f'{operating_hours:,}', "hours. Turbines could operate", operating_percent, "percent of the time.")
+```
+
+
+ 
+
+- if the annual average wind speed is at least 13 mph (5.8 m/s) *side margin 1
+- how often the wind is below the cut-in speed - 8 mph (3.6 m/s) *margin 2 (% of time)
+- how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *margin 2
+- does the diurnal pattern match daily electricity demands
+- does the monthly pattern match seasonal electricity demands
+
+# Limitations
+
+# Citations
+
+footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
+
+footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>

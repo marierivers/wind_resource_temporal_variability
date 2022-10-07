@@ -1,0 +1,170 @@
+---
+title: "NREL Geospatial Research Scientist Interview"
+subtitle: "National Renewable Energy Laboratory"
+author: "Marie Rivers"
+date: "October 13, 2022"
+format: 
+  revealjs:
+    theme: default
+    slide-number: true
+    preview-links: auto
+    footer: <https://marierivers.github.io/>
+    title-slide-attributes:
+      data-background-color: "#447099"
+editor: visual
+---
+October 13, 2022
+
+# Intro
+```{r}
+#| include: false
+```
+
+```{python}
+#| include: false
+import h5pyd
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from pyproj import Proj
+import dateutil
+from IPython.display import display, Markdown
+from itertools import chain
+```
+
+
+fncdkasnfa
+
+# Professional Background
+
+environmental engineering consultant
+
+# a plot
+```{r}
+#| echo: true
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
+```
+
+# Wind Resource Temporal Variability
+
+look at this code and these graphs
+
+## Report
+
+This tool creates a summary report by using a location as in input parameter.
+
+So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you're more interested in the conclustions than the analysis steps.
+
+For the given site, this report quickly communicates:
+- if the annual average wind speed is at least 13 mph (5.8 m/s) *footnote 1
+- how often the wind is below the cut-in speed - 8 mph (3.6 m/s) *footnote 2
+- how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2
+- does the diurnal pattern match daily electricity demands
+- does the monthly pattern match seasonal electricity demands
+
+The report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side.
+Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations ...xxx
+
+footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
+
+footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
+
+## Expanded scale
+```{python}
+#| echo: false
+f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
+windspeed_100m_dset = f['windspeed_100m']
+```
+
+```{python}
+#| echo: false
+datetime_df = f["datetime"]
+datetime_df = pd.DataFrame({"datetime": datetime_df[:]},index=range(0,datetime_df.shape[0]))
+datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
+
+start_date = '2012-01-01'
+end_date = '2013-01-01'
+datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
+```
+
+```{python}
+#| echo: false
+def indicesForCoord(f, lat, lon):
+    dset_coords = f['coordinates']
+    projstring = """+proj=lcc +lat_1=30 +lat_2=60 
+                    +lat_0=38.47240422490422 +lon_0=-96.0 
+                    +x_0=0 +y_0=0 +ellps=sphere 
+                    +units=m +no_defs """
+    projectLcc = Proj(projstring)
+    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database
+    origin = projectLcc(*origin_ll)
+    
+    coords = (lon, lat)
+    coords = projectLcc(*coords)
+    delta = np.subtract(coords, origin)
+    ij = [int(round(x/2000)) for x in delta]
+    return tuple(reversed(ij))
+```
+
+The code below shows how to expand the geographic scale
+
+```{python}
+#| echo: true
+#| output-location: slide
+site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]
+#site_coord_list = [(42.501587), (-72.429984)]
+site_name_list = ["Lake Wyola", "New York City"]
+site_dict = {"Lake Wyola":("42.501587", "-72.429984"), "New York City":("40.7128", "-74.0059")}
+
+for site in site_dict:
+  print(site, " is located at ", site_dict[site])
+  lat = float(site_dict[site][0])
+  lon = float(site_dict[site][1])
+  nearest_point_idx = indicesForCoord(f, lat, lon)
+  display(Markdown(f"### {site}"))
+  print("The site nearest to ", site, " is located at ", f["coordinates"][nearest_point_idx[0]][nearest_point_idx[1]])
+  tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]
+  windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
+  windspeed_100m_df["year"] = windspeed_100m_df.index.year
+  windspeed_100m_df["month"] = windspeed_100m_df.index.month
+  windspeed_100m_df["day"] = windspeed_100m_df.index.day
+  windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
+  windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
+  #windspeed_100m_df.head()
+  fig, ax = plt.subplots()
+  ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"])
+  plt.show()
+  display(Markdown(f'</div>'))
+```
+
+
+#
+
+no header?
+
+# Snow Today Capstone
+
+snow!
+
+# Blackout Analysis
+- step 1
+- step 2
+- step 3
+
+## level 2 header
+
+nfdfnkdlasa
+
+___
+
+### level 3 header
+
+dkaslvk
+fndklfnkl
+
+# Citations
+
+<https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
