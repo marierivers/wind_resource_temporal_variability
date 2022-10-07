@@ -91,6 +91,7 @@ print("Coordinates of nearest point: \t {}".format(f["coordinates"][lake_wyola_i
 map of site and nearest point
 
 ```{python}
+#| message: false
 nearest_site_coords = f["coordinates"][lake_wyola_idx[0]][lake_wyola_idx[1]]
 
 site_map = folium.Map(location = lake_wyola, zoom_start = 12)
@@ -122,6 +123,29 @@ windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
 ## Data exploration
 
 Start with graph of entire year
+
+```{python}
+#plt.style.use("seaborn-colorblind")
+fig, ax = plt.subplots()
+fig.set_size_inches([8, 4])
+ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"], linewidth = 0.25)
+ax.set_xlabel("date")
+ax.set_ylabel("wind speed at 100 meters (m/s)")
+ax.set_title("Hourly Wind Speed at Lake Wyola")
+plt.axhline(y=3.6, linewidth = 2.5, linestyle = '--', color = "black")
+ax.annotate("cut-in speed: 3.6 m/s", xy = [windspeed_100m_df.index[0], 4.5],
+            fontsize = 12,
+            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
+plt.axhline(y=24.6, linewidth = 2.5, linestyle = '--', color = "black")
+ax.annotate("cut-out speed: 24.6 m/s", xy = [windspeed_100m_df.index[0], 25.5],
+            fontsize = 12,
+            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
+ax.annotate("Hurricane Sandy", xy = [windspeed_100m_df.index[7250], 23],
+            xytext = [windspeed_100m_df.index[3000], 21.5], fontsize = 12,
+            arrowprops={"arrowstyle":"->", "color":"black"})                                      
+plt.show()
+```
+
 
 ```{python}
 # site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]

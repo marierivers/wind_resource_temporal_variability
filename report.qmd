@@ -9,9 +9,7 @@ toc-title: Contents
 toc-location: left
 toc-depth: 2
 ---
-```{r}
-#| include: false
-```
+xxx...frosting...re-calculate numbers with r to use in summary text. These chunks are include: false. Maybe pull the data with parameters in python, then save the pandas df to the data folder, then read in the df csv with tidyverse
 
 # Introduction
 
@@ -25,6 +23,10 @@ xxx...map
 The map below shows the target location as well as the location of the nearest data point in the NREL Wind Toolkit.
 
 # Analysis
+```{r}
+#| include: false
+library(tidyverse)
+```
 
 ```{python}
 #| echo: false

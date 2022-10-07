@@ -1,17 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Wind Resource Temporal Variability",
-    "section": "",
-    "text": "This tool quantifies and visualizes the diurnal and monthly variability of wind resources"
+    "objectID": "mrivers_presentation.html#report",
+    "href": "mrivers_presentation.html#report",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Report",
+    "text": "Report\nThis tool creates a summary report by using a location as in input parameter.\nSo far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.\nFor the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands\nThe report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx\nfootnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.\nfootnote2: https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "1 + 1\n\n[1] 2"
+    "objectID": "mrivers_presentation.html#expanded-scale",
+    "href": "mrivers_presentation.html#expanded-scale",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Expanded scale",
+    "text": "Expanded scale\n\n\n\n\n\n\n\n\n\nThe code below shows how to expand the geographic scale\n\nsite_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]\n#site_coord_list = [(42.501587), (-72.429984)]\nsite_name_list = [\"Lake Wyola\", \"New York City\"]\nsite_dict = {\"Lake Wyola\":(\"42.501587\", \"-72.429984\"), \"New York City\":(\"40.7128\", \"-74.0059\")}\n\nfor site in site_dict:\n  print(site, \" is located at \", site_dict[site])\n  lat = float(site_dict[site][0])\n  lon = float(site_dict[site][1])\n  nearest_point_idx = indicesForCoord(f, lat, lon)\n  display(Markdown(f\"### {site}\"))\n  print(\"The site nearest to \", site, \" is located at \", f[\"coordinates\"][nearest_point_idx[0]][nearest_point_idx[1]])\n  tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]\n  windspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n  windspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\n  windspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\n  windspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\n  windspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\n  windspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear\n  #windspeed_100m_df.head()\n  fig, ax = plt.subplots()\n  ax.plot(windspeed_100m_df.index, windspeed_100m_df[\"windspeed_100m\"])\n  plt.show()\n  display(Markdown(f'</div>'))"
   },
   {
     "objectID": "mrivers_presentation.html#level-2-header",
@@ -19,6 +19,13 @@
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "level 2 header",
     "text": "level 2 header\nnfdfnkdlasa"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Wind Resource Temporal Variability",
+    "section": "",
+    "text": "This tool quantifies and visualizes the diurnal and monthly variability of wind resources"
   },
   {
     "objectID": "index.html#determine-nearest-timeseries-for-given-latlon",
@@ -32,14 +39,14 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nmap of site and nearest point\n\nnearest_site_coords = f[\"coordinates\"][lake_wyola_idx[0]][lake_wyola_idx[1]]\n\nsite_map = folium.Map(location = lake_wyola, zoom_start = 12)\nfolium.Marker(lake_wyola, popup = 'Lake Wyola').add_to(site_map)\n\n<folium.map.Marker object at 0x7fe1204764f0>\n\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n<folium.map.Marker object at 0x7fe1204769a0>\n\nsite_map\n\nMake this Notebook Trusted to load map: File -> Trust Notebook\n\n\n\n# Get the entire 2012 timeseries data for a point near Lake Wyola\ntseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, lake_wyola_idx[0], lake_wyola_idx[1]]\n\n\n# convert numpy array to pandas dataframe\nwindspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n\n\nwindspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\nwindspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\nwindspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\nwindspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\nwindspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear"
+    "text": "Map\nmap of site and nearest point\n\nnearest_site_coords = f[\"coordinates\"][lake_wyola_idx[0]][lake_wyola_idx[1]]\n\nsite_map = folium.Map(location = lake_wyola, zoom_start = 12)\nfolium.Marker(lake_wyola, popup = 'Lake Wyola').add_to(site_map)\n\n<folium.map.Marker object at 0x7fb3c00cbf10>\n\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n<folium.map.Marker object at 0x7fb3c00cbbe0>\n\nsite_map\n\nMake this Notebook Trusted to load map: File -> Trust Notebook\n\n\n\n# Get the entire 2012 timeseries data for a point near Lake Wyola\ntseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, lake_wyola_idx[0], lake_wyola_idx[1]]\n\n\n# convert numpy array to pandas dataframe\nwindspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n\n\nwindspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\nwindspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\nwindspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\nwindspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\nwindspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear"
   },
   {
     "objectID": "index.html#data-exploration",
     "href": "index.html#data-exploration",
     "title": "Wind Resource Temporal Variability",
     "section": "Data exploration",
-    "text": "Data exploration\nStart with graph of entire year\n\n# site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]\n# #site_coord_list = [(42.501587), (-72.429984)]\n# site_name_list = [\"Lake Wyola\", \"New York City\"]\n# site_dict = {\"Lake Wyola\":(\"42.501587\", \"-72.429984\"), \"New York City\":(\"40.7128\", \"-74.0059\")}\n# \n# for site in site_dict:\n#   print(site, \" is located at \", site_dict[site])\n#   lat = float(site_dict[site][0])\n#   lon = float(site_dict[site][1])\n#   nearest_point_idx = indicesForCoord(f, lat, lon)\n#   display(Markdown(\"{site}\"))\n#   print(\"The site nearest to \", site, \" is located at \", f[\"coordinates\"][nearest_point_idx[0]][nearest_point_idx[1]])\n#   tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]\n#   windspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n#   windspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\n#   windspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\n#   windspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\n#   windspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\n#   windspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear\n#   #windspeed_100m_df.head()\n#   fig, ax = plt.subplots()\n#   ax.plot(windspeed_100m_df.index, windspeed_100m_df[\"windspeed_100m\"])\n#   plt.show()\n#   #display(Markdown(f'</div>'))\n\nhistogram (with line for mean and median) to get skew\nCalculate the variance and standard deviation of windspeed_100m for each month by grouping and aggregating\n\nwindspeed_100m_df[\"windspeed_100m\"].hist()\nplt.show()"
+    "text": "Data exploration\nStart with graph of entire year\n\n#plt.style.use(\"seaborn-colorblind\")\nfig, ax = plt.subplots()\nfig.set_size_inches([8, 4])\nax.plot(windspeed_100m_df.index, windspeed_100m_df[\"windspeed_100m\"], linewidth = 0.25)\nax.set_xlabel(\"date\")\nax.set_ylabel(\"wind speed at 100 meters (m/s)\")\nax.set_title(\"Hourly Wind Speed at Lake Wyola\")\nplt.axhline(y=3.6, linewidth = 2.5, linestyle = '--', color = \"black\")\nax.annotate(\"cut-in speed: 3.6 m/s\", xy = [windspeed_100m_df.index[0], 4.5],\n            fontsize = 12,\n            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})\nplt.axhline(y=24.6, linewidth = 2.5, linestyle = '--', color = \"black\")\nax.annotate(\"cut-out speed: 24.6 m/s\", xy = [windspeed_100m_df.index[0], 25.5],\n            fontsize = 12,\n            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})\nax.annotate(\"Hurricane Sandy\", xy = [windspeed_100m_df.index[7250], 23],\n            xytext = [windspeed_100m_df.index[3000], 21.5], fontsize = 12,\n            arrowprops={\"arrowstyle\":\"->\", \"color\":\"black\"})                                      \nplt.show()\n\n\n\n\n\n# site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]\n# #site_coord_list = [(42.501587), (-72.429984)]\n# site_name_list = [\"Lake Wyola\", \"New York City\"]\n# site_dict = {\"Lake Wyola\":(\"42.501587\", \"-72.429984\"), \"New York City\":(\"40.7128\", \"-74.0059\")}\n# \n# for site in site_dict:\n#   print(site, \" is located at \", site_dict[site])\n#   lat = float(site_dict[site][0])\n#   lon = float(site_dict[site][1])\n#   nearest_point_idx = indicesForCoord(f, lat, lon)\n#   display(Markdown(\"{site}\"))\n#   print(\"The site nearest to \", site, \" is located at \", f[\"coordinates\"][nearest_point_idx[0]][nearest_point_idx[1]])\n#   tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]\n#   windspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n#   windspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\n#   windspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\n#   windspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\n#   windspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\n#   windspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear\n#   #windspeed_100m_df.head()\n#   fig, ax = plt.subplots()\n#   ax.plot(windspeed_100m_df.index, windspeed_100m_df[\"windspeed_100m\"])\n#   plt.show()\n#   #display(Markdown(f'</div>'))\n\nhistogram (with line for mean and median) to get skew\nCalculate the variance and standard deviation of windspeed_100m for each month by grouping and aggregating\n\nwindspeed_100m_df[\"windspeed_100m\"].hist()\nplt.show()"
   },
   {
     "objectID": "index.html#diurnal-variability",
@@ -56,17 +63,17 @@
     "text": "Monthly variability\nwhich months how the greatest variability (spread) and which have the smallest spread\n\nwindspeed_100m_df.groupby('month')['windspeed_100m'].agg([np.var, np.std])\n\n             var       std\nmonth                     \n1      12.102011  3.478794\n2      12.350611  3.514344\n3      13.478157  3.671261\n4       8.707105  2.950780\n5       9.559426  3.091832\n6       8.445230  2.906068\n7       7.129603  2.670132\n8       6.476707  2.544937\n9      10.720469  3.274213\n10     18.704758  4.324900\n11     12.345001  3.513545\n12     16.031414  4.003925\n\n\nwhat month has the most outliers (get count of outliers by month)"
   },
   {
-    "objectID": "mrivers_presentation.html#report",
-    "href": "mrivers_presentation.html#report",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Report",
-    "text": "Report\nThis tool creates a summary report by using a location as in input parameter.\nSo far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.\nFor the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands\nThe report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx\nfootnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.\nfootnote2: https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
+    "objectID": "void/about.html",
+    "href": "void/about.html",
+    "title": "About",
+    "section": "",
+    "text": "1 + 1\n\n[1] 2"
   },
   {
-    "objectID": "mrivers_presentation.html#expanded-scale",
-    "href": "mrivers_presentation.html#expanded-scale",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Expanded scale",
-    "text": "Expanded scale\n\n\n\n\n\n\n\n\n\nThe code below shows how to expand the geographic scale\n\nsite_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]\n#site_coord_list = [(42.501587), (-72.429984)]\nsite_name_list = [\"Lake Wyola\", \"New York City\"]\nsite_dict = {\"Lake Wyola\":(\"42.501587\", \"-72.429984\"), \"New York City\":(\"40.7128\", \"-74.0059\")}\n\nfor site in site_dict:\n  print(site, \" is located at \", site_dict[site])\n  lat = float(site_dict[site][0])\n  lon = float(site_dict[site][1])\n  nearest_point_idx = indicesForCoord(f, lat, lon)\n  display(Markdown(f\"### {site}\"))\n  print(\"The site nearest to \", site, \" is located at \", f[\"coordinates\"][nearest_point_idx[0]][nearest_point_idx[1]])\n  tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]\n  windspeed_100m_df = pd.DataFrame(tseries, columns = [\"windspeed_100m\"], index = datetime_df.iloc[datetime_range,].datetime)\n  windspeed_100m_df[\"year\"] = windspeed_100m_df.index.year\n  windspeed_100m_df[\"month\"] = windspeed_100m_df.index.month\n  windspeed_100m_df[\"day\"] = windspeed_100m_df.index.day\n  windspeed_100m_df[\"hour\"] = windspeed_100m_df.index.hour\n  windspeed_100m_df[\"day_of_year\"] = windspeed_100m_df.index.dayofyear\n  #windspeed_100m_df.head()\n  fig, ax = plt.subplots()\n  ax.plot(windspeed_100m_df.index, windspeed_100m_df[\"windspeed_100m\"])\n  plt.show()\n  display(Markdown(f'</div>'))"
+    "objectID": "void/index.html",
+    "href": "void/index.html",
+    "title": "Wind Resource Temporal Variability",
+    "section": "",
+    "text": "About the data\n\n#%matplotlib inline\n# import h5pyd\n# import numpy as np\n# import pandas as pd\n# import matplotlib.pyplot as plt\n# import matplotlib.image as mpimg\n# from pyproj import Proj\n# import dateutil\n\n\n\nGet the data\n\n# f = h5pyd.File(\"/nrel/wtk-us.h5\", 'r', bucket=\"nrel-pds-hsds\")\n# list(f)\n\n\n#windspeed_100m_df = pd.read_csv(\"data/windspeed_100m_df.csv\")\n\n\n\nStatistical analysis\n\n\nConclusions / insights\n\n\nExpanded geographic scale\n\n\nCitations"
   }
 ]
