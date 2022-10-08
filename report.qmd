@@ -8,7 +8,114 @@ editor: visual
 toc-title: Contents
 toc-location: left
 toc-depth: 2
+params:
+  site_name: "Mount Washington"
+  site_lat: "44.2705"
+  site_lon: "-71.30325"
+  start_date: '2012-01-01'
+  end_date: '2013-01-01'
 ---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(reticulate)
+```
+
+```{python}
+#| include: false
+import h5pyd
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from pyproj import Proj
+import dateutil
+import folium
+```
+
+```{r}
+#| include: false
+df_R <- data.frame(params$site_name, params$site_lat, params$site_lon, params$start_date, params$end_date)
+```
+
+```{python}
+#| include: false
+df_py = r.df_R
+```
+
+```{r}
+#| include: true
+site_name_R <- params$site_name
+site_lat_R <- params$site_lat
+site_lon_R <- params$site_lon
+start_date_R <- params$start_date
+end_date_R <- params$end_date
+paste0("In R land ", df_R$params.site_name[[1]], "is located at (", df_R$params.site_lat[[1]], ", ", df_R$params.site_lon, ")")
+```
+
+```{python}
+#| include: true
+site_name_py = df_py["params.site_name"][0]
+site_lat_py = df_py["params.site_lat"][0]
+site_lon_py = df_py["params.site_lon"][0]
+start_date_py = df_py["params.start_date"][0]
+end_date_py = df_py["params.end_date"][0]
+print("In python land", df_py["params.site_name"][0], "is location at (", df_py["params.site_lat"][0], ", ", df_py["params.site_lon"][0], " )")
+```
+
+```{python}
+#| include: false
+f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
+windspeed_100m_dset = f['windspeed_100m']
+```
+
+```{python}
+#| include: false
+datetime_df = f["datetime"]
+datetime_df = pd.DataFrame({"datetime": datetime_df[:]},index=range(0,datetime_df.shape[0]))
+datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
+```
+
+```{python}
+#| include: false
+start_date = df_py["params.start_date"][0]
+end_date = df_py["params.end_date"][0]
+datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
+```
+
+```{python}
+#| include: false
+site_name = df_py["params.site_name"][0]
+site_coords = (df_py["params.site_lat"][0], df_py["params.site_lon"][0])
+```
+
+```{python}
+#| include: false
+
+def indicesForCoord(f, lat_index, lon_index):
+    dset_coords = f['coordinates']
+    projstring = """+proj=lcc +lat_1=30 +lat_2=60 
+                    +lat_0=38.47240422490422 +lon_0=-96.0 
+                    +x_0=0 +y_0=0 +ellps=sphere 
+                    +units=m +no_defs """
+    projectLcc = Proj(projstring)
+    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database
+    origin = projectLcc(*origin_ll)
+    
+    coords = (lon_index,lat_index)
+    coords = projectLcc(*coords)
+    delta = np.subtract(coords, origin)
+    ij = [int(round(x/2000)) for x in delta]
+    return tuple(reversed(ij))
+
+nearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )
+
+print("y,x indices for", site_name, ": \t\t {}".format(nearest_site))
+print("Coordinates of", site_name, ": \t {}".format(site_coords))
+print("Coordinates of nearest point: \t {}".format(f["coordinates"][nearest_site[0]][nearest_site[1]]))
+```
+
 xxx...frosting...re-calculate numbers with r to use in summary text. These chunks are include: false. Maybe pull the data with parameters in python, then save the pandas df to the data folder, then read in the df csv with tidyverse
 
 # Introduction
@@ -17,34 +124,89 @@ This report provides an overview of wind resources for xxx...location. This anal
 
 xxx...add more text about the data
 
-# Map
-xxx...map
+# Site Map
 
 The map below shows the target location as well as the location of the nearest data point in the NREL Wind Toolkit.
 
-# Analysis
+```{python}
+#| message: false
+#| echo: false
+
+nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
+
+site_map = folium.Map(location = site_coords, zoom_start = 10)
+folium.Marker(site_coords, popup = site_name).add_to(site_map)
+folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
+site_map
+```
+
+```{python}
+#| include: false
+tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_site[0], nearest_site[1]]
+```
+
+```{python}
+#| include: false
+# convert numpy array to pandas dataframe
+windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
+
+windspeed_100m_df["year"] = windspeed_100m_df.index.year
+windspeed_100m_df["month"] = windspeed_100m_df.index.month
+windspeed_100m_df["day"] = windspeed_100m_df.index.day
+windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
+windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
+```
+
+```{python}
+#| include: false
+windspeed_100m_df.to_csv("data/data_for_report_windspeed_100m_df.csv", index=True)
+```
+
+```{python}
+#| echo: false
+#data = pd.read_csv("data/windspeed_100m_df.csv")
+```
+
 ```{r}
 #| include: false
-library(tidyverse)
+data_R <- read_csv("data/data_for_report_windspeed_100m_df.csv")
 ```
+
+
+# Analysis
 
 ```{python}
 #| echo: false
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+plt.style.use("seaborn-colorblind")
+#plt.style.use("ggplot")
+fig, ax = plt.subplots()
+#fig.set_size_inches([8, 4])
+ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"], linewidth = 0.25)
+ax.set_xlabel("date")
+ax.set_ylabel("wind speed at 100 meters (m/s)")
+ax.set_title("Hourly Wind Speed")
+plt.axhline(y=3.6, linewidth = 2.5, linestyle = '--', color = "black")
+ax.annotate("cut-in speed: 3.6 m/s", xy = [windspeed_100m_df.index[0], 4.5],
+            fontsize = 12,
+            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
+plt.axhline(y=24.6, linewidth = 2.5, linestyle = '--', color = "black")
+ax.annotate("cut-out speed: 24.6 m/s", xy = [windspeed_100m_df.index[0], 25.5],
+            fontsize = 12,
+            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
+plt.show()
 ```
 
-xxx...if I have time, add the h5pyd to read in the data using input params. If I have time, index.html is for my 1 individual site and the report is / could be for expanding to other areas and times
+
+ index.html is for my 1 individual site and the report is / could be for expanding to other areas and times
+
+read in the data with h5pyd and convert it to pandas, then save it as "data for report", then read in "data for report" with R...this will only work if parameters work with python
+
+...or I could make a dataset with wind speeds to multiple sites
+
 
 ```{python}
-#| echo: false
-data = pd.read_csv("data/windspeed_100m_df.csv")
-```
-
-```{python}
-#| echo: false
-annual_average_windspeed = round(data["windspeed_100m"].mean(), 2)
+#| include: true
+annual_average_windspeed = round(windspeed_100m_df["windspeed_100m"].mean(), 2)
 
 if (annual_average_windspeed >= 5.8):
   above_below = "ABOVE"
@@ -55,11 +217,23 @@ print("The annual average wind speed for xxx...location in 2012 was " + str(annu
 print("This is", above_below, "the value recommended by the U.S. Energy Information Administration.")
 ```
 
+```{r}
+#| include: false
+annual_average_windspeed_R <- round(mean(data_R$windspeed_100m), 2)
+
+if (annual_average_windspeed_R >= 5.8) {
+  above_below_R <- "ABOVE"
+} else {
+  above_below_R <- "BELOW"
+}
+```
+The annual average wind speed for `r params$site_name` is `r annual_average_windspeed_R`. This is `r above_below_R` the value of 5.8 m/s (13 mph) recommended by the U.S. Energy Information Administration.
+
 ```{python}
 #| echo: false
-hours_below_cutin_speed = data[data["windspeed_100m"] < 3.6].shape[0]
+hours_below_cutin_speed = windspeed_100m_df[windspeed_100m_df["windspeed_100m"] < 3.6].shape[0]
 
-percent_below_cutin_speed = round((hours_below_cutin_speed / data.shape[0]) * 100, 2)
+percent_below_cutin_speed = round((hours_below_cutin_speed / windspeed_100m_df.shape[0]) * 100, 2)
 
 print("In 2012, wind speed was below the cut-in speed of 3.6 m/s for", f'{hours_below_cutin_speed:,}', "hours.")
 print("Therefore, wind turbines could not operate", percent_below_cutin_speed, "percent of the time due to lack of wind.")
@@ -67,9 +241,9 @@ print("Therefore, wind turbines could not operate", percent_below_cutin_speed, "
 
 ```{python}
 #| echo: false
-hours_above_cutout_speed = data[data["windspeed_100m"] > 24.6].shape[0]
+hours_above_cutout_speed = windspeed_100m_df[windspeed_100m_df["windspeed_100m"] > 24.6].shape[0]
 
-percent_above_cutout_speed = round((hours_above_cutout_speed/ data.shape[0]) * 100, 2)
+percent_above_cutout_speed = round((hours_above_cutout_speed/ windspeed_100m_df.shape[0]) * 100, 2)
 
 print("In 2012, wind speed exceeded the out-out speed of 24.6 m/s for", f'{hours_above_cutout_speed:,}', "hours.")
 print("Therefore, wind turbines could operate", percent_above_cutout_speed, "percent of the time due to strong wind.")
@@ -77,7 +251,7 @@ print("Therefore, wind turbines could operate", percent_above_cutout_speed, "per
 
 ```{python}
 #| echo: false
-operating_hours = data.shape[0] - hours_below_cutin_speed - hours_above_cutout_speed
+operating_hours = windspeed_100m_df.shape[0] - hours_below_cutin_speed - hours_above_cutout_speed
 operating_percent = 100 - percent_below_cutin_speed - percent_above_cutout_speed
 
 print("In 2012, wind speeds at this location would be within the acceptable operating range of")

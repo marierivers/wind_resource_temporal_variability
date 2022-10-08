@@ -59,9 +59,16 @@ datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetim
 ## Determine nearest timeseries for given Lat/Lon
 
 ```{python}
+# enter site specific info here
+site_name = "mount washington"
+site_coords = (44.27, -71.3)
+```
+
+```{python}
 # This function finds the nearest x/y indices for a given lat/lon.
 # Rather than fetching the entire coordinates database, which is 500+ MB, this
 # uses the Proj4 library to find a nearby point and then converts to x/y indices
+
 def indicesForCoord(f, lat_index, lon_index):
     dset_coords = f['coordinates']
     projstring = """+proj=lcc +lat_1=30 +lat_2=60 
@@ -78,12 +85,11 @@ def indicesForCoord(f, lat_index, lon_index):
     ij = [int(round(x/2000)) for x in delta]
     return tuple(reversed(ij))
 
-lake_wyola = (42.501587, -72.429984)
-lake_wyola_idx = indicesForCoord(f, lake_wyola[0], lake_wyola[1] )
+nearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )
 
-print("y,x indices for Lake Wyola: \t\t {}".format(lake_wyola_idx))
-print("Coordinates of Lake Wyola: \t {}".format(lake_wyola))
-print("Coordinates of nearest point: \t {}".format(f["coordinates"][lake_wyola_idx[0]][lake_wyola_idx[1]]))
+print("y,x indices for", site_name, ": \t\t {}".format(nearest_site))
+print("Coordinates of", site_name, ": \t {}".format(site_coords))
+print("Coordinates of nearest point: \t {}".format(f["coordinates"][nearest_site[0]][nearest_site[1]]))
 ```
 
 ## Map
@@ -92,31 +98,35 @@ map of site and nearest point
 
 ```{python}
 #| message: false
-nearest_site_coords = f["coordinates"][lake_wyola_idx[0]][lake_wyola_idx[1]]
+nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
 
-site_map = folium.Map(location = lake_wyola, zoom_start = 12)
-folium.Marker(lake_wyola, popup = 'Lake Wyola').add_to(site_map)
+site_map = folium.Map(location = site_coords, zoom_start = 10)
+folium.Marker(site_coords, popup = site_name).add_to(site_map)
 folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
 site_map
 ```
 
 ```{python}
-# Get the entire 2012 timeseries data for a point near Lake Wyola
-tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, lake_wyola_idx[0], lake_wyola_idx[1]]
+# Get the entire 2012 timeseries data for a point near the site
+tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_site[0], nearest_site[1]]
 ```
 
 ```{python}
 # convert numpy array to pandas dataframe
 windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
-```
 
-```{python}
 windspeed_100m_df["year"] = windspeed_100m_df.index.year
 windspeed_100m_df["month"] = windspeed_100m_df.index.month
 windspeed_100m_df["day"] = windspeed_100m_df.index.day
 windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
 windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
 ```
+
+```{python}
+#| include: false
+#windspeed_100m_df.to_csv("data/windspeed_100m_df.csv", index=True)
+```
+
 
 # Statistical analysis
 
@@ -125,9 +135,10 @@ windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
 Start with graph of entire year
 
 ```{python}
-#plt.style.use("seaborn-colorblind")
+plt.style.use("seaborn-colorblind")
+#plt.style.use("ggplot")
 fig, ax = plt.subplots()
-fig.set_size_inches([8, 4])
+#fig.set_size_inches([8, 4])
 ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"], linewidth = 0.25)
 ax.set_xlabel("date")
 ax.set_ylabel("wind speed at 100 meters (m/s)")
@@ -140,45 +151,17 @@ plt.axhline(y=24.6, linewidth = 2.5, linestyle = '--', color = "black")
 ax.annotate("cut-out speed: 24.6 m/s", xy = [windspeed_100m_df.index[0], 25.5],
             fontsize = 12,
             bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
-ax.annotate("Hurricane Sandy", xy = [windspeed_100m_df.index[7250], 23],
-            xytext = [windspeed_100m_df.index[3000], 21.5], fontsize = 12,
-            arrowprops={"arrowstyle":"->", "color":"black"})                                      
 plt.show()
 ```
 
-
-```{python}
-# site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]
-# #site_coord_list = [(42.501587), (-72.429984)]
-# site_name_list = ["Lake Wyola", "New York City"]
-# site_dict = {"Lake Wyola":("42.501587", "-72.429984"), "New York City":("40.7128", "-74.0059")}
-# 
-# for site in site_dict:
-#   print(site, " is located at ", site_dict[site])
-#   lat = float(site_dict[site][0])
-#   lon = float(site_dict[site][1])
-#   nearest_point_idx = indicesForCoord(f, lat, lon)
-#   display(Markdown("{site}"))
-#   print("The site nearest to ", site, " is located at ", f["coordinates"][nearest_point_idx[0]][nearest_point_idx[1]])
-#   tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]
-#   windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
-#   windspeed_100m_df["year"] = windspeed_100m_df.index.year
-#   windspeed_100m_df["month"] = windspeed_100m_df.index.month
-#   windspeed_100m_df["day"] = windspeed_100m_df.index.day
-#   windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
-#   windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
-#   #windspeed_100m_df.head()
-#   fig, ax = plt.subplots()
-#   ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"])
-#   plt.show()
-#   #display(Markdown(f'</div>'))
-```
 
 histogram (with line for mean and median) to get skew
 
 Calculate the variance and standard deviation of `windspeed_100m` for each month by grouping and aggregating
 
 ```{python}
+plt.style.use("seaborn-colorblind")
+fig, ax = plt.subplots()
 windspeed_100m_df["windspeed_100m"].hist()
 plt.show()
 ```
