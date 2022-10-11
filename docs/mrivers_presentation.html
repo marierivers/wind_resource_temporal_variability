@@ -397,34 +397,52 @@
 </section>
 <section id="intro" class="title-slide slide level1 center">
 <h1>Intro</h1>
-<p>fncdkasnfa</p>
+<p>xxx…outline of what I’ll be talking about today - Professional backgroud - wind variability technical task - Improving usability of snow data through open-source tools - Power outage geospatial analysis</p>
 </section>
-
-<section id="professional-background" class="title-slide slide level1 center">
-<h1>Professional Background</h1>
-<p>environmental engineering consultant</p>
-</section>
-
-<section id="a-plot" class="title-slide slide level1 center">
-<h1>a plot</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(hp, mpg, <span class="at">color =</span> am)) <span class="sc">+</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="fu">geom_smooth</span>(<span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">method =</span> <span class="st">"loess"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
 
 <section>
-<section id="wind-resource-temporal-variability" class="title-slide slide level1 center">
+<section id="professional-background" class="title-slide slide level1 center" data-background-color="#447099">
+<h1>Professional Background</h1>
+
+</section>
+<section id="environmental-engineering-consultant" class="slide level2">
+<h2>environmental engineering consultant</h2>
+<p>modeled drinking water distribution systems - used customer billing data to identify diunal patterns in water consumption - used diurnal patters in extended period simulation models unlike wind patterns, water use is influenced by human activities (dif patterns based on season, weekday/weekend, zoning (residential vs commercial vs industrial)) - predictive modeling</p>
+<p>used geospatial analyses to identify and evaluate locations from new infrastructure based on land use data and community demographics</p>
+</section>
+<section id="detour" class="slide level2">
+<h2>Detour</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<ul>
+<li>Master of Environmental Data Science</li>
+<li>zz..besides going to the beach and paddle boarding with my dog, I…</li>
+<li>learn geospatial analysis, statistics, and remote sensing with Python and R</li>
+<li>…and fell in love with the concept of reproducible open science</li>
+</ul>
+<p>zz..Last year my professional career took a detour</p>
+<p>zz..talk about why I made this decision</p>
+</div><div class="column" style="width:30%;">
+<p><img data-src="images/lyra_grad_pic.JPEG"></p>
+</div>
+</div>
+</section></section>
+<section>
+<section id="wind-resource-temporal-variability" class="title-slide slide level1 center" data-background-color="#447099">
 <h1>Wind Resource Temporal Variability</h1>
 <p>look at this code and these graphs</p>
+<ul>
+<li><p>circle back to water diurnal patterns ()</p></li>
+<li><p>so what does this tell us about the monthly variability?</p></li>
+<li><p>so what does this tell us about the daily variability?</p></li>
+</ul>
+<p>now that we have a good sense of what the data looks like for this location, let’s take a closer look at some statistics and quanity the variability</p>
 </section>
 <section id="report" class="slide level2">
 <h2>Report</h2>
 <p>This tool creates a summary report by using a location as in input parameter.</p>
 <p>So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.</p>
-<p>For the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) <em>footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) </em>footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands</p>
+<p>For the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) <em>footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s)</em> footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands</p>
 <p>The report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx</p>
 <p>footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <a href="https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines." class="uri">https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.</a></p>
 <p>footnote2: <a href="https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms" class="uri">https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms</a></p>
@@ -442,41 +460,41 @@
 </div>
 <p>The code below shows how to expand the geographic scale</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>site_coord_list <span class="op">=</span> [(<span class="fl">42.501587</span>, <span class="op">-</span><span class="fl">72.429984</span>), (<span class="fl">40.7128</span>, <span class="op">-</span><span class="fl">74.0059</span>)]</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#site_coord_list = [(42.501587), (-72.429984)]</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>site_name_list <span class="op">=</span> [<span class="st">"Lake Wyola"</span>, <span class="st">"New York City"</span>]</span>
-<span id="cb2-4"><a href="#cb2-4"></a>site_dict <span class="op">=</span> {<span class="st">"Lake Wyola"</span>:(<span class="st">"42.501587"</span>, <span class="st">"-72.429984"</span>), <span class="st">"New York City"</span>:(<span class="st">"40.7128"</span>, <span class="st">"-74.0059"</span>)}</span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="cf">for</span> site <span class="kw">in</span> site_dict:</span>
-<span id="cb2-7"><a href="#cb2-7"></a>  <span class="bu">print</span>(site, <span class="st">" is located at "</span>, site_dict[site])</span>
-<span id="cb2-8"><a href="#cb2-8"></a>  lat <span class="op">=</span> <span class="bu">float</span>(site_dict[site][<span class="dv">0</span>])</span>
-<span id="cb2-9"><a href="#cb2-9"></a>  lon <span class="op">=</span> <span class="bu">float</span>(site_dict[site][<span class="dv">1</span>])</span>
-<span id="cb2-10"><a href="#cb2-10"></a>  nearest_point_idx <span class="op">=</span> indicesForCoord(f, lat, lon)</span>
-<span id="cb2-11"><a href="#cb2-11"></a>  display(Markdown(<span class="ss">f"### </span><span class="sc">{</span>site<span class="sc">}</span><span class="ss">"</span>))</span>
-<span id="cb2-12"><a href="#cb2-12"></a>  <span class="bu">print</span>(<span class="st">"The site nearest to "</span>, site, <span class="st">" is located at "</span>, f[<span class="st">"coordinates"</span>][nearest_point_idx[<span class="dv">0</span>]][nearest_point_idx[<span class="dv">1</span>]])</span>
-<span id="cb2-13"><a href="#cb2-13"></a>  tseries <span class="op">=</span> windspeed_100m_dset[<span class="bu">min</span>(datetime_range):<span class="bu">max</span>(datetime_range)<span class="op">+</span><span class="dv">1</span>, nearest_point_idx[<span class="dv">0</span>], nearest_point_idx[<span class="dv">1</span>]]</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  windspeed_100m_df <span class="op">=</span> pd.DataFrame(tseries, columns <span class="op">=</span> [<span class="st">"windspeed_100m"</span>], index <span class="op">=</span> datetime_df.iloc[datetime_range,].datetime)</span>
-<span id="cb2-15"><a href="#cb2-15"></a>  windspeed_100m_df[<span class="st">"year"</span>] <span class="op">=</span> windspeed_100m_df.index.year</span>
-<span id="cb2-16"><a href="#cb2-16"></a>  windspeed_100m_df[<span class="st">"month"</span>] <span class="op">=</span> windspeed_100m_df.index.month</span>
-<span id="cb2-17"><a href="#cb2-17"></a>  windspeed_100m_df[<span class="st">"day"</span>] <span class="op">=</span> windspeed_100m_df.index.day</span>
-<span id="cb2-18"><a href="#cb2-18"></a>  windspeed_100m_df[<span class="st">"hour"</span>] <span class="op">=</span> windspeed_100m_df.index.hour</span>
-<span id="cb2-19"><a href="#cb2-19"></a>  windspeed_100m_df[<span class="st">"day_of_year"</span>] <span class="op">=</span> windspeed_100m_df.index.dayofyear</span>
-<span id="cb2-20"><a href="#cb2-20"></a>  <span class="co">#windspeed_100m_df.head()</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>  fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb2-22"><a href="#cb2-22"></a>  ax.plot(windspeed_100m_df.index, windspeed_100m_df[<span class="st">"windspeed_100m"</span>])</span>
-<span id="cb2-23"><a href="#cb2-23"></a>  plt.show()</span>
-<span id="cb2-24"><a href="#cb2-24"></a>  display(Markdown(<span class="ss">f'&lt;/div&gt;'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>site_coord_list <span class="op">=</span> [(<span class="fl">42.501587</span>, <span class="op">-</span><span class="fl">72.429984</span>), (<span class="fl">40.7128</span>, <span class="op">-</span><span class="fl">74.0059</span>)]</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co">#site_coord_list = [(42.501587), (-72.429984)]</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>site_name_list <span class="op">=</span> [<span class="st">"Lake Wyola"</span>, <span class="st">"New York City"</span>]</span>
+<span id="cb1-4"><a href="#cb1-4"></a>site_dict <span class="op">=</span> {<span class="st">"Lake Wyola"</span>:(<span class="st">"42.501587"</span>, <span class="st">"-72.429984"</span>), <span class="st">"New York City"</span>:(<span class="st">"40.7128"</span>, <span class="st">"-74.0059"</span>)}</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="cf">for</span> site <span class="kw">in</span> site_dict:</span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="bu">print</span>(site, <span class="st">" is located at "</span>, site_dict[site])</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  lat <span class="op">=</span> <span class="bu">float</span>(site_dict[site][<span class="dv">0</span>])</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  lon <span class="op">=</span> <span class="bu">float</span>(site_dict[site][<span class="dv">1</span>])</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  nearest_point_idx <span class="op">=</span> indicesForCoord(f, lat, lon)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  display(Markdown(<span class="ss">f"### </span><span class="sc">{</span>site<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="bu">print</span>(<span class="st">"The site nearest to "</span>, site, <span class="st">" is located at "</span>, f[<span class="st">"coordinates"</span>][nearest_point_idx[<span class="dv">0</span>]][nearest_point_idx[<span class="dv">1</span>]])</span>
+<span id="cb1-13"><a href="#cb1-13"></a>  tseries <span class="op">=</span> windspeed_100m_dset[<span class="bu">min</span>(datetime_range):<span class="bu">max</span>(datetime_range)<span class="op">+</span><span class="dv">1</span>, nearest_point_idx[<span class="dv">0</span>], nearest_point_idx[<span class="dv">1</span>]]</span>
+<span id="cb1-14"><a href="#cb1-14"></a>  windspeed_100m_df <span class="op">=</span> pd.DataFrame(tseries, columns <span class="op">=</span> [<span class="st">"windspeed_100m"</span>], index <span class="op">=</span> datetime_df.iloc[datetime_range,].datetime)</span>
+<span id="cb1-15"><a href="#cb1-15"></a>  windspeed_100m_df[<span class="st">"year"</span>] <span class="op">=</span> windspeed_100m_df.index.year</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  windspeed_100m_df[<span class="st">"month"</span>] <span class="op">=</span> windspeed_100m_df.index.month</span>
+<span id="cb1-17"><a href="#cb1-17"></a>  windspeed_100m_df[<span class="st">"day"</span>] <span class="op">=</span> windspeed_100m_df.index.day</span>
+<span id="cb1-18"><a href="#cb1-18"></a>  windspeed_100m_df[<span class="st">"hour"</span>] <span class="op">=</span> windspeed_100m_df.index.hour</span>
+<span id="cb1-19"><a href="#cb1-19"></a>  windspeed_100m_df[<span class="st">"day_of_year"</span>] <span class="op">=</span> windspeed_100m_df.index.dayofyear</span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="co">#windspeed_100m_df.head()</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb1-22"><a href="#cb1-22"></a>  ax.plot(windspeed_100m_df.index, windspeed_100m_df[<span class="st">"windspeed_100m"</span>])</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  plt.show()</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  display(Markdown(<span class="ss">f'&lt;/div&gt;'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </section><section expanded-scale-output="expanded-scale-output" class="slide level2 output-location-slide"><h2>Expanded scale</h2><div class="cell output-location-slide">
 <div class="cell-output-display">
-<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
+<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
 </div>
 <div class="cell-output-display">
-<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-7-2.png" width="960"></p>
+<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-6-2.png" width="960"></p>
 </div>
 <div class="cell-output-display">
-<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-7-3.png" width="960"></p>
+<p><img data-src="mrivers_presentation_files/figure-revealjs/unnamed-chunk-6-3.png" width="960"></p>
 </div>
 </div></section></section>
 <section id="section" class="title-slide slide level1 center">
@@ -484,14 +502,23 @@
 <p>no header?</p>
 </section>
 
-<section id="snow-today-capstone" class="title-slide slide level1 center">
-<h1>Snow Today Capstone</h1>
-<p>snow!</p>
-</section>
-
 <section>
-<section id="blackout-analysis" class="title-slide slide level1 center">
+<section id="snow-today-capstone" class="title-slide slide level1 center" data-background-color="#447099">
+<h1>Snow Today Capstone</h1>
+
+</section>
+<section id="project-goal" class="slide level2">
+<h2>Project goal</h2>
+<p>Improve the usability of snow data through web based visualizations and tutorials snow!</p>
+<p>The</p>
+</section></section>
+<section>
+<section id="blackout-analysis" class="title-slide slide level1 center" data-background-color="#447099">
 <h1>Blackout Analysis</h1>
+
+</section>
+<section id="project-overview" class="slide level2">
+<h2>Project overview</h2>
 <ul>
 <li>step 1</li>
 <li>step 2</li>
@@ -512,7 +539,7 @@
 <p><a href="https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines." class="uri">https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.</a></p>
 
 <div class="footer footer-default">
-<p><a href="https://marierivers.github.io/" class="uri">https://marierivers.github.io/</a></p>
+<p><a href="https://marierivers.github.io/wind_resource_temporal_variability/" class="uri">https://marierivers.github.io/wind_resource_temporal_variability/</a></p>
 </div>
 </section>
     </div>

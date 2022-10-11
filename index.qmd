@@ -13,17 +13,23 @@ code-tools:
   caption: view source code
 code-block-bg: true
 code-block-border-left: "#31BAE9"
+
 ---
 
-This tool quantifies and visualizes the diurnal and monthly variability of wind resources
+This tool uses statistical analyses and visualizations to explore the diurnal and monthly variability of wind resources at Mount Washington in New Hampshire using data from the [National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit](https://www.nrel.gov/grid/wind-toolkit.html). Datasets within this tool include meteorological conditions such as temperature, pressure, relative humidity, wind direction, and wind speed. Hourly data is available for the continental United States from 2007 to 2013. This analysis used the wind speed at 100 meters dataset for the year 2012.
 
-# About the data
+# Access data
+
+The code below was used to access the data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](). The data are stored in the file `wtk_us.h5` with is in HDF5 format. Data are stored in three dimensions `dataset[t, y, x]` where x is the longitudinal index, y is the latitudinal index, and t is the temporal index. Timestamps are in the UTC timezone.
 
 ```{r}
 #| include: false
+library(tidyverse)
+library(here)
 ```
 
 ```{python}
+#| column: page-right
 import h5pyd
 import numpy as np
 import pandas as pd
@@ -32,25 +38,30 @@ import matplotlib.image as mpimg
 from pyproj import Proj
 import dateutil
 import folium
-#from IPython.display import display, Markdown
+import plotly.graph_objects as go
 ```
-
-# Access data
 
 ```{python}
 #| column: page-right
+
+# access the wind toolkit file
 f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
+
+# access the windspeed_100m dataset
 windspeed_100m_dset = f['windspeed_100m']
 ```
 
 ```{python}
+#| column: page-right
+# access the datetime dataset
 datetime_df = f["datetime"]
 datetime_df = pd.DataFrame({"datetime": datetime_df[:]},index=range(0,datetime_df.shape[0]))
 datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
 ```
 
 ```{python}
-# datetime range for 2012
+#| column: page-right
+# specify datetime range
 start_date = '2012-01-01'
 end_date = '2013-01-01'
 datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
@@ -58,13 +69,19 @@ datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetim
 
 ## Determine nearest timeseries for given Lat/Lon
 
+The file structure organizes the data within a 2 kilometer x 2 kilometer grid. The code below takes the latitude/longitude coordinates of an individual site and finds the indices and coordinates of the nearest site within the dataset.
+
+Latitude and longitude coordinates are in a modified Lambert Conic projection.
+
 ```{python}
+#| column: page-right
 # enter site specific info here
-site_name = "mount washington"
+site_name = "Mount Washington"
 site_coords = (44.27, -71.3)
 ```
 
 ```{python}
+#| column: page-right
 # This function finds the nearest x/y indices for a given lat/lon.
 # Rather than fetching the entire coordinates database, which is 500+ MB, this
 # uses the Proj4 library to find a nearby point and then converts to x/y indices
@@ -94,7 +111,7 @@ print("Coordinates of nearest point: \t {}".format(f["coordinates"][nearest_site
 
 ## Map
 
-map of site and nearest point
+This map shows the location of Mount Washington and the nearest point from the WIND Toolkit.
 
 ```{python}
 #| message: false
@@ -106,12 +123,18 @@ folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
 site_map
 ```
 
+## Timeseries
+
 ```{python}
+#| column: page-right
 # Get the entire 2012 timeseries data for a point near the site
 tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_site[0], nearest_site[1]]
 ```
 
+## Convert to pandas dataframe
+
 ```{python}
+#| column: page-right
 # convert numpy array to pandas dataframe
 windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
 
@@ -127,48 +150,324 @@ windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
 #windspeed_100m_df.to_csv("data/windspeed_100m_df.csv", index=True)
 ```
 
+## Aggregate data 
+
+Expand the chunks below to code used to aggregate the data for the statistical analysis and visualizations.
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "functions to calculate quantiles"
+def quantile25(column):
+    return column.quantile(0.25)
+
+def quantile50(column):
+    return column.quantile(0.50)
+
+def quantile75(column):
+    return column.quantile(0.75)
+```
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "create dataframe of average wind speed for each hour"
+hourly_avg = windspeed_100m_df.groupby("hour")["windspeed_100m"].agg(["mean", "std", quantile25, quantile50, quantile75])
+hourly_avg["coef_of_variation"] = hourly_avg["std"] / hourly_avg["mean"]
+hourly_avg = hourly_avg.reset_index()
+hourly_avg
+```
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "create dataframe of average wind speed for each hour by month"
+hourly_avg_by_month = windspeed_100m_df.groupby(["hour", "month"]).mean()
+hourly_avg_by_month = hourly_avg_by_month.reset_index().pivot(index = "hour", columns = str("month"), values = "windspeed_100m")
+#hourly_avg_by_month = hourly_avg_by_month.reset_index()
+hourly_avg_by_month.columns = hourly_avg_by_month.columns.astype(str)
+hourly_avg_by_month
+```
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "create dataframe of average wind speed for each month"
+monthly_avg = windspeed_100m_df.groupby("month")["windspeed_100m"].agg(["mean", "std", quantile25, quantile50, quantile75]).reset_index()
+monthly_avg["coef_of_variation"] = monthly_avg["std"] / monthly_avg["mean"]
+monthly_avg
+```
+
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "calculate moving averages"
+
+# 24 hour moving average
+window_size_24hr = 24
+
+# Get the window of series of observations for specified window size
+windows_24hr = windspeed_100m_df.rolling(window_size_24hr)
+
+# Create a series of moving averages for each window
+moving_averages_24hr = windows_24hr.mean()
+
+#10 day moving average
+window_size_10day = 240
+windows_10day = windspeed_100m_df.rolling(window_size_10day)
+moving_averages_10day = windows_10day.mean()
+
+# 30 day moving average
+window_size_30day = 720
+windows_30day = windspeed_100m_df.rolling(window_size_30day)
+moving_averages_30day = windows_30day.mean()
+```
+
+
+# Analysis
+
+Before beginning the statistical analysis, here is a graph of the full time series to get a general idea of the shape and magnitude of the data for this location. There seems to fluctuate a lot. xxx. Toggle the legend lines on/off to see 24 hour, 10 day, and 30 day rolling averages. From the 30 day average, wind speed seems to be higher in the winter than the summer. Let's explore the monthly and daily wind speed variability further.
+
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "code to graph rolling averages"
+#| fig-width: 9
+fig = go.Figure([
+    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = 'hourly', line=dict(color='blue', width=0.75)),
+    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], 
+              mode = 'lines', legendrank = 1,
+              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')
+])
+
+fig.update_layout(
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5',
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Hourly Wind Speed",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'}
+)
+#fig.show()
+```
+
+Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demands peak. To begin looking at the diurnal variability for Mount Washington, here is a graph of average hourly wind speed for the year 2012. The graph also presents the interquartile range and standard deviation of this data.
+
+Based on this graph, wind speed at Mount Washington seems to be lowest in the middle of the day, but based on the standard deviation bars and interquartile range, there is a large spread to the data. Diurnal variability will be explored more further down the page.
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "code to graph hourly averages with IQR and standard deviation"
+#| fig-width: 9
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = hourly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75',
+        y = hourly_avg['quantile75'],
+        x = hourly_avg['hour'],
+        mode='lines',
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        #legendgroup = 'IQR',
+        showlegend = False
+    ),
+
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR',
+        y = hourly_avg['quantile25'],
+        x = hourly_avg['hour'],
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True
+    )
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 2),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+Next, a similar graph is shown for average monthly wind speed.
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "code to graph hourly averages with IQR and standard deviation"
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = monthly_avg['mean'], x = monthly_avg['month'], 
+              mode = 'lines', line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = monthly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75', y = monthly_avg['quantile75'], x = monthly_avg['month'],
+        mode='lines', marker=dict(color="#444"), line=dict(width=0),
+        showlegend = False
+    ),
+
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR', y = monthly_avg['quantile25'], x = monthly_avg['month'],
+        marker=dict(color="#444"), line=dict(width=0), mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True)
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        dtick = 1),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Monthly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+
+
+Low mid-day wind speeds during the summer decreases power generation from wind sources when demands from air conditioning units are likely high.
+
+## Insights
+
+values related to min/max turbine requirements...no hlines here...save that for report and presentation...just focus on variability
+how diurnal pattern matches electricity demand curves
 
 # Statistical analysis
 
-## Data exploration
+The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spred out the data.
+
+# Data visualization
 
 Start with graph of entire year
 
-```{python}
-plt.style.use("seaborn-colorblind")
-#plt.style.use("ggplot")
-fig, ax = plt.subplots()
-#fig.set_size_inches([8, 4])
-ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"], linewidth = 0.25)
-ax.set_xlabel("date")
-ax.set_ylabel("wind speed at 100 meters (m/s)")
-ax.set_title("Hourly Wind Speed at Lake Wyola")
-plt.axhline(y=3.6, linewidth = 2.5, linestyle = '--', color = "black")
-ax.annotate("cut-in speed: 3.6 m/s", xy = [windspeed_100m_df.index[0], 4.5],
-            fontsize = 12,
-            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
-plt.axhline(y=24.6, linewidth = 2.5, linestyle = '--', color = "black")
-ax.annotate("cut-out speed: 24.6 m/s", xy = [windspeed_100m_df.index[0], 25.5],
-            fontsize = 12,
-            bbox={'facecolor': 'white', 'alpha': 0.75, 'pad': 1})
-plt.show()
-```
 
 
 histogram (with line for mean and median) to get skew
 
 Calculate the variance and standard deviation of `windspeed_100m` for each month by grouping and aggregating
 
-```{python}
-plt.style.use("seaborn-colorblind")
-fig, ax = plt.subplots()
-windspeed_100m_df["windspeed_100m"].hist()
-plt.show()
-```
+
 
 ## Diurnal variability
 
-graph with for loop
+xxx...talk about the black line and mention which lines are above and below it
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "code to graph hourly averages for each month"
+fig = go.Figure([
+    go.Scatter(y = hourly_avg_by_month['1'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 1, 
+              name = 'January', line=dict(color='#DC050C', width=2)),
+    go.Scatter(y = hourly_avg_by_month['2'], x = hourly_avg_by_month.index,
+              mode = 'lines+markers', legendrank = 2, 
+              name = 'February', line=dict(color='#E8601c', width=2)),
+    go.Scatter(y = hourly_avg_by_month['3'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 3, 
+              name = 'March', line=dict(color='#f4a736', width=2)),
+    go.Scatter(y = hourly_avg_by_month['4'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 4, 
+              name = 'April', line=dict(color='#f7f056', width=2)),
+    go.Scatter(y = hourly_avg_by_month['5'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 5, 
+              name = 'May', line=dict(color='#cae0ab', width=2)),
+    go.Scatter(y = hourly_avg_by_month['6'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 6, 
+              name = 'June', line=dict(color='#4eb265', width=2)),
+    go.Scatter(y = hourly_avg_by_month['7'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 7, 
+              name = 'July', line=dict(color='#7bafde', width=2)),
+    go.Scatter(y = hourly_avg_by_month['8'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 8, 
+              name = 'August', line=dict(color='#5289c7', width=2)),
+    go.Scatter(y = hourly_avg_by_month['9'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 9, 
+              name = 'September', line=dict(color='#1965b0', width=2)),
+    go.Scatter(y = hourly_avg_by_month['10'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 10, 
+              name = 'October', line=dict(color='#882e72', width=2)),
+    go.Scatter(y = hourly_avg_by_month['11'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 11, 
+              name = 'November', line=dict(color='#ae76a3', width=2)),
+    go.Scatter(y = hourly_avg_by_month['12'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 12, 
+              name = 'December', line=dict(color='#d1bbd7', width=2)),
+    go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "black", width = 4))
+
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="hour",
+        titlefont=dict(size=16),
+        dtick = 4),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed by Month",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+
+
+
+
 
 ## Monthly variability
 
@@ -177,6 +476,8 @@ which months how the greatest variability (spread) and which have the smallest s
 ```{python}
 windspeed_100m_df.groupby('month')['windspeed_100m'].agg([np.var, np.std])
 ```
+
+November has the greatest variability, while May has the lowest variability.
 
 what month has the most outliers (get count of outliers by month)
 
@@ -190,10 +491,93 @@ When planning utility scale wind power plants, you may not be so concerned with 
 -   does the diurnal pattern match daily electricity demands
 -   does the monthly pattern match seasonal electricity demands
 
+footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
+
+footnote2: cut-in speed of 3.6 m/s and cut-out speed of 24.6 m/s <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
+
+How does the diurnal pattern compare to electricity demand patterns? Is wind genenrated electricity available when people need it?
+
 # Conclusions / insights
 
 # Expanded geographic scale
 
+A [report](https://marierivers.github.io/wind_resource_temporal_variability/report.pdf) was created as a tool for expanding the geographic scale of this analysis. This report was generated using the [parameterized reporting](https://quarto.org/docs/computations/parameters.html) capabilities of [Quarto](https://quarto.org/), an open-source scientific and technical publishing system.
+
+The report can be modified by specifying parameters for:
+
+-   site name (site_name)
+-   site latitude (site_lat)
+-   site longitude (site_lon)
+-   start date (start_date)
+-   end date (end_date)
+-   turbine cut-in speed (cut_in_speed)
+-   turbine cut-out speed (cut_out_speed)
+-   required annual average wind speed (req_annual_avg_speed)
+
+Default parameters are:
+
+-   start_date: '2012-01-01'
+-   end_date: '2013-01-01'
+-   cut_in_speed: 3.6
+-   cut_out_speed: 24.6
+-   req_annual_avg_speed: 5.8
+
+A new report can be generated using the command line interface. The code below shows an example that renders a report for New York City in 2010 using default values for cut-in speed, cut-out speed, and required annual average wind speed.
+
+> quarto render report.qmd -P site_name:"New York City" -P site_lat:40.7128 -P site_lon:-74.0059 -P start_date:2010-01-01 -P end_date:2011-01-01 \--output new_york_city_report.pdf (>)
+
+xxx...update to include params for cut-in/out and annual avg speeds (see how function works with NA)
+
+The function below can be used to generate multiple reports from a dataframe of parameters for different sites.
+
+```{r}
+#| eval: false
+#| column: page-right
+render_fun <- function(param_df){
+  quarto::quarto_render(
+    input = "report.qmd",
+    execute_params = list(site_name = param_df$site_name,
+                          site_lat = param_df$site_lat,
+                          site_lon = param_df$site_lon,
+                          start_date = param_df$start_date,
+                          end_date = param_df$end_date),
+    output_file = glue::glue("{param_df$site_name}-report.pdf")
+  )
+}
+```
+
+The next code chunks show an example of how to work with this function from a dataframe of input.
+
+```{r}
+#| column: page-right
+report_parameters = data.frame(site_name = c("University of Delaware", "Umass Amherst", "UC Santa Barbara", "Golden, CO"), 
+                               site_lat = c(39.68071, 42.39405, 34.413202, 39.74086), 
+                               site_lon = c(-75.75173, -72.52938, -119.841955, -105.1686), 
+                               start_date = c("2009-01-01", "2011-01-01", "2007-06-01", "2008-01-01"), 
+                               end_date = c("2010-01-01", "2012-01-01", "2008-03-01", "2010-01-01"))
+```
+
+```{r}
+#| eval: false
+#| column: page-right
+source(here("R", "render_fun.R"))
+
+param_list <- split(report_parameters, seq(nrow(report_parameters))) %>% 
+  purrr::walk(render_fun)
+```
+
+The example repots generated above can be viewed here:
+
+xxx...add links to these example PDF reports
+xxx...add code folding
+xxx...maybe add an about page with basic info about me, quick links to the blackout analysis and capstone repo/shiny app, and data wrangling code sample
+
 # Citations
+
+Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. [Overview and Meteorological Validation of the Wind Integration National Dataset Toolkit (Technical Report](https://www.nrel.gov/docs/fy15osti/61740.pdf), NREL/TP-5000-61740). Golden, CO: National Renewable Energy Laboratory.
+
+Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. "[The Wind Integration National Dataset (WIND) Toolkit.](https://www.sciencedirect.com/science/article/pii/S0306261915004237?via%3Dihub)" Applied Energy 151: 355366.
+
+King, J., A. Clifton, and B.M. Hodge. 2014. [Validation of Power Output for the WIND Toolkit](https://www.nrel.gov/docs/fy14osti/61714.pdf) (Technical Report, NREL/TP-5D00-61714). Golden, CO: National Renewable Energy Laboratory.
 
 <https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48>

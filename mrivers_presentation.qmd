@@ -8,16 +8,17 @@ format:
     theme: default
     slide-number: true
     preview-links: auto
-    footer: <https://marierivers.github.io/>
+    footer: <https://marierivers.github.io/wind_resource_temporal_variability/>
     title-slide-attributes:
       data-background-color: "#447099"
 editor: visual
 ---
+
 October 13, 2022
 
-# Intro
 ```{r}
 #| include: false
+library(tidyverse)
 ```
 
 ```{python}
@@ -33,24 +34,48 @@ from IPython.display import display, Markdown
 from itertools import chain
 ```
 
+# Intro
 
-fncdkasnfa
+xxx...outline of what I'll be talking about today - Professional backgroud - wind variability technical task - Improving usability of snow data through open-source tools - Power outage geospatial analysis
 
-# Professional Background
+# Professional Background {background-color="#447099"}
 
-environmental engineering consultant
+## environmental engineering consultant
 
-# a plot
-```{r}
-#| echo: true
-library(ggplot2)
-ggplot(mtcars, aes(hp, mpg, color = am)) +
-  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
-```
+modeled drinking water distribution systems - used customer billing data to identify diunal patterns in water consumption - used diurnal patters in extended period simulation models unlike wind patterns, water use is influenced by human activities (dif patterns based on season, weekday/weekend, zoning (residential vs commercial vs industrial)) - predictive modeling
 
-# Wind Resource Temporal Variability
+used geospatial analyses to identify and evaluate locations from new infrastructure based on land use data and community demographics
+
+## Detour
+
+::: columns
+::: {.column width="70%"}
+-   Master of Environmental Data Science
+-   zz..besides going to the beach and paddle boarding with my dog, I...
+-   learn geospatial analysis, statistics, and remote sensing with Python and R
+-   ...and fell in love with the concept of reproducible open science
+
+zz..Last year my professional career took a detour
+
+zz..talk about why I made this decision
+:::
+
+::: {.column width="30%"}
+![](images/lyra_grad_pic.JPEG)
+:::
+:::
+
+# Wind Resource Temporal Variability {background-color="#447099"}
 
 look at this code and these graphs
+
+-   circle back to water diurnal patterns ()
+
+-   so what does this tell us about the monthly variability?
+
+-   so what does this tell us about the daily variability?
+
+now that we have a good sense of what the data looks like for this location, let's take a closer look at some statistics and quanity the variability
 
 ## Report
 
@@ -58,21 +83,16 @@ This tool creates a summary report by using a location as in input parameter.
 
 So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you're more interested in the conclustions than the analysis steps.
 
-For the given site, this report quickly communicates:
-- if the annual average wind speed is at least 13 mph (5.8 m/s) *footnote 1
-- how often the wind is below the cut-in speed - 8 mph (3.6 m/s) *footnote 2
-- how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2
-- does the diurnal pattern match daily electricity demands
-- does the monthly pattern match seasonal electricity demands
+For the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) *footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s)* footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) \*footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands
 
-The report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side.
-Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations ...xxx
+The report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations ...xxx
 
 footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
 
 footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
 
 ## Expanded scale
+
 ```{python}
 #| echo: false
 f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
@@ -140,30 +160,35 @@ for site in site_dict:
   display(Markdown(f'</div>'))
 ```
 
-
-#
+# 
 
 no header?
 
-# Snow Today Capstone
+# Snow Today Capstone {background-color="#447099"}
 
-snow!
+## Project goal
 
-# Blackout Analysis
-- step 1
-- step 2
-- step 3
+Improve the usability of snow data through web based visualizations and tutorials snow!
+
+The
+
+# Blackout Analysis {background-color="#447099"}
+
+## Project overview
+
+-   step 1
+-   step 2
+-   step 3
 
 ## level 2 header
 
 nfdfnkdlasa
 
-___
+------------------------------------------------------------------------
 
 ### level 3 header
 
-dkaslvk
-fndklfnkl
+dkaslvk fndklfnkl
 
 # Citations
 

@@ -14,12 +14,17 @@ params:
   site_lon: "-71.30325"
   start_date: '2012-01-01'
   end_date: '2013-01-01'
+  cut_in_speed: 3.6
+  cut_out_speed: 24.6
+  req_annual_avg_speed: 5.8
 ---
 
 ```{r}
 #| include: false
 library(tidyverse)
 library(reticulate)
+library(leaflet)
+library(htmltools)
 ```
 
 ```{python}
@@ -32,36 +37,40 @@ import matplotlib.image as mpimg
 from pyproj import Proj
 import dateutil
 import folium
+import contextily
+import geopandas
+from shapely.geometry import Point
 ```
 
 ```{r}
 #| include: false
-df_R <- data.frame(params$site_name, params$site_lat, params$site_lon, params$start_date, params$end_date)
+params_df_R <- data.frame(params$site_name, params$site_lat, params$site_lon, params$start_date, params$end_date, params$cut_in_speed, params$cut_out_speed, params$req_annual_avg_speed)
 ```
 
 ```{python}
 #| include: false
-df_py = r.df_R
+params_df_py = r.params_df_R
 ```
 
 ```{r}
-#| include: true
+#| include: false
 site_name_R <- params$site_name
 site_lat_R <- params$site_lat
 site_lon_R <- params$site_lon
 start_date_R <- params$start_date
 end_date_R <- params$end_date
-paste0("In R land ", df_R$params.site_name[[1]], "is located at (", df_R$params.site_lat[[1]], ", ", df_R$params.site_lon, ")")
+year <- format(as.Date(params$start_date), "%Y")
+paste0("In R land ", params_df_R$params.site_name[[1]], "is located at (", params_df_R$params.site_lat[[1]], ", ", params_df_R$params.site_lon, ")")
 ```
 
 ```{python}
-#| include: true
-site_name_py = df_py["params.site_name"][0]
-site_lat_py = df_py["params.site_lat"][0]
-site_lon_py = df_py["params.site_lon"][0]
-start_date_py = df_py["params.start_date"][0]
-end_date_py = df_py["params.end_date"][0]
-print("In python land", df_py["params.site_name"][0], "is location at (", df_py["params.site_lat"][0], ", ", df_py["params.site_lon"][0], " )")
+#| include: false
+site_name_py = params_df_py["params.site_name"][0]
+site_lat_py = params_df_py["params.site_lat"][0]
+site_lon_py = params_df_py["params.site_lon"][0]
+start_date_py = params_df_py["params.start_date"][0]
+end_date_py = params_df_py["params.end_date"][0]
+print("In python land", params_df_py["params.site_name"][0], "is location at (", params_df_py["params.site_lat"][0], ", ", params_df_py["params.site_lon"][0], " )")
 ```
 
 ```{python}
@@ -79,19 +88,19 @@ datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
 
 ```{python}
 #| include: false
-start_date = df_py["params.start_date"][0]
-end_date = df_py["params.end_date"][0]
+start_date = params_df_py["params.start_date"][0]
+end_date = params_df_py["params.end_date"][0]
 datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
 ```
 
 ```{python}
 #| include: false
-site_name = df_py["params.site_name"][0]
-site_coords = (df_py["params.site_lat"][0], df_py["params.site_lon"][0])
+site_name = params_df_py["params.site_name"][0]
+site_coords = (params_df_py["params.site_lat"][0], params_df_py["params.site_lon"][0])
 ```
 
 ```{python}
-#| include: false
+#| include: true
 
 def indicesForCoord(f, lat_index, lon_index):
     dset_coords = f['coordinates']
@@ -110,35 +119,37 @@ def indicesForCoord(f, lat_index, lon_index):
     return tuple(reversed(ij))
 
 nearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )
+nearest_site_lat = f["coordinates"][nearest_site[0]][nearest_site[1]][0]
+nearest_site_lon = f["coordinates"][nearest_site[0]][nearest_site[1]][1]
 
 print("y,x indices for", site_name, ": \t\t {}".format(nearest_site))
 print("Coordinates of", site_name, ": \t {}".format(site_coords))
 print("Coordinates of nearest point: \t {}".format(f["coordinates"][nearest_site[0]][nearest_site[1]]))
 ```
 
-xxx...frosting...re-calculate numbers with r to use in summary text. These chunks are include: false. Maybe pull the data with parameters in python, then save the pandas df to the data folder, then read in the df csv with tidyverse
-
 # Introduction
 
-This report provides an overview of wind resources for xxx...location. This analysis is based on data from the NREL Wind Toolkit, in particular the dataset for wind speed at 100 meters.
+This report provides an overview of wind resources for `r params$site_name` from `r params$start_date` to `r params$end_date`. This analysis is based on the wind speed at 100 meters dataset within the NREL Wind Toolkit.
 
 xxx...add more text about the data
 
 # Site Map
 
-The map below shows the target location as well as the location of the nearest data point in the NREL Wind Toolkit.
+The map below shows the location of `r params$site_name`.
 
-```{python}
-#| message: false
+```{r out.width='75%'}
 #| echo: false
+leaflet_df <- data.frame(location = c(site_name_R),
+                         lat = c(as.numeric(site_lat_R)),
+                         lon = c(as.numeric(site_lon_R)))
 
-nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
-
-site_map = folium.Map(location = site_coords, zoom_start = 10)
-folium.Marker(site_coords, popup = site_name).add_to(site_map)
-folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
-site_map
+leaflet(leaflet_df) %>%
+  setView(leaflet_df$lon, leaflet_df$lat, zoom = 8) %>%
+  addTiles() %>%
+  addMarkers(~as.numeric(lon), ~as.numeric(lat), label = ~location,
+             labelOptions = labelOptions(noHide = TRUE, textsize = "16px"))
 ```
+
 
 ```{python}
 #| include: false
@@ -172,8 +183,11 @@ windspeed_100m_df.to_csv("data/data_for_report_windspeed_100m_df.csv", index=Tru
 data_R <- read_csv("data/data_for_report_windspeed_100m_df.csv")
 ```
 
-
 # Analysis
+
+The graph below shows hourly wind speed for `r params$site_name` and the selected time range. Wind speed values are show in relation to typical turbine cut-in and cut-out speeds.
+
+xxx...update hline to use param values
 
 ```{python}
 #| echo: false
@@ -196,16 +210,8 @@ ax.annotate("cut-out speed: 24.6 m/s", xy = [windspeed_100m_df.index[0], 25.5],
 plt.show()
 ```
 
-
- index.html is for my 1 individual site and the report is / could be for expanding to other areas and times
-
-read in the data with h5pyd and convert it to pandas, then save it as "data for report", then read in "data for report" with R...this will only work if parameters work with python
-
-...or I could make a dataset with wind speeds to multiple sites
-
-
 ```{python}
-#| include: true
+#| include: false
 annual_average_windspeed = round(windspeed_100m_df["windspeed_100m"].mean(), 2)
 
 if (annual_average_windspeed >= 5.8):
@@ -221,16 +227,15 @@ print("This is", above_below, "the value recommended by the U.S. Energy Informat
 #| include: false
 annual_average_windspeed_R <- round(mean(data_R$windspeed_100m), 2)
 
-if (annual_average_windspeed_R >= 5.8) {
+if (annual_average_windspeed_R >= params$req_annual_avg_speed) {
   above_below_R <- "ABOVE"
 } else {
   above_below_R <- "BELOW"
 }
 ```
-The annual average wind speed for `r params$site_name` is `r annual_average_windspeed_R`. This is `r above_below_R` the value of 5.8 m/s (13 mph) recommended by the U.S. Energy Information Administration.
 
 ```{python}
-#| echo: false
+#| include: false
 hours_below_cutin_speed = windspeed_100m_df[windspeed_100m_df["windspeed_100m"] < 3.6].shape[0]
 
 percent_below_cutin_speed = round((hours_below_cutin_speed / windspeed_100m_df.shape[0]) * 100, 2)
@@ -239,18 +244,36 @@ print("In 2012, wind speed was below the cut-in speed of 3.6 m/s for", f'{hours_
 print("Therefore, wind turbines could not operate", percent_below_cutin_speed, "percent of the time due to lack of wind.")
 ```
 
+```{r}
+#| include: false
+hours_below_cutin_speed_R <- data_R %>% 
+  filter(windspeed_100m < params$cut_in_speed) %>% 
+  nrow()
+
+percent_below_cutin_speed_R <- round((hours_below_cutin_speed_R / nrow(data_R)) * 100, 2)
+```
+
 ```{python}
-#| echo: false
+#| include: false
 hours_above_cutout_speed = windspeed_100m_df[windspeed_100m_df["windspeed_100m"] > 24.6].shape[0]
 
 percent_above_cutout_speed = round((hours_above_cutout_speed/ windspeed_100m_df.shape[0]) * 100, 2)
 
-print("In 2012, wind speed exceeded the out-out speed of 24.6 m/s for", f'{hours_above_cutout_speed:,}', "hours.")
-print("Therefore, wind turbines could operate", percent_above_cutout_speed, "percent of the time due to strong wind.")
+print("In 2012, wind speed exceeded the cut-out speed of 24.6 m/s for", f'{hours_above_cutout_speed:,}', "hours.")
+print("Therefore, wind turbines could not operate", percent_above_cutout_speed, "percent of the time due to strong wind.")
+```
+
+```{r}
+#| include: false
+hours_above_cutout_speed_R <- data_R %>% 
+  filter(windspeed_100m > params$cut_out_speed) %>% 
+  nrow()
+
+percent_above_cutout_speed_R <- round((hours_above_cutout_speed_R / nrow(data_R)) * 100, 2)
 ```
 
 ```{python}
-#| echo: false
+#| include: false
 operating_hours = windspeed_100m_df.shape[0] - hours_below_cutin_speed - hours_above_cutout_speed
 operating_percent = 100 - percent_below_cutin_speed - percent_above_cutout_speed
 
@@ -258,19 +281,17 @@ print("In 2012, wind speeds at this location would be within the acceptable oper
 print("3.6 m/s to 24.6 m/s for", f'{operating_hours:,}', "hours. Turbines could operate", operating_percent, "percent of the time.")
 ```
 
+```{r}
+#| include: false
+operating_hours_R = nrow(data_R) - hours_below_cutin_speed_R - hours_above_cutout_speed_R
+operating_percent_R = round(100 - percent_below_cutin_speed_R - percent_above_cutout_speed_R, 2)
+```
 
- 
+The annual average wind speed for `r params$site_name` was `r annual_average_windspeed_R` m/s. This is `r above_below_R` the value of `r params$req_annual_avg_speed` m/s (13 mph) recommended by the U.S. Energy Information Administration. Wind speed was below the cut-in speed of `r params$cut_in_speed` m/s for `r format(hours_below_cutin_speed_R, big.mark = ",")` hours. Therefore, wind turbines could not operate `r percent_below_cutin_speed_R` percent of the time due to lack of wind. Wind speed exceeded the cut-out speed of `r params$cut_out_speed` m/s for `r format(hours_above_cutout_speed_R, big.mark = ",")` hours. Therefore, wind turbines could not operate `r percent_above_cutout_speed_R` percent of the time due to strong wind. Between `r params$start_date` to `r params$end_date`, wind speeds at this location were within the acceptable operating range of `r params$cut_in_speed` m/s to `r params$cut_out_speed` m/s for `r format(operating_hours_R, big.mark = ",")` hours. Therefore, turbines could operate `r operating_percent_R` percent of the time.
 
-- if the annual average wind speed is at least 13 mph (5.8 m/s) *side margin 1
-- how often the wind is below the cut-in speed - 8 mph (3.6 m/s) *margin 2 (% of time)
-- how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *margin 2
-- does the diurnal pattern match daily electricity demands
-- does the monthly pattern match seasonal electricity demands
+-   does the diurnal pattern match daily electricity demands
+-   does the monthly pattern match seasonal electricity demands
 
 # Limitations
 
 # Citations
-
-footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
-
-footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
