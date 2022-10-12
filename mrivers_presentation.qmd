@@ -14,11 +14,10 @@ format:
 editor: visual
 ---
 
-October 13, 2022
-
 ```{r}
 #| include: false
 library(tidyverse)
+library(leaflet)
 ```
 
 ```{python}
@@ -30,23 +29,137 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from pyproj import Proj
 import dateutil
-from IPython.display import display, Markdown
-from itertools import chain
+import folium
+import plotly.graph_objects as go
 ```
 
-# Intro
+```{python}
+#| include: false
+f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
+
+# access the windspeed_100m dataset
+windspeed_100m_dset = f['windspeed_100m']
+
+datetime_df = f["datetime"]
+datetime_df = pd.DataFrame({"datetime": datetime_df[:]},index=range(0,datetime_df.shape[0]))
+datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
+
+start_date = '2012-01-01'
+end_date = '2013-01-01'
+datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
+
+site_name = "Mount Washington"
+site_coords = (44.27, -71.3)
+```
+
+```{python}
+#| include: false
+# This function finds the nearest x/y indices for a given lat/lon.
+# Rather than fetching the entire coordinates database, which is 500+ MB, this
+# uses the Proj4 library to find a nearby point and then converts to x/y indices
+
+def indicesForCoord(f, lat_index, lon_index):
+    dset_coords = f['coordinates']
+    projstring = """+proj=lcc +lat_1=30 +lat_2=60 
+                    +lat_0=38.47240422490422 +lon_0=-96.0 
+                    +x_0=0 +y_0=0 +ellps=sphere 
+                    +units=m +no_defs """
+    projectLcc = Proj(projstring)
+    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database
+    origin = projectLcc(*origin_ll)
+    
+    coords = (lon_index,lat_index)
+    coords = projectLcc(*coords)
+    delta = np.subtract(coords, origin)
+    ij = [int(round(x/2000)) for x in delta]
+    return tuple(reversed(ij))
+
+nearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )
+
+print("y,x indices for", site_name, ": \t\t {}".format(nearest_site))
+```
+
+```{python}
+#| include: false
+nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
+
+site_map = folium.Map(location = site_coords, zoom_start = 10)
+folium.Marker(site_coords, popup = site_name).add_to(site_map)
+```
+
+```{python}
+#| include: false
+tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_site[0], nearest_site[1]]
+
+windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
+
+windspeed_100m_df["year"] = windspeed_100m_df.index.year
+windspeed_100m_df["month"] = windspeed_100m_df.index.month
+windspeed_100m_df["day"] = windspeed_100m_df.index.day
+windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
+windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
+windspeed_100m_df["month_name"] = windspeed_100m_df.index.month_name()
+```
+
+```{python}
+#| include: false
+def quantile25(column):
+    return column.quantile(0.25)
+def quantile50(column):
+    return column.quantile(0.50)
+def quantile75(column):
+    return column.quantile(0.75)
+
+hourly_avg = windspeed_100m_df.groupby("hour")["windspeed_100m"].agg(["mean", "std", quantile25, quantile50, quantile75])
+hourly_avg = hourly_avg.reset_index()
+hourly_avg.head()
+
+monthly_avg = windspeed_100m_df.groupby(["month", "month_name"])["windspeed_100m"].agg(["mean", "std", quantile25, quantile50, quantile75]).reset_index()
+
+hourly_avg_by_month = windspeed_100m_df.groupby(["hour", "month"]).mean()
+hourly_avg_by_month = hourly_avg_by_month.reset_index().pivot(index = "hour", columns = str("month"), values = "windspeed_100m")
+hourly_avg_by_month.columns = hourly_avg_by_month.columns.astype(str)
+
+hourly_std_by_month = windspeed_100m_df.groupby(["hour", "month"]).std()
+hourly_std_by_month = hourly_std_by_month.reset_index().pivot(index = "hour", columns = str("month"), values = "windspeed_100m")
+hourly_std_by_month.columns = hourly_avg_by_month.columns.astype(str)
+```
+
+```{python}
+#| include: false
+# 24 hour moving average
+window_size_24hr = 24
+windows_24hr = windspeed_100m_df.rolling(window_size_24hr)
+moving_averages_24hr = windows_24hr.mean()
+
+# 10 day moving average
+window_size_10day = 240
+windows_10day = windspeed_100m_df.rolling(window_size_10day)
+moving_averages_10day = windows_10day.mean()
+
+# 30 day moving average
+window_size_30day = 720
+windows_30day = windspeed_100m_df.rolling(window_size_30day)
+moving_averages_30day = windows_30day.mean()
+```
+
+# Intro {.smaller}
 
 xxx...outline of what I'll be talking about today - Professional backgroud - wind variability technical task - Improving usability of snow data through open-source tools - Power outage geospatial analysis
 
 # Professional Background {background-color="#447099"}
 
-## environmental engineering consultant
+## environmental engineering consultant {.smaller}
 
 modeled drinking water distribution systems - used customer billing data to identify diunal patterns in water consumption - used diurnal patters in extended period simulation models unlike wind patterns, water use is influenced by human activities (dif patterns based on season, weekday/weekend, zoning (residential vs commercial vs industrial)) - predictive modeling
 
 used geospatial analyses to identify and evaluate locations from new infrastructure based on land use data and community demographics
 
-## Detour
+::: footer
+<https://marierivers.github.io/>
+:::
+
+## Detour {.smaller}
 
 ::: columns
 ::: {.column width="70%"}
@@ -65,21 +178,675 @@ zz..talk about why I made this decision
 :::
 :::
 
+::: footer
+<https://marierivers.github.io/>
+:::
+
 # Wind Resource Temporal Variability {background-color="#447099"}
 
-look at this code and these graphs
+## Overview {.smaller}
 
--   circle back to water diurnal patterns ()
+::: columns
+::: {.column width="60%"}
+-   Explore the diurnal and monthly variability of wind resources at Mount Washington in NH
+-   Used the [NREL Wind Integration National Dataset (WIND) Toolkit](https://www.nrel.gov/grid/wind-toolkit.html)
+-   Accessed data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](https://github.com/NREL/hsds-examples)
+-   subset the for the `windspeed_100,` dataset and year 2012
+-   converted to pandas dataframe
+-   aggregated data by hourly and monthly groupings to calculate mean, standard deviation, and quartiles
+:::
 
--   so what does this tell us about the monthly variability?
+::: {.column width="40%"}
+```{r}
+leaflet_df_pres <- data.frame(location = c("Mount Washington"),
+                         lat = c(as.numeric(44.27)),
+                         lon = c(as.numeric(-71.3)))
 
--   so what does this tell us about the daily variability?
+leaflet(leaflet_df_pres) %>%
+  setView(-68.5, leaflet_df_pres$lat, zoom = 7) %>%
+  addTiles() %>%
+  addMarkers(~as.numeric(lon), ~as.numeric(lat), label = ~location,
+             labelOptions = labelOptions(noHide = TRUE, textsize = "16px"))
+```
+:::
+:::
 
-now that we have a good sense of what the data looks like for this location, let's take a closer look at some statistics and quanity the variability
+## Visualization of full time series
 
-## Report
+::: panel-tabset
+### graph
 
-This tool creates a summary report by using a location as in input parameter.
+```{python}
+fig = go.Figure([
+    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = 'hourly', line=dict(color='blue', width=0.75)),
+    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], 
+              mode = 'lines', legendrank = 1,
+              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')
+])
+
+fig.update_layout(
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5',
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Hourly Wind Speed",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'}
+)
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+fig = go.Figure([
+    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = 'hourly', line=dict(color='blue', width=0.75)),
+    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], 
+              mode = 'lines', legendrank = 1,
+              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),
+    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], 
+              mode = 'lines', legendrank = 1, 
+              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')
+])
+
+fig.update_layout(
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5',
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Hourly Wind Speed",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'}
+)
+```
+:::
+
+## Diurnal and Monthly Variability {.smaller}
+
+-   both wind speed and electricity demands fluctuate throughout the day
+-   both wind speed and electricity demands fluctuate seasonally (by month)
+-   when selecting sites for utility scale wind power it is important to have adequate wind speeds at the same time as peak electricity demands
+-   the Interquartile range and standard deviation can help quantify the spread of data
+
+## Diurnal and Monthly Variability {.smaller}
+
+::: column-screen-right
+::: columns
+::: {.column width="50%"}
+**Hourly average**
+
+::: panel-tabset
+#### graph
+
+```{python}
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = hourly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75', y = hourly_avg['quantile75'], x = hourly_avg['hour'],
+        mode='lines',
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        #legendgroup = 'IQR',
+        showlegend = False
+    ),
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR', y = hourly_avg['quantile25'], x = hourly_avg['hour'],
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True
+    )
+])
+fig.update_layout(
+    width=540,
+    height=400,
+    xaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 2),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+#### code
+
+```{python}
+#| echo: true
+#| eval: false
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = hourly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75', y = hourly_avg['quantile75'], x = hourly_avg['hour'],
+        mode='lines',
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        #legendgroup = 'IQR',
+        showlegend = False
+    ),
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR', y = hourly_avg['quantile25'], x = hourly_avg['hour'],
+        marker=dict(color="#444"),
+        line=dict(width=0),
+        mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True
+    )
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 2),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+:::
+:::
+
+::: {.column width="50%"}
+**Monthly average**
+
+::: panel-tabset
+### graph
+
+```{python}
+#| code-fold: true
+#| code-summary: "hourly averages with IQR and std"
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = monthly_avg['mean'], x = monthly_avg['month'], 
+              mode = 'lines', line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = monthly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75', y = monthly_avg['quantile75'], x = monthly_avg['month'],
+        mode='lines', marker=dict(color="#444"), line=dict(width=0),
+        showlegend = False
+    ),
+
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR', y = monthly_avg['quantile25'], x = monthly_avg['month'],
+        marker=dict(color="#444"), line=dict(width=0), mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True)
+])
+fig.update_layout(
+     width=540,
+    height=400,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        dtick = 1),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Monthly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+fig = go.Figure([
+    go.Scatter(name = 'mean', y = monthly_avg['mean'], x = monthly_avg['month'], 
+              mode = 'lines', line = dict(color = "blue", width = 4),
+              error_y = dict(type = 'data', array = monthly_avg['std'], visible = True)),
+    go.Scatter(
+        name = 'IQR 75', y = monthly_avg['quantile75'], x = monthly_avg['month'],
+        mode='lines', marker=dict(color="#444"), line=dict(width=0),
+        showlegend = False
+    ),
+
+    # Create IQR 25 fill color
+    go.Scatter(
+        name='IQR', y = monthly_avg['quantile25'], x = monthly_avg['month'],
+        marker=dict(color="#444"), line=dict(width=0), mode='lines',
+        fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', # fill to next y
+        legendgroup = 'IQR',
+        showlegend = True)
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        dtick = 1),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Monthly Wind Speed for the Year 2012",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+:::
+:::
+:::
+:::
+
+## Diurnal and Monthly Variability {.smaller}
+
+::: panel-tabset
+### graph
+
+```{python}
+fig = go.Figure([
+    go.Scatter(y = hourly_avg_by_month['1'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 1, 
+              name = 'January', line=dict(color='#DC050C', width=2)),
+    go.Scatter(y = hourly_avg_by_month['2'], x = hourly_avg_by_month.index,
+              mode = 'lines+markers', legendrank = 2, 
+              name = 'February', line=dict(color='#E8601c', width=2)),
+    go.Scatter(y = hourly_avg_by_month['3'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 3, 
+              name = 'March', line=dict(color='#f4a736', width=2)),
+    go.Scatter(y = hourly_avg_by_month['4'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 4, 
+              name = 'April', line=dict(color='#f7f056', width=2)),
+    go.Scatter(y = hourly_avg_by_month['5'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 5, 
+              name = 'May', line=dict(color='#cae0ab', width=2)),
+    go.Scatter(y = hourly_avg_by_month['6'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 6, 
+              name = 'June', line=dict(color='#4eb265', width=2)),
+    go.Scatter(y = hourly_avg_by_month['7'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 7, 
+              name = 'July', line=dict(color='#7bafde', width=2)),
+    go.Scatter(y = hourly_avg_by_month['8'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 8, 
+              name = 'August', line=dict(color='#5289c7', width=2)),
+    go.Scatter(y = hourly_avg_by_month['9'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 9, 
+              name = 'September', line=dict(color='#1965b0', width=2)),
+    go.Scatter(y = hourly_avg_by_month['10'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 10, 
+              name = 'October', line=dict(color='#882e72', width=2)),
+    go.Scatter(y = hourly_avg_by_month['11'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 11, 
+              name = 'November', line=dict(color='#ae76a3', width=2)),
+    go.Scatter(y = hourly_avg_by_month['12'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 12, 
+              name = 'December', line=dict(color='#d1bbd7', width=2)),
+    go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "black", width = 4))
+
+])
+fig.update_layout(
+    width=1050,
+    height=500,
+    xaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 4),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed by Month",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+fig = go.Figure([
+    go.Scatter(y = hourly_avg_by_month['1'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 1, 
+              name = 'January', line=dict(color='#DC050C', width=2)),
+    go.Scatter(y = hourly_avg_by_month['2'], x = hourly_avg_by_month.index,
+              mode = 'lines+markers', legendrank = 2, 
+              name = 'February', line=dict(color='#E8601c', width=2)),
+    go.Scatter(y = hourly_avg_by_month['3'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 3, 
+              name = 'March', line=dict(color='#f4a736', width=2)),
+    go.Scatter(y = hourly_avg_by_month['4'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 4, 
+              name = 'April', line=dict(color='#f7f056', width=2)),
+    go.Scatter(y = hourly_avg_by_month['5'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 5, 
+              name = 'May', line=dict(color='#cae0ab', width=2)),
+    go.Scatter(y = hourly_avg_by_month['6'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 6, 
+              name = 'June', line=dict(color='#4eb265', width=2)),
+    go.Scatter(y = hourly_avg_by_month['7'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 7, 
+              name = 'July', line=dict(color='#7bafde', width=2)),
+    go.Scatter(y = hourly_avg_by_month['8'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 8, 
+              name = 'August', line=dict(color='#5289c7', width=2)),
+    go.Scatter(y = hourly_avg_by_month['9'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 9, 
+              name = 'September', line=dict(color='#1965b0', width=2)),
+    go.Scatter(y = hourly_avg_by_month['10'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 10, 
+              name = 'October', line=dict(color='#882e72', width=2)),
+    go.Scatter(y = hourly_avg_by_month['11'], x = hourly_avg_by_month.index, 
+              mode = 'lines', legendrank = 11, 
+              name = 'November', line=dict(color='#ae76a3', width=2)),
+    go.Scatter(y = hourly_avg_by_month['12'], x = hourly_avg_by_month.index, 
+              mode = 'lines+markers', legendrank = 12, 
+              name = 'December', line=dict(color='#d1bbd7', width=2)),
+    go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
+              line = dict(color = "black", width = 4))
+
+])
+fig.update_layout(
+    xaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 4),
+    yaxis=dict(
+        title_text="windspeed (m/s)",
+        titlefont=dict(size=16)),
+    title={
+        'text': "Average Hourly Wind Speed by Month",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor='#f5f5f5'
+)
+```
+:::
+
+## Diurnal and Monthly Variability {.smaller}
+
+::: panel-tabset
+### graph
+
+```{python}
+heatmap_month = hourly_avg_by_month.columns.tolist()
+heatmap_hour = hourly_avg_by_month.index.tolist()
+heatmap_windspeed = hourly_avg_by_month.values.tolist()
+
+trace = go.Heatmap(
+   x = heatmap_month,
+   y = heatmap_hour,
+   z = heatmap_windspeed,
+   type = 'heatmap',
+   #colorscale = [(0,"blue"), (1,"red")],
+   colorscale = 'mint',
+   colorbar=dict(title='Wind Speed (m/s)')
+)
+data = [trace]
+fig = go.Figure(data = data)
+
+fig.update_layout(
+    width=1050,
+    height=550,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        #dtick = 1,
+        tickmode = 'array',
+        # Set tick intervals to correspond with months
+        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ticktext = ['January', 'February', 'March', 'April', 
+                    'May', 'June', 'July', 'August', 
+                    'September', 'October', 'November', 'December'],
+        tickfont = dict(size=16)),
+    yaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 1,
+        tickfont = dict(size=16)),
+    title={
+        'text': "Average Wind Speed by Month and Hour",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+)
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+heatmap_month = hourly_avg_by_month.columns.tolist()
+heatmap_hour = hourly_avg_by_month.index.tolist()
+heatmap_windspeed = hourly_avg_by_month.values.tolist()
+
+trace = go.Heatmap(
+   x = heatmap_month,
+   y = heatmap_hour,
+   z = heatmap_windspeed,
+   type = 'heatmap',
+   #colorscale = [(0,"blue"), (1,"red")],
+   colorscale = 'mint',
+   colorbar=dict(title='Wind Speed (m/s)')
+)
+data = [trace]
+fig = go.Figure(data = data)
+
+fig.update_layout(
+    #width=1000,
+    height=650,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        #dtick = 1,
+        tickmode = 'array',
+        # Set tick intervals to correspond with months
+        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ticktext = ['January', 'February', 'March', 'April', 
+                    'May', 'June', 'July', 'August', 
+                    'September', 'October', 'November', 'December'],
+        tickfont = dict(size=16)),
+    yaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 1,
+        tickfont = dict(size=16)),
+    title={
+        'text': "Average Wind Speed by Month and Hour",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+)
+```
+:::
+
+## Statistical Analysis {.smaller}
+
+|                 | min wind speed (m/s) | max wind speed (m/s) |
+|-----------------|:--------------------:|:--------------------:|
+| Hourly          |         0.12         |        36.66         |
+| Hourly average  |        10.71         |        12.50         |
+| monthly average |         8.78         |        15.81         |
+|                 |                      |                      |
+
+: Range of wind speed values in 2012
+
+|              | smallest variability | greatest variability | smallest average wind speed | greatest average wind speed |
+|---------------|:-------------:|:-------------:|:-------------:|:-------------:|
+| monthly      |         July         |       November       |           August            |          February           |
+| hourly       |          19          |          13          |             16              |              1              |
+| month & hour |    March, hour 16    |   October, hour 13   |       August, hour 15       |      February, hour 1       |
+|              |                      |                      |                             |                             |
+
+: Summary of stats for monthly and hourly wind speed
+
+## Conclusions {.smaller}
+
+-   greatest monthly variability in **November**
+-   smallest monthy variability in **July**
+-   highest wind speeds in **February**
+-   lowest wind speeds in **August**
+-   slower wind speeds mid-day than at night
+-   based on the seasonal variability, this site would be better at meeting high winter demands than summer demands
+-   this site may not be ideal for meeting all daytime demands.
+
+so what does this tell us about the monthly variability? so what does this tell us about the daily variability?
+
+circle back to water diurnal patterns ()
+
+now that we have a good sense of what the data looks like for this location, let's take a closer look at some statistics and quantity the variability
+
+## Expanded Geographic Scale {.smaller}
+
+Created a parameterized [report](https://marierivers.github.io/wind_resource_temporal_variability/report.pdf) using [Quarto](https://quarto.org/docs/computations/parameters.html) as a tool to allow users to generate summary reports based on specified inputs from CLI or with render function for multiple sites.
+
+::: columns
+::: {.column width="55%"}
+**Modify report by specifying parameters for:**
+
+-   site name
+-   site latitude
+-   site longitude
+-   start date
+-   end date
+-   turbine cut-in speed
+-   turbine cut-out speed
+-   required annual average wind speed
+:::
+
+::: {.column width="45%"}
+**Default parameters are:**
+
+-   start date: '2012-01-01'
+-   end date: '2013-01-01'
+-   cut-in speed: 3.6 m/s
+-   cut-out speed: 24.6 m/s
+-   required annual avg speed: 5.8 m/s
+:::
+:::
+
+## Expanded Geographic Scale {.smaller}
+
+In the CLI the example code below renders a report for NYC in 2010 using default values for cut-in speed, cut-out speed, and required annual average wind speed.
+
+> quarto render report.qmd -P site_name:"New York City" -P site_lat:40.7128 -P site_lon:-74.0059 -P start_date:2010-01-01 -P end_date:2011-01-01 \--output new_york_city_report.pdf (\>)
+
+This function generate multiples reports from a dataframe of parameters for different sites.
+
+```{r}
+#| eval: false
+#| echo: true
+render_fun <- function(param_df){
+  quarto::quarto_render(
+    input = "report.qmd",
+    execute_params = list(site_name = param_df$site_name,
+                          site_lat = param_df$site_lat,
+                          site_lon = param_df$site_lon,
+                          start_date = param_df$start_date,
+                          end_date = param_df$end_date),
+    output_file = glue::glue("{param_df$site_name}-report.pdf"))}
+
+param_list <- split(report_parameters, seq(nrow(report_parameters))) %>% 
+  purrr::walk(render_fun)
+```
+
+## Report {.smaller}
+
+For the specified site, the report answers the following questions:
+
+::: columns
+::: {.column width="70%"}
+-   is the annual average wind speed at least 13 mph (5.8 m/s)? [^1]
+-   how often the wind is below the cut-in speed of 8 mph (3.6 m/s)? [^2]
+-   how often the wind exceed the cut-out speed of 55 mph (24.6 m/s)?
+:::
+
+::: {.column width="30%"}
+![![]()](images/sample_report.png)
+:::
+:::
+
+[^1]: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
+
+[^2]: The Office of Energy Efficiency & Renewable Energy notes a typical cut-in speed of 6 to 9 mpg and cut-out speed of 55 mph. <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
+
+## 
 
 So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you're more interested in the conclustions than the analysis steps.
 
@@ -91,108 +858,314 @@ footnote1: The U.S. Energy Information Administration recommends an annual avera
 
 footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
 
-## Expanded scale
+# Snow Today {background-color="#447099"}
 
-```{python}
-#| echo: false
-f = h5pyd.File("/nrel/wtk-us.h5", 'r', bucket="nrel-pds-hsds")
-windspeed_100m_dset = f['windspeed_100m']
-```
+Improving usability of snow data through web basked visualizations and tutorials
 
-```{python}
-#| echo: false
-datetime_df = f["datetime"]
-datetime_df = pd.DataFrame({"datetime": datetime_df[:]},index=range(0,datetime_df.shape[0]))
-datetime_df['datetime'] = datetime_df['datetime'].apply(dateutil.parser.parse)
-
-start_date = '2012-01-01'
-end_date = '2013-01-01'
-datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetime_df.datetime < end_date)].index
-```
-
-```{python}
-#| echo: false
-def indicesForCoord(f, lat, lon):
-    dset_coords = f['coordinates']
-    projstring = """+proj=lcc +lat_1=30 +lat_2=60 
-                    +lat_0=38.47240422490422 +lon_0=-96.0 
-                    +x_0=0 +y_0=0 +ellps=sphere 
-                    +units=m +no_defs """
-    projectLcc = Proj(projstring)
-    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database
-    origin = projectLcc(*origin_ll)
-    
-    coords = (lon, lat)
-    coords = projectLcc(*coords)
-    delta = np.subtract(coords, origin)
-    ij = [int(round(x/2000)) for x in delta]
-    return tuple(reversed(ij))
-```
-
-The code below shows how to expand the geographic scale
-
-```{python}
-#| echo: true
-#| output-location: slide
-site_coord_list = [(42.501587, -72.429984), (40.7128, -74.0059)]
-#site_coord_list = [(42.501587), (-72.429984)]
-site_name_list = ["Lake Wyola", "New York City"]
-site_dict = {"Lake Wyola":("42.501587", "-72.429984"), "New York City":("40.7128", "-74.0059")}
-
-for site in site_dict:
-  print(site, " is located at ", site_dict[site])
-  lat = float(site_dict[site][0])
-  lon = float(site_dict[site][1])
-  nearest_point_idx = indicesForCoord(f, lat, lon)
-  display(Markdown(f"### {site}"))
-  print("The site nearest to ", site, " is located at ", f["coordinates"][nearest_point_idx[0]][nearest_point_idx[1]])
-  tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest_point_idx[0], nearest_point_idx[1]]
-  windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
-  windspeed_100m_df["year"] = windspeed_100m_df.index.year
-  windspeed_100m_df["month"] = windspeed_100m_df.index.month
-  windspeed_100m_df["day"] = windspeed_100m_df.index.day
-  windspeed_100m_df["hour"] = windspeed_100m_df.index.hour
-  windspeed_100m_df["day_of_year"] = windspeed_100m_df.index.dayofyear
-  #windspeed_100m_df.head()
-  fig, ax = plt.subplots()
-  ax.plot(windspeed_100m_df.index, windspeed_100m_df["windspeed_100m"])
-  plt.show()
-  display(Markdown(f'</div>'))
-```
-
-## Conclusions
-
-Wind resources are highly variable.
-
-# 
-
-no header?
-
-# Snow Today Capstone {background-color="#447099"}
-
-## Project goal
+## Project goal {.smaller}
 
 Improve the usability of snow data through web based visualizations and tutorials snow!
 
-The
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
 
-# Blackout Analysis {background-color="#447099"}
+# Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resourcs.
 
-## Project overview
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
 
--   step 1
--   step 2
--   step 3
+# Snow Science: UCSB CUES Field Station Site Visit
 
-## level 2 header
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
 
-nfdfnkdlasa
+## Albedo {.smaller}
 
-------------------------------------------------------------------------
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
 
-### level 3 header
+## Albedo Importance {.smaller}
 
-dkaslvk fndklfnkl
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Snow Today {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Snow Today: Usability {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Snow Today: Visualizations {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Snow Today: Data Accessibility {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Objectives {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Website Recommendations {.smaller}
+
+**website architecture**
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Website Recommendations {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Interactive Visualizations {.smaller}
+
+**Prototype Web Application**
+
+![](images/interactive_vis_prototype_web_app.gif){fig-align="right"}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Interactive Visualizations {.smaller}
+
+**Monthly Average and Anomaly**
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Interactive Visualizations {.smaller}
+
+**Annual Comparisons**
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Interactive Visualizations {.smaller}
+
+try exporting processed data to csv that can be read in easily, then remake the figure with plotly
+
+## Tutorials {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## Tutorials {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+# Contributions {.smaller}
+
+::: footer
+<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
+:::
+
+## As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience {.smaller}
+
+# Houston Power Outages {background-color="#447099"}
+
+A Geospatial and Statistical Analysis
+
+## Background
+
+::: columns
+::: {.column width="75%"}
+In February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures
+
+**1.4 million customers without power**
+:::
+:::
+
+![](images/houston_street_map.png){.absolute top="0" right="0" fig-alt="a street map of the houston metropolitan area" width="550"}
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Approach {.smaller}
+
+**Use geospatial and statistical methods to quantify:**
+
+1.  number of residential homes without power
+
+2.  socioeconomic differences of areas with and without power
+
+**...by using data from:**
+
+1.  satellite imagery of nighttime lights
+
+2.  OpenStreetMaps roadways and buidings
+
+3.  census tract level race, age and income variables
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Project overview {.smaller}
+
+::: columns
+::: {.column width="40%"}
+1.  Load satellite imagery
+
+2.  Create blackout mask
+
+3.  Identify residential buildings within blackout area
+
+4.  spatially join census data to blackout areas
+:::
+:::
+
+![](images/step1_satellite_imagery.png){.absolute top="70" right="300"}
+
+![](images/step2_blackout_mask.png){.absolute top="70" right="0"}
+
+![](images/step3_buildings.png){.absolute bottom="50" right="300" width="295"}
+
+![](images/step4_spatial_join.png){.absolute bottom="50" right="0"}
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+# +144,000 households without power {background-color="#447099"}
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## 
+
+::: columns
+::: {.column width="50%"}
+**Percent white**
+
+![](images/pct_white_map.png){width="425"}
+:::
+
+::: {.column width="50%"}
+**Percent bipoc**
+
+![](images/pct_bipoc_map.png){width="425"}
+:::
+:::
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## 
+
+::: columns
+::: {.column width="50%"}
+**Percent white**
+
+![](images/pct_white_blackout_map.png){width="425"}
+:::
+
+::: {.column width="50%"}
+**Percent bipoc**
+
+![](images/pct_bipoc_blackout_map.png){width="450"}
+:::
+:::
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Statistical Analysis
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Statistical Analysis
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Statistical Analysis
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Results
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Conclusions
+
+-   While race, age and income accounted for small portions of the overall variance in residential power outages, this analysis suggests some racial and economic inequality.
+
+-   Electric utilities should evaluate infrastructure and asset management plans in areas with higher proportions of people of color and poverty
+
+-   There is a need for more equitable responses to natural disasters
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+# Tabset panels
+
+::: panel-tabset
+### graph
+
+```{python}
+
+
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+
+```
+:::
+
+# two columns
+
+::: columns
+::: {.column width="40%"}
+Left column
+:::
+
+::: {.column width="60%"}
+Right column
+:::
+:::
 
 # Citations
 

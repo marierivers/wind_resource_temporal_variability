@@ -132,7 +132,7 @@ nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
 site_map = folium.Map(location = site_coords, zoom_start = 10)
 folium.Marker(site_coords, popup = site_name).add_to(site_map)
 folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
-site_map
+#site_map
 ```
 
 # Create dataframes
@@ -228,14 +228,12 @@ hourly_std_by_month.head()
 #| code-summary: "calculate moving averages"
 #| warning: false
 #| output: false
+#| error: false
+#| message: false
 
 # 24 hour moving average
 window_size_24hr = 24
-
-# Get the window of series of observations for specified window size
 windows_24hr = windspeed_100m_df.rolling(window_size_24hr)
-
-# Create a series of moving averages for each window
 moving_averages_24hr = windows_24hr.mean()
 
 # 10 day moving average
@@ -310,9 +308,7 @@ fig = go.Figure([
               line = dict(color = "blue", width = 4),
               error_y = dict(type = 'data', array = hourly_avg['std'], visible = True)),
     go.Scatter(
-        name = 'IQR 75',
-        y = hourly_avg['quantile75'],
-        x = hourly_avg['hour'],
+        name = 'IQR 75', y = hourly_avg['quantile75'], x = hourly_avg['hour'],
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
@@ -322,9 +318,7 @@ fig = go.Figure([
 
     # Create IQR 25 fill color
     go.Scatter(
-        name='IQR',
-        y = hourly_avg['quantile25'],
-        x = hourly_avg['hour'],
+        name='IQR', y = hourly_avg['quantile25'], x = hourly_avg['hour'],
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
