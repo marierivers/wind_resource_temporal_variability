@@ -160,6 +160,10 @@ for site in site_dict:
   display(Markdown(f'</div>'))
 ```
 
+## Conclusions
+
+Wind resources are highly variable.
+
 # 
 
 no header?
@@ -191,5 +195,13 @@ nfdfnkdlasa
 dkaslvk fndklfnkl
 
 # Citations
+
+Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. [Overview and Meteorological Validation of the Wind Integration National Dataset Toolkit (Technical Report](https://www.nrel.gov/docs/fy15osti/61740.pdf), NREL/TP-5000-61740). Golden, CO: National Renewable Energy Laboratory.
+
+Draxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. "[The Wind Integration National Dataset (WIND) Toolkit.](https://www.sciencedirect.com/science/article/pii/S0306261915004237?via%3Dihub)" Applied Energy 151: 355366.
+
+King, J., A. Clifton, and B.M. Hodge. 2014. [Validation of Power Output for the WIND Toolkit](https://www.nrel.gov/docs/fy14osti/61714.pdf) (Technical Report, NREL/TP-5D00-61714). Golden, CO: National Renewable Energy Laboratory.
+
+<https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48>
 
 <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
