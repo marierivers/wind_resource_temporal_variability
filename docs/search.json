@@ -14,97 +14,6 @@
     "text": "Detour\n\n\n\nMaster of Environmental Data Science\nzz..besides going to the beach and paddle boarding with my dog, I…\nlearn geospatial analysis, statistics, and remote sensing with Python and R\n…and fell in love with the concept of reproducible open science\n\nzz..Last year my professional career took a detour\nzz..talk about why I made this decision\n\n\n\n\n\nhttps://marierivers.github.io/"
   },
   {
-    "objectID": "mrivers_presentation.html#report",
-    "href": "mrivers_presentation.html#report",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Report",
-    "text": "Report\nFor the specified site, the report answers the following questions:\n\n\n\nis the annual average wind speed at least 13 mph (5.8 m/s)? 1\nhow often the wind is below the cut-in speed of 8 mph (3.6 m/s)? 2\nhow often the wind exceed the cut-out speed of 55 mph (24.6 m/s)?\n\n\n\n\n\n\n\n\n\n\nThe U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.The Office of Energy Efficiency & Renewable Energy notes a typical cut-in speed of 6 to 9 mpg and cut-out speed of 55 mph. https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
-  },
-  {
-    "objectID": "mrivers_presentation.html#expanded-scale",
-    "href": "mrivers_presentation.html#expanded-scale",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Expanded scale",
-    "text": "Expanded scale\n\n\n\n\n\n\n\n\n\nThe code below shows how to expand the geographic scale"
-  },
-  {
-    "objectID": "mrivers_presentation.html#conclusions",
-    "href": "mrivers_presentation.html#conclusions",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Conclusions",
-    "text": "Conclusions\n\ngreatest monthly variability in November\nsmallest monthy variability in July\nhighest wind speeds in February\nlowest wind speeds in August\nslower wind speeds mid-day than at night\nbased on the seasonal variability, this site would be better at meeting high winter demands than summer demands\nthis site may not be ideal for meeting all daytime demands.\n\nso what does this tell us about the monthly variability? so what does this tell us about the daily variability?\ncircle back to water diurnal patterns ()\nnow that we have a good sense of what the data looks like for this location, let’s take a closer look at some statistics and quantity the variability"
-  },
-  {
-    "objectID": "mrivers_presentation.html#project-goal",
-    "href": "mrivers_presentation.html#project-goal",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Project goal",
-    "text": "Project goal\nImprove the usability of snow data through web based visualizations and tutorials snow!\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#project-overview",
-    "href": "mrivers_presentation.html#project-overview",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Project overview",
-    "text": "Project overview\n\n\n\nLoad satellite imagery\nCreate blackout mask\nIdentify residential buildings within blackout area\nspatially join census data to blackout areas\n\n\n\n\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#level-2-header",
-    "href": "mrivers_presentation.html#level-2-header",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "level 2 header",
-    "text": "level 2 header\nnfdfnkdlasa"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Wind Resource Temporal Variability",
-    "section": "",
-    "text": "This tool uses statistical analyses and visualizations to explore the diurnal and monthly variability of wind resources at Mount Washington in New Hampshire using data from the National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit. Datasets within this tool include meteorological conditions such as temperature, pressure, relative humidity, wind direction, and wind speed. Hourly data is available for the continental United States from 2007 to 2013. This analysis used the wind speed at 100 meters dataset for the year 2012."
-  },
-  {
-    "objectID": "index.html#determine-nearest-timeseries-for-given-latlon",
-    "href": "index.html#determine-nearest-timeseries-for-given-latlon",
-    "title": "Wind Resource Temporal Variability",
-    "section": "Determine nearest timeseries for given Lat/Lon",
-    "text": "Determine nearest timeseries for given Lat/Lon\nThe file structure organizes the data into 2 kilometer x 2 kilometer grids. The code below takes the latitude/longitude coordinates of an individual site (in this case Mount Washinton) and finds the indices and coordinates of the nearest site within the dataset. Latitude and longitude coordinates are in a modified Lambert Conic projection.\n\n\nsite specific info\nsite_name = \"Mount Washington\"\nsite_coords = (44.27, -71.3)\n\n\n\n\nfunction to find nearest point\n# This function finds the nearest x/y indices for a given lat/lon.\n# Rather than fetching the entire coordinates database, which is 500+ MB, this\n# uses the Proj4 library to find a nearby point and then converts to x/y indices\n\ndef indicesForCoord(f, lat_index, lon_index):\n    dset_coords = f['coordinates']\n    projstring = \"\"\"+proj=lcc +lat_1=30 +lat_2=60 \n                    +lat_0=38.47240422490422 +lon_0=-96.0 \n                    +x_0=0 +y_0=0 +ellps=sphere \n                    +units=m +no_defs \"\"\"\n    projectLcc = Proj(projstring)\n    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database\n    origin = projectLcc(*origin_ll)\n    \n    coords = (lon_index,lat_index)\n    coords = projectLcc(*coords)\n    delta = np.subtract(coords, origin)\n    ij = [int(round(x/2000)) for x in delta]\n    return tuple(reversed(ij))\n\nnearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )\n\nprint(\"y,x indices for\", site_name, \": \\t\\t {}\".format(nearest_site))\n\n\ny,x indices for Mount Washington :       (1258, 2423)\n\n\nfunction to find nearest point\nprint(\"Coordinates of\", site_name, \": \\t {}\".format(site_coords))\n\n\nCoordinates of Mount Washington :    (44.27, -71.3)\n\n\nfunction to find nearest point\nprint(\"Coordinates of nearest point: \\t {}\".format(f[\"coordinates\"][nearest_site[0]][nearest_site[1]]))\n\n\nCoordinates of nearest point:    (44.265121, -71.280396)"
-  },
-  {
-    "objectID": "index.html#map",
-    "href": "index.html#map",
-    "title": "Wind Resource Temporal Variability",
-    "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fabf9798520>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n#site_map\n\n\n<folium.map.Marker object at 0x7fabf9798760>"
-  },
-  {
-    "objectID": "index.html#aggregate-data",
-    "href": "index.html#aggregate-data",
-    "title": "Wind Resource Temporal Variability",
-    "section": "Aggregate data",
-    "text": "Aggregate data\nThe pandas dataframe was then aggregated to group the data by month and hour and calculate values for mean and standard deviation. Functions to calculate the first, second, and third quartiles were also used. These dataframes were used for the statistical analysis and visualizations.\n\n\nfunctions to calculate quantiles\ndef quantile25(column):\n    return column.quantile(0.25)\n\ndef quantile50(column):\n    return column.quantile(0.50)\n\ndef quantile75(column):\n    return column.quantile(0.75)\n\n\n\n\n\ncreate dataframe of average wind speed for each hour\nhourly_avg = windspeed_100m_df.groupby(\"hour\")[\"windspeed_100m\"].agg([\"mean\", \"std\", quantile25, quantile50, quantile75])\nhourly_avg = hourly_avg.reset_index()\nhourly_avg.head()\n\n\n   hour       mean       std  quantile25  quantile50  quantile75\n0     0  12.387863  6.712486    7.355722   12.079224   16.777550\n1     1  12.496613  6.747195    7.489243   12.189095   16.737114\n2     2  12.483580  6.864682    7.070374   12.457657   16.932434\n3     3  12.368402  6.868386    6.917786   12.387463   16.807304\n4     4  12.149085  6.715096    6.789604   12.137211   16.203804\n\n\n\n\ncreate dataframe of average wind speed for each month\nmonthly_avg = windspeed_100m_df.groupby([\"month\", \"month_name\"])[\"windspeed_100m\"].agg([\"mean\", \"std\", quantile25, quantile50, quantile75]).reset_index()\nmonthly_avg.head()\n\n\n   month month_name       mean       std  quantile25  quantile50  quantile75\n0      1    January  15.694266  6.280080   11.762596   15.463730   19.280067\n1      2   February  15.809338  7.093691   11.239204   16.272469   20.300148\n2      3      March  12.230855  6.782397    6.586655   11.641289   17.367319\n3      4      April  13.519631  6.016217    9.871977   14.194160   17.768639\n4      5        May   9.106350  5.020830    5.429245    8.146919   12.250893\n\n\n\n\ncreate dataframe of average wind speed for each hour grouped by month\nhourly_avg_by_month = windspeed_100m_df.groupby([\"hour\", \"month\"]).mean()\nhourly_avg_by_month = hourly_avg_by_month.reset_index().pivot(index = \"hour\", columns = str(\"month\"), values = \"windspeed_100m\")\nhourly_avg_by_month.columns = hourly_avg_by_month.columns.astype(str)\nhourly_avg_by_month.head()\n\n\nmonth          1          2          3  ...         10         11         12\nhour                                    ...                                 \n0      16.933540  17.768402  12.863748  ...  12.589771  11.489303  12.568311\n1      16.990442  17.863747  12.890527  ...  13.027860  11.083611  12.639684\n2      17.024899  17.666428  12.944869  ...  13.207230  11.067130  12.651399\n3      17.247192  17.689476  12.414536  ...  13.030813  10.995311  12.727105\n4      17.087215  17.182659  12.194508  ...  13.004232  10.831832  12.852821\n\n[5 rows x 12 columns]\n\n\n\n\ncreate dataframe of average wind speed for each hour by month\nhourly_std_by_month = windspeed_100m_df.groupby([\"hour\", \"month\"]).std()\nhourly_std_by_month = hourly_std_by_month.reset_index().pivot(index = \"hour\", columns = str(\"month\"), values = \"windspeed_100m\")\nhourly_std_by_month.columns = hourly_avg_by_month.columns.astype(str)\nhourly_std_by_month.head()\n\n\nmonth         1         2         3  ...        10        11        12\nhour                                 ...                              \n0      5.391501  6.570820  6.416065  ...  7.869388  8.129505  7.792957\n1      5.445199  6.508991  6.569621  ...  7.946729  7.871586  7.952874\n2      5.927134  6.394429  7.066956  ...  8.314149  7.716703  7.624423\n3      5.916150  6.125285  6.914925  ...  8.346868  7.587217  7.677165\n4      5.975209  5.834017  6.484714  ...  8.281481  7.604963  7.446602\n\n[5 rows x 12 columns]\n\n\n\n\n\ncalculate moving averages\n# 24 hour moving average\nwindow_size_24hr = 24\nwindows_24hr = windspeed_100m_df.rolling(window_size_24hr)\nmoving_averages_24hr = windows_24hr.mean()\n\n# 10 day moving average\n\n\ncalculate moving averages\nwindow_size_10day = 240\nwindows_10day = windspeed_100m_df.rolling(window_size_10day)\nmoving_averages_10day = windows_10day.mean()\n\n# 30 day moving average\nwindow_size_30day = 720\nwindows_30day = windspeed_100m_df.rolling(window_size_30day)\nmoving_averages_30day = windows_30day.mean()"
-  },
-  {
-    "objectID": "void/about.html",
-    "href": "void/about.html",
-    "title": "About",
-    "section": "",
-    "text": "1 + 1\n\n[1] 2"
-  },
-  {
-    "objectID": "void/index.html",
-    "href": "void/index.html",
-    "title": "Wind Resource Temporal Variability",
-    "section": "",
-    "text": "About the data\n\n#%matplotlib inline\n# import h5pyd\n# import numpy as np\n# import pandas as pd\n# import matplotlib.pyplot as plt\n# import matplotlib.image as mpimg\n# from pyproj import Proj\n# import dateutil\n\n\n\nGet the data\n\n# f = h5pyd.File(\"/nrel/wtk-us.h5\", 'r', bucket=\"nrel-pds-hsds\")\n# list(f)\n\n\n#windspeed_100m_df = pd.read_csv(\"data/windspeed_100m_df.csv\")\n\n\n\nStatistical analysis\n\n\nConclusions / insights\n\n\nExpanded geographic scale\n\n\nCitations"
-  },
-  {
-    "objectID": "mrivers_presentation.html#slide-title---test",
-    "href": "mrivers_presentation.html#slide-title---test",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Slide Title - test",
-    "text": "Slide Title - test\nSlide content\n\nCustom footer text"
-  },
-  {
     "objectID": "mrivers_presentation.html#overview",
     "href": "mrivers_presentation.html#overview",
     "title": "NREL Geospatial Research Scientist Interview",
@@ -112,18 +21,11 @@
     "text": "Overview\n\n\n\nExplore the diurnal and monthly variability of wind resources at Mount Washington in NH\nUsed the NREL Wind Integration National Dataset (WIND) Toolkit\nAccessed data with the h5pyd Python package and NREL Highly Scalable Data Service (HSDS)\nsubset the for the windspeed_100, dataset and year 2012\nconverted to pandas dataframe\naggregated data by hourly and monthly groupings to calculate mean, standard deviation, and quartiles"
   },
   {
-    "objectID": "mrivers_presentation.html#look-at-this-code-and-these-graphs",
-    "href": "mrivers_presentation.html#look-at-this-code-and-these-graphs",
+    "objectID": "mrivers_presentation.html#visualization-of-full-time-series",
+    "href": "mrivers_presentation.html#visualization-of-full-time-series",
     "title": "NREL Geospatial Research Scientist Interview",
-    "section": "look at this code and these graphs",
-    "text": "look at this code and these graphs\n\ncircle back to water diurnal patterns ()\nso what does this tell us about the monthly variability?\nso what does this tell us about the daily variability?\n\nnow that we have a good sense of what the data looks like for this location, let’s take a closer look at some statistics and quanity the variability"
-  },
-  {
-    "objectID": "mrivers_presentation.html#statistical-analysis",
-    "href": "mrivers_presentation.html#statistical-analysis",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Statistical Analysis",
-    "text": "Statistical Analysis\n\nRange of wind speed values in 2012\n\n\n\nmin wind speed (m/s)\nmax wind speed (m/s)\n\n\n\n\nHourly\n0.12\n36.66\n\n\nHourly average\n10.71\n12.50\n\n\nmonthly average\n8.78\n15.81\n\n\n\n\n\n\n\n\n\nSummary of stats for monthly and hourly wind speed\n\n\n\n\n\n\n\n\n\n\nsmallest variability\ngreatest variability\nsmallest average wind speed\ngreatest average wind speed\n\n\n\n\nmonthly\nJuly\nNovember\nAugust\nFebruary\n\n\nhourly\n19\n13\n16\n1\n\n\nmonth & hour\nMarch, hour 16\nOctober, hour 13\nAugust, hour 15\nFebruary, hour 1"
+    "section": "Visualization of full time series",
+    "text": "Visualization of full time series\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nfig = go.Figure([\n    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = 'hourly', line=dict(color='blue', width=0.75)),\n    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], \n              mode = 'lines', legendrank = 1,\n              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),\n    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),\n    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')\n])\n\nfig.update_layout(\n    margin=dict(l=20, r=20, t=30, b=20),\n    paper_bgcolor=\"#FFFFFF\",\n    plot_bgcolor='#f5f5f5',\n    yaxis=dict(\n        title_text=\"windspeed (m/s)\",\n        titlefont=dict(size=16)),\n    title={\n        'text': \"Hourly Wind Speed\",\n        'y':0.99,\n        'x':0.5,\n        'xanchor': 'center',\n        'yanchor': 'top'}\n)"
   },
   {
     "objectID": "mrivers_presentation.html#diurnal-and-monthly-variability",
@@ -131,13 +33,6 @@
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Diurnal and Monthly Variability",
     "text": "Diurnal and Monthly Variability\n\nboth wind speed and electricity demands fluctuate throughout the day\nboth wind speed and electricity demands fluctuate seasonally (by month)\nwhen selecting sites for utility scale wind power it is important to have adequate wind speeds at the same time as peak electricity demands\nthe Interquartile range and standard deviation can help quantify the spread of data"
-  },
-  {
-    "objectID": "mrivers_presentation.html#visualization-of-full-time-series",
-    "href": "mrivers_presentation.html#visualization-of-full-time-series",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Visualization of full time series",
-    "text": "Visualization of full time series\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nfig = go.Figure([\n    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = 'hourly', line=dict(color='blue', width=0.75)),\n    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], \n              mode = 'lines', legendrank = 1,\n              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),\n    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),\n    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], \n              mode = 'lines', legendrank = 1, \n              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')\n])\n\nfig.update_layout(\n    margin=dict(l=20, r=20, t=30, b=20),\n    paper_bgcolor=\"#FFFFFF\",\n    plot_bgcolor='#f5f5f5',\n    yaxis=dict(\n        title_text=\"windspeed (m/s)\",\n        titlefont=dict(size=16)),\n    title={\n        'text': \"Hourly Wind Speed\",\n        'y':0.99,\n        'x':0.5,\n        'xanchor': 'center',\n        'yanchor': 'top'}\n)"
   },
   {
     "objectID": "mrivers_presentation.html#diurnal-and-monthly-variability-1",
@@ -161,25 +56,25 @@
     "text": "Diurnal and Monthly Variability\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nheatmap_month = hourly_avg_by_month.columns.tolist()\nheatmap_hour = hourly_avg_by_month.index.tolist()\nheatmap_windspeed = hourly_avg_by_month.values.tolist()\n\ntrace = go.Heatmap(\n   x = heatmap_month,\n   y = heatmap_hour,\n   z = heatmap_windspeed,\n   type = 'heatmap',\n   #colorscale = [(0,\"blue\"), (1,\"red\")],\n   colorscale = 'mint',\n   colorbar=dict(title='Wind Speed (m/s)')\n)\ndata = [trace]\nfig = go.Figure(data = data)\n\nfig.update_layout(\n    #width=1000,\n    height=650,\n    xaxis=dict(\n        title_text=\"month\",\n        titlefont=dict(size=16),\n        #dtick = 1,\n        tickmode = 'array',\n        # Set tick intervals to correspond with months\n        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],\n        ticktext = ['January', 'February', 'March', 'April', \n                    'May', 'June', 'July', 'August', \n                    'September', 'October', 'November', 'December'],\n        tickfont = dict(size=16)),\n    yaxis=dict(\n        title_text=\"hour (UTC)\",\n        titlefont=dict(size=16),\n        dtick = 1,\n        tickfont = dict(size=16)),\n    title={\n        'text': \"Average Wind Speed by Month and Hour\",\n        'y':0.99,\n        'x':0.5,\n        'xanchor': 'center',\n        'yanchor': 'top'},\n    margin=dict(l=20, r=20, t=30, b=20),\n)"
   },
   {
+    "objectID": "mrivers_presentation.html#statistical-analysis",
+    "href": "mrivers_presentation.html#statistical-analysis",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Statistical Analysis",
+    "text": "Statistical Analysis\n\nRange of wind speed values in 2012\n\n\n\nmin wind speed (m/s)\nmax wind speed (m/s)\n\n\n\n\nHourly\n0.12\n36.66\n\n\nHourly average\n10.71\n12.50\n\n\nmonthly average\n8.78\n15.81\n\n\n\n\n\n\n\n\n\nSummary of stats for monthly and hourly wind speed\n\n\n\n\n\n\n\n\n\n\nsmallest variability\ngreatest variability\nsmallest average wind speed\ngreatest average wind speed\n\n\n\n\nmonthly\nJuly\nNovember\nAugust\nFebruary\n\n\nhourly\n19\n13\n16\n1\n\n\nmonth & hour\nMarch, hour 16\nOctober, hour 13\nAugust, hour 15\nFebruary, hour 1"
+  },
+  {
+    "objectID": "mrivers_presentation.html#conclusions",
+    "href": "mrivers_presentation.html#conclusions",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Conclusions",
+    "text": "Conclusions\n\ngreatest monthly variability in November\nsmallest monthy variability in July\nhighest wind speeds in February\nlowest wind speeds in August\nslower wind speeds mid-day than at night\nbased on the seasonal variability, this site would be better at meeting high winter demands than summer demands\nthis site may not be ideal for meeting all daytime demands.\n\nso what does this tell us about the monthly variability? so what does this tell us about the daily variability?\ncircle back to water diurnal patterns ()\nnow that we have a good sense of what the data looks like for this location, let’s take a closer look at some statistics and quantity the variability"
+  },
+  {
     "objectID": "mrivers_presentation.html#expanded-geographic-scale",
     "href": "mrivers_presentation.html#expanded-geographic-scale",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Expanded Geographic Scale",
     "text": "Expanded Geographic Scale\nCreated a parameterized report using Quarto as a tool to allow users to generate summary reports based on specified inputs from CLI or with render function for multiple sites.\n\n\nModify report by specifying parameters for:\n\nsite name\nsite latitude\nsite longitude\nstart date\nend date\nturbine cut-in speed\nturbine cut-out speed\nrequired annual average wind speed\n\n\nDefault parameters are:\n\nstart date: ‘2012-01-01’\nend date: ‘2013-01-01’\ncut-in speed: 3.6 m/s\ncut-out speed: 24.6 m/s\nrequired annual avg speed: 5.8 m/s"
-  },
-  {
-    "objectID": "mrivers_presentation.html#conclusions-1",
-    "href": "mrivers_presentation.html#conclusions-1",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Conclusions",
-    "text": "Conclusions\n\nWhile race, age and income accounted for small portions of the overall variance in residential power outages, this analysis suggests some racial and economic inequality.\nElectric utilities should evaluate infrastructure and asset management plans in areas with higher proportions of people of color and poverty\nThere is a need for more equitable responses to natural disasters\n\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#section",
-    "href": "mrivers_presentation.html#section",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "",
-    "text": "So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.\nFor the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands\nThe report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx\nfootnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.\nfootnote2: https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
   },
   {
     "objectID": "mrivers_presentation.html#expanded-geographic-scale-1",
@@ -189,74 +84,25 @@
     "text": "Expanded Geographic Scale\nIn the CLI the example code below renders a report for NYC in 2010 using default values for cut-in speed, cut-out speed, and required annual average wind speed.\n\nquarto render report.qmd -P site_name:“New York City” -P site_lat:40.7128 -P site_lon:-74.0059 -P start_date:2010-01-01 -P end_date:2011-01-01 --output new_york_city_report.pdf (>)\n\nThis function generate multiples reports from a dataframe of parameters for different sites.\n\nrender_fun <- function(param_df){\n  quarto::quarto_render(\n    input = \"report.qmd\",\n    execute_params = list(site_name = param_df$site_name,\n                          site_lat = param_df$site_lat,\n                          site_lon = param_df$site_lon,\n                          start_date = param_df$start_date,\n                          end_date = param_df$end_date),\n    output_file = glue::glue(\"{param_df$site_name}-report.pdf\"))}\n\nparam_list <- split(report_parameters, seq(nrow(report_parameters))) %>% \n  purrr::walk(render_fun)"
   },
   {
-    "objectID": "mrivers_presentation.html#report-sample",
-    "href": "mrivers_presentation.html#report-sample",
+    "objectID": "mrivers_presentation.html#report",
+    "href": "mrivers_presentation.html#report",
     "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Report Sample",
-    "text": "Report Sample"
+    "section": "Report",
+    "text": "Report\nFor the specified site, the report answers the following questions:\n\n\n\nis the annual average wind speed at least 13 mph (5.8 m/s)? 1\nhow often the wind is below the cut-in speed of 8 mph (3.6 m/s)? 2\nhow often the wind exceed the cut-out speed of 55 mph (24.6 m/s)?\n\n\n\n\n\n\n\n\n\n\nThe U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.The Office of Energy Efficiency & Renewable Energy notes a typical cut-in speed of 6 to 9 mpg and cut-out speed of 55 mph. https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
   },
   {
-    "objectID": "mrivers_presentation.html#background",
-    "href": "mrivers_presentation.html#background",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Background",
-    "text": "Background\n\n\nIn February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures\n1.4 million customers without power\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#approach",
-    "href": "mrivers_presentation.html#approach",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Approach",
-    "text": "Approach\nUse geospatial and statistical methods to quantify:\n\nnumber of residential homes without power\nsocioeconomic differences of areas with and without power\n\n…by using data from:\n\nsatellite imagery of nighttime lights\nOpenStreetMaps roadways and buidings\ncensus tract level race, age and income variables\n\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#section-1",
-    "href": "mrivers_presentation.html#section-1",
+    "objectID": "mrivers_presentation.html#section",
+    "href": "mrivers_presentation.html#section",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "",
-    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "text": "So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.\nFor the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands\nThe report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx\nfootnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.\nfootnote2: https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
   },
   {
-    "objectID": "mrivers_presentation.html#project-overview-1",
-    "href": "mrivers_presentation.html#project-overview-1",
+    "objectID": "mrivers_presentation.html#project-goal",
+    "href": "mrivers_presentation.html#project-goal",
     "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Project overview",
-    "text": "Project overview\n}"
-  },
-  {
-    "objectID": "mrivers_presentation.html#section-2",
-    "href": "mrivers_presentation.html#section-2",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "",
-    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#statistical-analysis-1",
-    "href": "mrivers_presentation.html#statistical-analysis-1",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Statistical Analysis",
-    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#statistical-analysis-2",
-    "href": "mrivers_presentation.html#statistical-analysis-2",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Statistical Analysis",
-    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#statistical-analysis-3",
-    "href": "mrivers_presentation.html#statistical-analysis-3",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Statistical Analysis",
-    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
-  },
-  {
-    "objectID": "mrivers_presentation.html#results",
-    "href": "mrivers_presentation.html#results",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Results",
-    "text": "Results\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "section": "Project goal",
+    "text": "Project goal\nImprove the usability of snow data through web based visualizations and tutorials snow!\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#albedo",
@@ -369,5 +215,117 @@
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience",
     "text": "As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience"
+  },
+  {
+    "objectID": "mrivers_presentation.html#background",
+    "href": "mrivers_presentation.html#background",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Background",
+    "text": "Background\n\n\nIn February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures\n1.4 million customers without power\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#approach",
+    "href": "mrivers_presentation.html#approach",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Approach",
+    "text": "Approach\nUse geospatial and statistical methods to quantify:\n\nnumber of residential homes without power\nsocioeconomic differences of areas with and without power\n\n…by using data from:\n\nsatellite imagery of nighttime lights\nOpenStreetMaps roadways and buidings\ncensus tract level race, age and income variables\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#project-overview",
+    "href": "mrivers_presentation.html#project-overview",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Project overview",
+    "text": "Project overview\n\n\n\nLoad satellite imagery\nCreate blackout mask\nIdentify residential buildings within blackout area\nspatially join census data to blackout areas\n\n\n\n\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-1",
+    "href": "mrivers_presentation.html#section-1",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-2",
+    "href": "mrivers_presentation.html#section-2",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#statistical-analysis-1",
+    "href": "mrivers_presentation.html#statistical-analysis-1",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Statistical Analysis",
+    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#statistical-analysis-2",
+    "href": "mrivers_presentation.html#statistical-analysis-2",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Statistical Analysis",
+    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#statistical-analysis-3",
+    "href": "mrivers_presentation.html#statistical-analysis-3",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Statistical Analysis",
+    "text": "Statistical Analysis\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#results",
+    "href": "mrivers_presentation.html#results",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Results",
+    "text": "Results\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#conclusions-1",
+    "href": "mrivers_presentation.html#conclusions-1",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Conclusions",
+    "text": "Conclusions\n\nWhile race, age and income accounted for small portions of the overall variance in residential power outages, this analysis suggests some racial and economic inequality.\nElectric utilities should evaluate infrastructure and asset management plans in areas with higher proportions of people of color and poverty\nThere is a need for more equitable responses to natural disasters\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Wind Resource Temporal Variability",
+    "section": "",
+    "text": "This tool uses statistical analyses and visualizations to explore the diurnal and monthly variability of wind resources at Mount Washington in New Hampshire using data from the National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit. Datasets within this tool include meteorological conditions such as temperature, pressure, relative humidity, wind direction, and wind speed. Hourly data is available for the continental United States from 2007 to 2013. This analysis used the wind speed at 100 meters dataset for the year 2012."
+  },
+  {
+    "objectID": "index.html#determine-nearest-timeseries-for-given-latlon",
+    "href": "index.html#determine-nearest-timeseries-for-given-latlon",
+    "title": "Wind Resource Temporal Variability",
+    "section": "Determine nearest timeseries for given Lat/Lon",
+    "text": "Determine nearest timeseries for given Lat/Lon\nThe file structure organizes the data into 2 kilometer x 2 kilometer grids. The code below takes the latitude/longitude coordinates of an individual site (in this case Mount Washinton) and finds the indices and coordinates of the nearest site within the dataset. Latitude and longitude coordinates are in a modified Lambert Conic projection.\n\n\nsite specific info\nsite_name = \"Mount Washington\"\nsite_coords = (44.27, -71.3)\n\n\n\n\nfunction to find nearest point\n# This function finds the nearest x/y indices for a given lat/lon.\n# Rather than fetching the entire coordinates database, which is 500+ MB, this\n# uses the Proj4 library to find a nearby point and then converts to x/y indices\n\ndef indicesForCoord(f, lat_index, lon_index):\n    dset_coords = f['coordinates']\n    projstring = \"\"\"+proj=lcc +lat_1=30 +lat_2=60 \n                    +lat_0=38.47240422490422 +lon_0=-96.0 \n                    +x_0=0 +y_0=0 +ellps=sphere \n                    +units=m +no_defs \"\"\"\n    projectLcc = Proj(projstring)\n    origin_ll = reversed(dset_coords[0][0])  # Grab origin directly from database\n    origin = projectLcc(*origin_ll)\n    \n    coords = (lon_index,lat_index)\n    coords = projectLcc(*coords)\n    delta = np.subtract(coords, origin)\n    ij = [int(round(x/2000)) for x in delta]\n    return tuple(reversed(ij))\n\nnearest_site = indicesForCoord(f, site_coords[0], site_coords[1] )\n\nprint(\"y,x indices for\", site_name, \": \\t\\t {}\".format(nearest_site))\n\n\ny,x indices for Mount Washington :       (1258, 2423)\n\n\nfunction to find nearest point\nprint(\"Coordinates of\", site_name, \": \\t {}\".format(site_coords))\n\n\nCoordinates of Mount Washington :    (44.27, -71.3)\n\n\nfunction to find nearest point\nprint(\"Coordinates of nearest point: \\t {}\".format(f[\"coordinates\"][nearest_site[0]][nearest_site[1]]))\n\n\nCoordinates of nearest point:    (44.265121, -71.280396)"
+  },
+  {
+    "objectID": "index.html#map",
+    "href": "index.html#map",
+    "title": "Wind Resource Temporal Variability",
+    "section": "Map",
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f8faafcc610>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f8faafcc820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+  },
+  {
+    "objectID": "index.html#aggregate-data",
+    "href": "index.html#aggregate-data",
+    "title": "Wind Resource Temporal Variability",
+    "section": "Aggregate data",
+    "text": "Aggregate data\nThe pandas dataframe was then aggregated to group the data by month and hour and calculate values for mean and standard deviation. Functions to calculate the first, second, and third quartiles were also used. These dataframes were used for the statistical analysis and visualizations.\n\n\nfunctions to calculate quantiles\ndef quantile25(column):\n    return column.quantile(0.25)\n\ndef quantile50(column):\n    return column.quantile(0.50)\n\ndef quantile75(column):\n    return column.quantile(0.75)\n\n\n\n\n\ncreate dataframe of average wind speed for each hour\nhourly_avg = windspeed_100m_df.groupby(\"hour\")[\"windspeed_100m\"].agg([\"mean\", \"std\", quantile25, quantile50, quantile75])\nhourly_avg = hourly_avg.reset_index()\nhourly_avg.head()\n\n\n   hour       mean       std  quantile25  quantile50  quantile75\n0     0  12.387863  6.712486    7.355722   12.079224   16.777550\n1     1  12.496613  6.747195    7.489243   12.189095   16.737114\n2     2  12.483580  6.864682    7.070374   12.457657   16.932434\n3     3  12.368402  6.868386    6.917786   12.387463   16.807304\n4     4  12.149085  6.715096    6.789604   12.137211   16.203804\n\n\n\n\ncreate dataframe of average wind speed for each month\nmonthly_avg = windspeed_100m_df.groupby([\"month\", \"month_name\"])[\"windspeed_100m\"].agg([\"mean\", \"std\", quantile25, quantile50, quantile75]).reset_index()\nmonthly_avg.head()\n\n\n   month month_name       mean       std  quantile25  quantile50  quantile75\n0      1    January  15.694266  6.280080   11.762596   15.463730   19.280067\n1      2   February  15.809338  7.093691   11.239204   16.272469   20.300148\n2      3      March  12.230855  6.782397    6.586655   11.641289   17.367319\n3      4      April  13.519631  6.016217    9.871977   14.194160   17.768639\n4      5        May   9.106350  5.020830    5.429245    8.146919   12.250893\n\n\n\n\ncreate dataframe of average wind speed for each hour grouped by month\nhourly_avg_by_month = windspeed_100m_df.groupby([\"hour\", \"month\"]).mean()\nhourly_avg_by_month = hourly_avg_by_month.reset_index().pivot(index = \"hour\", columns = str(\"month\"), values = \"windspeed_100m\")\nhourly_avg_by_month.columns = hourly_avg_by_month.columns.astype(str)\nhourly_avg_by_month.head()\n\n\nmonth          1          2          3  ...         10         11         12\nhour                                    ...                                 \n0      16.933540  17.768402  12.863748  ...  12.589771  11.489303  12.568311\n1      16.990442  17.863747  12.890527  ...  13.027860  11.083611  12.639684\n2      17.024899  17.666428  12.944869  ...  13.207230  11.067130  12.651399\n3      17.247192  17.689476  12.414536  ...  13.030813  10.995311  12.727105\n4      17.087215  17.182659  12.194508  ...  13.004232  10.831832  12.852821\n\n[5 rows x 12 columns]\n\n\n\n\ncreate dataframe of average wind speed for each hour by month\nhourly_std_by_month = windspeed_100m_df.groupby([\"hour\", \"month\"]).std()\nhourly_std_by_month = hourly_std_by_month.reset_index().pivot(index = \"hour\", columns = str(\"month\"), values = \"windspeed_100m\")\nhourly_std_by_month.columns = hourly_avg_by_month.columns.astype(str)\nhourly_std_by_month.head()\n\n\nmonth         1         2         3  ...        10        11        12\nhour                                 ...                              \n0      5.391501  6.570820  6.416065  ...  7.869388  8.129505  7.792957\n1      5.445199  6.508991  6.569621  ...  7.946729  7.871586  7.952874\n2      5.927134  6.394429  7.066956  ...  8.314149  7.716703  7.624423\n3      5.916150  6.125285  6.914925  ...  8.346868  7.587217  7.677165\n4      5.975209  5.834017  6.484714  ...  8.281481  7.604963  7.446602\n\n[5 rows x 12 columns]\n\n\n\n\n\ncalculate moving averages\n# 24 hour moving average\nwindow_size_24hr = 24\nwindows_24hr = windspeed_100m_df.rolling(window_size_24hr)\nmoving_averages_24hr = windows_24hr.mean()\n\n# 10 day moving average\n\n\ncalculate moving averages\nwindow_size_10day = 240\nwindows_10day = windspeed_100m_df.rolling(window_size_10day)\nmoving_averages_10day = windows_10day.mean()\n\n# 30 day moving average\nwindow_size_30day = 720\nwindows_30day = windspeed_100m_df.rolling(window_size_30day)\nmoving_averages_30day = windows_30day.mean()"
+  },
+  {
+    "objectID": "void/about.html",
+    "href": "void/about.html",
+    "title": "About",
+    "section": "",
+    "text": "1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "void/index.html",
+    "href": "void/index.html",
+    "title": "Wind Resource Temporal Variability",
+    "section": "",
+    "text": "About the data\n\n#%matplotlib inline\n# import h5pyd\n# import numpy as np\n# import pandas as pd\n# import matplotlib.pyplot as plt\n# import matplotlib.image as mpimg\n# from pyproj import Proj\n# import dateutil\n\n\n\nGet the data\n\n# f = h5pyd.File(\"/nrel/wtk-us.h5\", 'r', bucket=\"nrel-pds-hsds\")\n# list(f)\n\n\n#windspeed_100m_df = pd.read_csv(\"data/windspeed_100m_df.csv\")\n\n\n\nStatistical analysis\n\n\nConclusions / insights\n\n\nExpanded geographic scale\n\n\nCitations"
   }
 ]

@@ -24,7 +24,7 @@ Click the drop down to the right of the title to view all code written for this 
 
 # Access data
 
-The code below was used to access the data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](). The data are stored in the file `wtk_us.h5` with is in HDF5 format. Data are stored in three dimensions `dataset[t, y, x]` where x is the longitudinal index, y is the latitudinal index, and t is the temporal index. Timestamps are in the UTC timezone.
+The code below was used to access the data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](https://github.com/NREL/hsds-examples). The data are stored in the file `wtk_us.h5` with is in HDF5 format. Data are stored in three dimensions `dataset[t, y, x]` where x is the longitudinal index, y is the latitudinal index, and t is the temporal index. Timestamps are in the UTC timezone.
 
 ```{r}
 #| include: false
@@ -132,7 +132,7 @@ nearest_site_coords = f["coordinates"][nearest_site[0]][nearest_site[1]]
 site_map = folium.Map(location = site_coords, zoom_start = 10)
 folium.Marker(site_coords, popup = site_name).add_to(site_map)
 folium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)
-#site_map
+site_map
 ```
 
 # Create dataframes
@@ -285,10 +285,9 @@ fig.update_layout(
         'xanchor': 'center',
         'yanchor': 'top'}
 )
-#fig.show()
 ```
 
-Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demands peak. To begin looking at the diurnal variability for Mount Washington, the a graph on the left shows average hourly wind speed for the year 2012. This graph also presents the interquartile range (IQR) and standard deviation of this data. The IQR illustrates the spread of the middle half of wind speed values. The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spred out the data.
+Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demands peak. To begin looking at the diurnal variability for Mount Washington, the graph on the left shows average hourly wind speed for the year 2012. This graph also presents the interquartile range (IQR) and standard deviation of this data. The IQR illustrates the spread of the middle half of wind speed values. The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spred out the data.
 
 Based on the hourly wind speed visualization, wind speed at Mount Washington seems to be lowest in the middle of the day, but based on the standard deviation bars and interquartile range, there is a large spread to the data. Seasonal diurnal variability will be explored more further down the page.
 
@@ -315,7 +314,6 @@ fig = go.Figure([
         #legendgroup = 'IQR',
         showlegend = False
     ),
-
     # Create IQR 25 fill color
     go.Scatter(
         name='IQR', y = hourly_avg['quantile25'], x = hourly_avg['hour'],
@@ -524,6 +522,8 @@ This analysis concludes that wind speeds at 100 meteres near Mount Washington in
 
 Overall, the dirunal wind speed pattern resulted in higher speeds between hours 1-4; from there, wind speed tended to decrease and reach a minimum between hours 13-18; wind speeds generally increased between hours 19-23. Monthly wind speeds tended to be highest during the winter and lowest during the summer.
 
+Based on the seasonal variability, this site would be better at meeting high winter demands than summer demands. This site may not be ideal for meeting all daytime demands.
+
 ::: panel-tabset
 ## Monthly
 
@@ -604,9 +604,9 @@ Default parameters are:
 
 -   start_date: '2012-01-01'
 -   end_date: '2013-01-01'
--   cut_in_speed: 3.6
--   cut_out_speed: 24.6
--   req_annual_avg_speed: 5.8
+-   cut_in_speed: 3.6 m/s
+-   cut_out_speed: 24.6 m/s
+-   req_annual_avg_speed: 5.8 m/s
 
 For the specified site, the report answers the following questions:
 
@@ -620,7 +620,7 @@ For the specified site, the report answers the following questions:
 
 A new report can be generated using the command line interface. The code below shows an example that renders a report for New York City in 2010 using default values for cut-in speed, cut-out speed, and required annual average wind speed.
 
-> quarto render report.qmd -P site_name:"New York City" -P site_lat:40.7128 -P site_lon:-74.0059 -P start_date:2010-01-01 -P end_date:2011-01-01 \--output new_york_city_report.pdf (\>)
+> quarto render report.qmd -P site_name:"New York City" -P site_lat:40.7128 -P site_lon:-74.0059 -P start_date:2010-01-01 -P end_date:2011-01-01 \--output new_york_city_report.pdf
 
 The function below can be used to generate multiple reports from a dataframe of parameters for different sites.
 
@@ -660,9 +660,15 @@ param_list <- split(report_parameters, seq(nrow(report_parameters))) %>%
   purrr::walk(render_fun)
 ```
 
-The example reports generated above can be viewed here: xxx
+The example reports generated above can be viewed here: 
 
-xxx...add links to these example PDF reports xxx...add code folding xxx...maybe add an about page with basic info about me, quick links to the blackout analysis and capstone repo/shiny app, and data wrangling code sample
+[University of Delaware](University of Delaware-report.pdf)
+
+[UMass Amherst](Umass Amherst-report.pdf)
+
+[UC Santa Barbara](UC Santa Barbara-report.pdf)
+
+[NREL - Golden, CO](Golden, CO-report.pdf)
 
 # Citations
 
