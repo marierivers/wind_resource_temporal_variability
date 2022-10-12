@@ -5,7 +5,7 @@ author: "Marie Rivers"
 date: "October 13, 2022"
 format: 
   revealjs:
-    theme: default
+    theme: [default, presentation_styles.scss]
     slide-number: true
     preview-links: auto
     footer: <https://marierivers.github.io/wind_resource_temporal_variability/>
@@ -164,8 +164,8 @@ used geospatial analyses to identify and evaluate locations from new infrastruct
 ::: columns
 ::: {.column width="70%"}
 -   Master of Environmental Data Science
--   zz..besides going to the beach and paddle boarding with my dog, I...
--   learn geospatial analysis, statistics, and remote sensing with Python and R
+-   zz..besides [going to the beach]{.yellow}and paddle boarding with my dog, I...
+-   learn [geospatial analysis]{.blue}, statistics, and remote sensing with Python and R
 -   ...and fell in love with the concept of reproducible open science
 
 zz..Last year my professional career took a detour
@@ -860,29 +860,27 @@ footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-se
 
 # Snow Today {background-color="#447099"}
 
-Improving usability of snow data through web basked visualizations and tutorials
+Improving usability of snow data through web based visualizations and tutorials
 
-## Project goal {.smaller}
+##  {background-image="images/snow_collage.jpg"}
 
-Improve the usability of snow data through web based visualizations and tutorials snow!
+::: {style="text-align: center"}
+[Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resources.]{.big_centered_text .absolute top="40%" width="100%"}
+:::
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
-# Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resourcs.
+##  {background-image="images/field_visit.jpg" background-size="100%"}
+
+[Snow Science: UCSB CUES Field Station Site Visit]{.big_centered_text .absolute top="42%" width="100%"}
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
-# Snow Science: UCSB CUES Field Station Site Visit
-
-::: footer
-<https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
-:::
-
-## Albedo {.smaller}
+##  {background-image="images/albedo_example.jpg" background-size="95%"}
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -890,11 +888,38 @@ Improve the usability of snow data through web based visualizations and tutorial
 
 ## Albedo Importance {.smaller}
 
+::: columns
+::: {.column width="60%"}
+-   Regulates the Earth's temperature by reflecting solar radiation <br> <br>
+-   Influences rate of snow melt <br> <br>
+-   Particularly important in the Western US <br> <br>
+-   Accurate estimates critical for climate models and predicting water storage
+:::
+
+::: {.column width="40%"}
+![](images/dirty_snow1.jpg){.absolute top="50" right="0" width="400"}
+
+![](images/dirty_snow2.png){.absolute bottom="50" right="0" width="400"}
+:::
+:::
+
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
 ## Snow Today {.smaller}
+
+::: columns
+::: {.column width="60%"}
+-   Scientific analysis website that provides data on snow conditions from satellite and surface measurements <br> <br>
+-   Used by scientists, water managers, and outdoor enthusiasts for snow observations <br> <br>
+-   Spatial products offered include measures of snow cover extent and albedo
+:::
+
+::: {.column width="40%"}
+![](images/existing_snow_today_website.png){width="505"}
+:::
+:::
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -902,11 +927,31 @@ Improve the usability of snow data through web based visualizations and tutorial
 
 ## Snow Today: Usability {.smaller}
 
+::: columns
+::: {.column width="40%"}
+![](images/snowy_mountain.png){width="366"}
+:::
+
+::: {.column width="60%"}
+Snow Today can be [hard to navigate]{.yellow} for new users unfamiliar with the website's layout <br> <br> Website visualizations are of current snow conditions, and have [limited customization options]{.yellow} <br> <br> Snow data is behind a request form, [obscuring what data is available]{.yellow}
+:::
+:::
+
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
 ## Snow Today: Visualizations {.smaller}
+
+::: columns
+::: {.column width="50%"}
+![](images/existing_vis1.png){width="564"}
+:::
+
+::: {.column width="50%"}
+![](images/existing_vis2.png){width="562"}
+:::
+:::
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -914,11 +959,51 @@ Improve the usability of snow data through web based visualizations and tutorial
 
 ## Snow Today: Data Accessibility {.smaller}
 
+::: columns
+::: {.column width="40%"}
+![](images/data_files.png){width="577"}
+:::
+
+::: {.column width="60%"}
+Data accessibility is not only limited by a [difficult to find]{.yellow} download page
+
+Snow datasets format may be [hard to access for new users]{.yellow}
+
+Snow metadata is stored in a non-standardized format making it [difficult for certain softwares to interpret]{.yellow} the data
+
+Users may have [trouble processing and analyzing snow data]{.yellow} without the help of others
+:::
+:::
+
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
 ## Objectives {.smaller}
+
+::: columns
+::: {.column width="40%"}
+![](images/snowy_tree.jpg)
+:::
+
+::: {.column width="60%"}
+Create an open source workflow for processing and visualizing snow data
+
+::: {.fragment fragment-index="1"}
+::: {.fragment .highlight-blue fragment-index="4"}
+1.  Provide recommendations for the Snow Today website
+:::
+:::
+
+::: {.fragment fragment-index="2"}
+2.  Create interactive visualizations
+:::
+
+::: {.fragment fragment-index="3"}
+3.  Improve data usability through tutorials in Python
+:::
+:::
+:::
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -928,11 +1013,23 @@ Improve the usability of snow data through web based visualizations and tutorial
 
 **website architecture**
 
+![](images/website_architechture1.png){width="100%"}
+
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
 :::
 
 ## Website Recommendations {.smaller}
+
+::: columns
+::: {.column width="50%"}
+![](images/wireframe1.png){width="1515"}
+:::
+
+::: {.column width="50%"}
+![](images/wireframe2.png)
+:::
+:::
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -942,7 +1039,7 @@ Improve the usability of snow data through web based visualizations and tutorial
 
 **Prototype Web Application**
 
-![](images/interactive_vis_prototype_web_app.gif){fig-align="right"}
+![](images/daily_snow.gif)
 
 ::: footer
 <https://shiny.snow.ucsb.edu/snow_today_shiny_app/>
@@ -998,7 +1095,7 @@ A Geospatial and Statistical Analysis
 ::: {.column width="75%"}
 In February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures
 
-**1.4 million customers without power**
+[1.4 million customers without power]{.fragment .text_block}
 :::
 :::
 

@@ -11,7 +11,7 @@
     "href": "mrivers_presentation.html#detour",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Detour",
-    "text": "Detour\n\n\n\nMaster of Environmental Data Science\nzz..besides going to the beach and paddle boarding with my dog, I…\nlearn geospatial analysis, statistics, and remote sensing with Python and R\n…and fell in love with the concept of reproducible open science\n\nzz..Last year my professional career took a detour\nzz..talk about why I made this decision\n\n\n\n\n\nhttps://marierivers.github.io/"
+    "text": "Detour\n\n\n\nMaster of Environmental Data Science\nzz..besides going to the beachand paddle boarding with my dog, I…\nlearn geospatial analysis, statistics, and remote sensing with Python and R\n…and fell in love with the concept of reproducible open science\n\nzz..Last year my professional career took a detour\nzz..talk about why I made this decision\n\n\n\n\n\nhttps://marierivers.github.io/"
   },
   {
     "objectID": "mrivers_presentation.html#overview",
@@ -116,56 +116,56 @@
     "href": "mrivers_presentation.html#albedo-importance",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Albedo Importance",
-    "text": "Albedo Importance\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Albedo Importance\n\n\n\nRegulates the Earth’s temperature by reflecting solar radiation  \nInfluences rate of snow melt  \nParticularly important in the Western US  \nAccurate estimates critical for climate models and predicting water storage\n\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#snow-today-1",
     "href": "mrivers_presentation.html#snow-today-1",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today",
-    "text": "Snow Today\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today\n\n\n\nScientific analysis website that provides data on snow conditions from satellite and surface measurements  \nUsed by scientists, water managers, and outdoor enthusiasts for snow observations  \nSpatial products offered include measures of snow cover extent and albedo\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#snow-today-usability",
     "href": "mrivers_presentation.html#snow-today-usability",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today: Usability",
-    "text": "Snow Today: Usability\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today: Usability\n\n\n\n\nSnow Today can be hard to navigate for new users unfamiliar with the website’s layout   Website visualizations are of current snow conditions, and have limited customization options   Snow data is behind a request form, obscuring what data is available\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#snow-today-visualizations",
     "href": "mrivers_presentation.html#snow-today-visualizations",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today: Visualizations",
-    "text": "Snow Today: Visualizations\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today: Visualizations\n\n\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#snow-today-data-accessibility",
     "href": "mrivers_presentation.html#snow-today-data-accessibility",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today: Data Accessibility",
-    "text": "Snow Today: Data Accessibility\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today: Data Accessibility\n\n\n\n\nData accessibility is not only limited by a difficult to find download page\nSnow datasets format may be hard to access for new users\nSnow metadata is stored in a non-standardized format making it difficult for certain softwares to interpret the data\nUsers may have trouble processing and analyzing snow data without the help of others\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#objectives",
     "href": "mrivers_presentation.html#objectives",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Objectives",
-    "text": "Objectives\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Objectives\n\n\n\n\nCreate an open source workflow for processing and visualizing snow data\n\n\n\nProvide recommendations for the Snow Today website\n\n\n\n\n\nCreate interactive visualizations\n\n\n\n\nImprove data usability through tutorials in Python\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#website-recommendations",
     "href": "mrivers_presentation.html#website-recommendations",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Website Recommendations",
-    "text": "Website Recommendations\nwebsite architecture\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Website Recommendations\nwebsite architecture\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#website-recommendations-1",
     "href": "mrivers_presentation.html#website-recommendations-1",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Website Recommendations",
-    "text": "Website Recommendations\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Website Recommendations\n\n\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#interactive-visualizations",
@@ -242,14 +242,14 @@
     "href": "mrivers_presentation.html#section-1",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "",
-    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "text": "Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resources.\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#section-2",
     "href": "mrivers_presentation.html#section-2",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "",
-    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "text": "Snow Science: UCSB CUES Field Station Site Visit\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#statistical-analysis-1",
@@ -305,7 +305,7 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f8faafcc610>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f8faafcc820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fbf6a463610>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fbf6a463820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
   },
   {
     "objectID": "index.html#aggregate-data",
@@ -327,5 +327,61 @@
     "title": "Wind Resource Temporal Variability",
     "section": "",
     "text": "About the data\n\n#%matplotlib inline\n# import h5pyd\n# import numpy as np\n# import pandas as pd\n# import matplotlib.pyplot as plt\n# import matplotlib.image as mpimg\n# from pyproj import Proj\n# import dateutil\n\n\n\nGet the data\n\n# f = h5pyd.File(\"/nrel/wtk-us.h5\", 'r', bucket=\"nrel-pds-hsds\")\n# list(f)\n\n\n#windspeed_100m_df = pd.read_csv(\"data/windspeed_100m_df.csv\")\n\n\n\nStatistical analysis\n\n\nConclusions / insights\n\n\nExpanded geographic scale\n\n\nCitations"
+  },
+  {
+    "objectID": "mrivers_presentation.html#knowing-the-spatial-extent-of-snow-cover-is-critical-for-water-management-and-winter-recreation.-climate-change-will-affect-the-variability-of-frozen-water-resourcs.",
+    "href": "mrivers_presentation.html#knowing-the-spatial-extent-of-snow-cover-is-critical-for-water-management-and-winter-recreation.-climate-change-will-affect-the-variability-of-frozen-water-resourcs.",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resourcs.",
+    "text": "Knowing the spatial extent of snow cover is critical for water management and winter recreation. Climate change will affect the variability of frozen water resourcs.\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-3",
+    "href": "mrivers_presentation.html#section-3",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "https://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-4",
+    "href": "mrivers_presentation.html#section-4",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-5",
+    "href": "mrivers_presentation.html#section-5",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-6",
+    "href": "mrivers_presentation.html#section-6",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-7",
+    "href": "mrivers_presentation.html#section-7",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#objectives-1",
+    "href": "mrivers_presentation.html#objectives-1",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Objectives",
+    "text": "Objectives\n\n\n\n\nCreate an open source workflow for processing and visualizing snow data\n1. Provide recommendations for the Snow Today website\n\nCreate interactive visualizations\nImprove data usability through tutorials in Python\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#website-recommendations-2",
+    "href": "mrivers_presentation.html#website-recommendations-2",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Website Recommendations",
+    "text": "Website Recommendations\n\n\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   }
 ]

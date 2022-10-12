@@ -287,6 +287,7 @@ fig.update_layout(
 )
 ```
 
+<br>
 Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demands peak. To begin looking at the diurnal variability for Mount Washington, the graph on the left shows average hourly wind speed for the year 2012. This graph also presents the interquartile range (IQR) and standard deviation of this data. The IQR illustrates the spread of the middle half of wind speed values. The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spred out the data.
 
 Based on the hourly wind speed visualization, wind speed at Mount Washington seems to be lowest in the middle of the day, but based on the standard deviation bars and interquartile range, there is a large spread to the data. Seasonal diurnal variability will be explored more further down the page.
@@ -396,6 +397,7 @@ fig.update_layout(
 :::
 :::
 
+<br>
 The next graph shows hourly average wind speed with lines for each month. The thick black line represents the annual mean for each hour.
 
 This graph illustrates both the magnitude of wind speed values related to other months as well and the seasonal variability of daily wind speed patterns. For the year 2012, the months of January, February, March, April, October and December had higher than average wind speeds while the months of May, June, July, August, September, and November had lower than average wind speed. For most months, wind speeds are lowest during the middle of the day.
@@ -465,6 +467,7 @@ fig.update_layout(
 )
 ```
 
+<br>
 This heatmap summarizes both the daily and monthly variability of wind speed at Mount Washington in 2012. Here we can clearly see that for this location, wind speeds are lowest in the summer and mid day and highest in the winter and early/late hours.
 
 ```{python}
