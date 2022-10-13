@@ -98,6 +98,13 @@
     "text": "So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you’re more interested in the conclustions than the analysis steps.\nFor the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s) footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) *footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands\nThe report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations …xxx\nfootnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.\nfootnote2: https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms"
   },
   {
+    "objectID": "mrivers_presentation.html#citations",
+    "href": "mrivers_presentation.html#citations",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Citations",
+    "text": "Citations\nDraxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. Overview and Meteorological Validation of the Wind Integration National Dataset Toolkit (Technical Report, NREL/TP-5000-61740). Golden, CO: National Renewable Energy Laboratory.\nDraxl, C., B.M. Hodge, A. Clifton, and J. McCaa. 2015. “The Wind Integration National Dataset (WIND) Toolkit.” Applied Energy 151: 355366.\nKing, J., A. Clifton, and B.M. Hodge. 2014. Validation of Power Output for the WIND Toolkit (Technical Report, NREL/TP-5D00-61714). Golden, CO: National Renewable Energy Laboratory.\nhttps://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48\nhttps://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines."
+  },
+  {
     "objectID": "mrivers_presentation.html#section-1",
     "href": "mrivers_presentation.html#section-1",
     "title": "NREL Geospatial Research Scientist Interview",
@@ -175,6 +182,13 @@
     "text": "Website Recommendations\n\n\n\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
+    "objectID": "mrivers_presentation.html#objectives-1",
+    "href": "mrivers_presentation.html#objectives-1",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Objectives",
+    "text": "Objectives\n\n\n\n\nCreate an open source workflow for processing and visualizing snow data\n\nProvide recommendations for the Snow Today website\n\n2. Create interactive visualizations\n\nImprove data usability through tutorials in Python\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
     "objectID": "mrivers_presentation.html#interactive-visualizations",
     "href": "mrivers_presentation.html#interactive-visualizations",
     "title": "NREL Geospatial Research Scientist Interview",
@@ -196,13 +210,6 @@
     "text": "Interactive Visualizations\nAnnual Comparisons\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
-    "objectID": "mrivers_presentation.html#test",
-    "href": "mrivers_presentation.html#test",
-    "title": "NREL Geospatial Research Scientist Interview",
-    "section": "Test",
-    "text": "Test"
-  },
-  {
     "objectID": "mrivers_presentation.html#interactive-visualizations-3",
     "href": "mrivers_presentation.html#interactive-visualizations-3",
     "title": "NREL Geospatial Research Scientist Interview",
@@ -210,32 +217,67 @@
     "text": "Interactive Visualizations\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nsnow_cover_df = pd.read_csv('data/snow_cover_df.csv')\nsnow_cover_df = snow_cover_df.fillna(0)\n\n# Create empty list to input with for loop\nIQR_25 = []\nIQR_75 = []\nIQR_50 = []\ndays = []\nfor i in range(len(snow_cover_df)): \n    #Takes the IQR of each day (25, 50, 75)\n    Q1 = np.percentile(snow_cover_df.iloc[i], 25)\n    Q2 = np.percentile(snow_cover_df.iloc[i], 50)\n    Q3 = np.percentile(snow_cover_df.iloc[i], 75)\n    #appends list with IQR outputs\n    IQR_25.append(Q1)\n    IQR_50.append(Q2)\n    IQR_75.append(Q3)\n    #Creates day list to append dataset with\n    days.append(i + 1)\n    \n# Next, need to create a single column of mean values. \nsnow_cover_df['Average Snow Cover'] = snow_cover_df.mean(axis = 1)\n\n#Appends list for loop lists\nsnow_cover_df['IQR_25'] = IQR_25\nsnow_cover_df['IQR_75'] = IQR_75\nsnow_cover_df['IQR_50'] = IQR_50\nsnow_cover_df['days'] = days\n\nmonth_day = [31, 30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30]\nnew_list = []\n\nj = 0 \nfor i in range(0,len(month_day)):\n    j+=month_day[i]\n    new_list.append(j)\n    \n# Create a list of years to graph. legend rank allows lets you order where the lines are located on the chart. \nfor i in range(len(snow_cover_df)):\n    print(\"\"\"go.Scatter(\"\"\"\n        \"\"\"name = '\"\"\" + str(i + 2001) + \"\"\"', \"\"\"\n        \"\"\"y = snow_cover_df['\"\"\"+ str(i + 2001) + \"\"\"'], x = snow_cover_df['days'], \"\"\"\n        \"\"\"mode = 'lines', legendrank = \"\"\" + str(19-i) + \"\"\"),\"\"\"\n    )\n#Plot the figure. \nfig = go.Figure([\n\n#create median line\ngo.Scatter(\n    #Name that appears on legend\n    name = 'Median',\n    # y-dim\n    y = snow_cover_df['IQR_50'],\n    # x-dim\n    x = snow_cover_df['days'],\n    # type of plot\n    mode = 'lines',\n    # Include to select/deselect multiple variables at once\n    legendgroup = 'IQR',\n    # Name of legend group on legend\n    legendgrouptitle_text=\"<b>Interquartile Range</b>\",\n    # Legend position\n    legendrank = 20,\n    # Line color\n    line=dict(color='rgb(31, 119, 180)'),\n),\n#Create IQR 75 line\ngo.Scatter(\n        name = 'IQR 75', y = snow_cover_df['IQR_75'], x = snow_cover_df['days'],\n        mode='lines', marker=dict(color=\"#444\"), line=dict(width=0),\n        legendgroup = 'IQR', showlegend = False\n        # Here we 'hide' the name from appearing on the legend since it's lumped in with the legendgroup 'IQR'\n    ),\n    #Create IQR 25 fill color\n    go.Scatter(\n        name='IQR 25', y = snow_cover_df['IQR_25'], x = snow_cover_df['days'],\n        marker=dict(color=\"#444\"), line=dict(width=0),  mode='lines',\n        fillcolor='rgba(68, 68, 68, 0.3)', fill='tonexty',\n        legendgroup = 'IQR', showlegend = False\n    ),\n    #Create mean line\n    go.Scatter(\n        name = 'Average Snow Cover',  y = snow_cover_df['Average Snow Cover'], x = snow_cover_df['days'],\n        mode = 'lines', legendgroup = 'Average',\n        legendgrouptitle_text = '<b>Average</b>', legendrank = 21\n    ),\n#Create lines for each respective year\ngo.Scatter(name = '2001', y = snow_cover_df['2001'], x = snow_cover_df['days'], mode = 'lines', legendrank = 19),\ngo.Scatter(name = '2002', y = snow_cover_df['2002'], x = snow_cover_df['days'], mode = 'lines', legendrank = 18),\ngo.Scatter(name = '2003', y = snow_cover_df['2003'], x = snow_cover_df['days'], mode = 'lines', legendrank = 17),\ngo.Scatter(name = '2004', y = snow_cover_df['2004'], x = snow_cover_df['days'], mode = 'lines', legendrank = 16),\ngo.Scatter(name = '2005', y = snow_cover_df['2005'], x = snow_cover_df['days'], mode = 'lines', legendrank = 15),\ngo.Scatter(name = '2006', y = snow_cover_df['2006'], x = snow_cover_df['days'], mode = 'lines', legendrank = 14),\ngo.Scatter(name = '2007', y = snow_cover_df['2007'], x = snow_cover_df['days'], mode = 'lines', legendrank = 13),\ngo.Scatter(name = '2008', y = snow_cover_df['2008'], x = snow_cover_df['days'], mode = 'lines', legendrank = 12),\ngo.Scatter(name = '2009', y = snow_cover_df['2009'], x = snow_cover_df['days'], mode = 'lines', legendrank = 11),\ngo.Scatter(name = '2010', y = snow_cover_df['2010'], x = snow_cover_df['days'], mode = 'lines', legendrank = 10),\ngo.Scatter(name = '2011', y = snow_cover_df['2011'], x = snow_cover_df['days'], mode = 'lines', legendrank = 9),\ngo.Scatter(name = '2012', y = snow_cover_df['2012'], x = snow_cover_df['days'], mode = 'lines', legendrank = 8),\ngo.Scatter(name = '2013', y = snow_cover_df['2013'], x = snow_cover_df['days'], mode = 'lines', legendrank = 7),\ngo.Scatter(name = '2014', y = snow_cover_df['2014'], x = snow_cover_df['days'], mode = 'lines', legendrank = 6),\ngo.Scatter(name = '2015', y = snow_cover_df['2015'], x = snow_cover_df['days'], mode = 'lines', legendrank = 5),\ngo.Scatter(name = '2016', y = snow_cover_df['2016'], x = snow_cover_df['days'], mode = 'lines', legendrank = 4),\ngo.Scatter(name = '2017', y = snow_cover_df['2017'], x = snow_cover_df['days'], mode = 'lines', legendrank = 3),\ngo.Scatter(name = '2018', y = snow_cover_df['2018'], x = snow_cover_df['days'], mode = 'lines', legendrank = 2),\ngo.Scatter(name = '2019', y = snow_cover_df['2019'], x = snow_cover_df['days'], mode = 'lines', legendrank = 1)\n\n])\n# Can change default \"off\" variables. Right now, the only variable visible is year_2019 and IQR\nvariables_to_hide = ['2001', '2002', '2003', '2004', '2005', '2006', '2007', \n'2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018',\n'Average Snow Cover']\nfig.for_each_trace(lambda trace: trace.update(visible=\"legendonly\") \n                   if trace.name in variables_to_hide else ())\nfig.update_layout(\n    title = \"<b> Annual Snow Cover Area: Sierra Nevada Region </b> <br> <sup>2001-2019</sup></br>\",\n    legend_title=\"<b>Year</b>\",\n    autosize=False,\n    width=1200,\n    height=700,\n    template = 'none',\n    font=dict(\n        size=16),\nxaxis = dict(\n        tickmode = 'array',\n        tickvals = [1, 31, 61, 92, 123, 151, 182, 212, 243, 273, 304, 335, 365],\n        ticktext = ['<b>October</b>', '<b>November</b>', '<b>December</b>', '<b>January</b>', '<b>February</b>', '<b>March</b>', '<b>April</b>', '<b>May</b>', \n        '<b>June</b>', '<b>July', '<b>August</b>', \"<b>September</b>\", \"<b>October</b>\"],\n        tickfont = dict(size=12))\n)\n\nfig.update_xaxes(title_text = \"\", gridcolor = 'lightgrey', gridwidth = 0.1)\nfig.update_yaxes(title_text = \"<b> Area (Thousands of Square Kilometers) </b>\", \n    title_font = {\"size\": 15}, gridcolor = 'lightgrey', gridwidth = 0.1)"
   },
   {
+    "objectID": "mrivers_presentation.html#objectives-2",
+    "href": "mrivers_presentation.html#objectives-2",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Objectives",
+    "text": "Objectives\n\n\n\n\nCreate an open source workflow for processing and visualizing snow data\n\nProvide recommendations for the Snow Today website\nCreate interactive visualizations\n\n3. Improve data usability through tutorials in Python\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
     "objectID": "mrivers_presentation.html#tutorials",
     "href": "mrivers_presentation.html#tutorials",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Tutorials",
-    "text": "Tutorials\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#tutorials-1",
     "href": "mrivers_presentation.html#tutorials-1",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Tutorials",
-    "text": "Tutorials\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nDownload snow cover and albedo datasets\nOpen datasets and view metadata\nCreate basic visualizations of each dataset\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
-    "objectID": "mrivers_presentation.html#as-water-resources-become-harder-to-manage-due-to-climate-change-implementing-these-tools-will-open-a-valuable-dataset-to-a-wider-audience",
-    "href": "mrivers_presentation.html#as-water-resources-become-harder-to-manage-due-to-climate-change-implementing-these-tools-will-open-a-valuable-dataset-to-a-wider-audience",
+    "objectID": "mrivers_presentation.html#tutorials-2",
+    "href": "mrivers_presentation.html#tutorials-2",
     "title": "NREL Geospatial Research Scientist Interview",
-    "section": "As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience",
-    "text": "As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience"
+    "section": "Tutorials",
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nProcess and subset datasets\nCalculate monthly and yearly snow cover and albedo averages and anomalies\nCreate interactive maps of processed data\nConvert processed data to GeoTiff and NetCDF formats\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#tutorials-3",
+    "href": "mrivers_presentation.html#tutorials-3",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Tutorials",
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nCalcualte total snow cover area and average albedo for entire spatial domain\nPerform basic statistical analysis of datasets\nDevelop interactive charts to compare snow cover area and albedo percentages for each water year\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#contributions",
+    "href": "mrivers_presentation.html#contributions",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Contributions",
+    "text": "Contributions"
+  },
+  {
+    "objectID": "mrivers_presentation.html#section-4",
+    "href": "mrivers_presentation.html#section-4",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "",
+    "text": "As water resources become harder to manage due to climate change, implementing these tools will open a valuable dataset to a wider audience\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+  },
+  {
+    "objectID": "mrivers_presentation.html#acknowledgements",
+    "href": "mrivers_presentation.html#acknowledgements",
+    "title": "NREL Geospatial Research Scientist Interview",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nFaculty Advisors\nSam Stevenson, UCSB Bren School\nAllison Horst, UCSB Bren School\nClients\nTimbo Stillinger, UCSB Earth Research Institute\nNed Bair, UCSB Earth Research Institute\nKarl Rittger, CU Boulder Institute of Arctic & Alpine Research\nExternal Advisors\nJames Frew, UCSB Bren School\nNiklas Griessbaum, UCSB Bren School\nKat Le, UCSB Bren School\nMichael Colee, UCSB Geography & Earth Research Institute\nBren School Faculty and Staff and the MEDS 2022 cohort\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#background",
     "href": "mrivers_presentation.html#background",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Background",
-    "text": "Background\n\n\nIn February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures\n1.4 million customers without power\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "text": "Background\n\n\nIn February 2021 the Houston, TX metropolitan area experienced wide scale power outages due to electrical infrastructure failure during winter storms and extreme cold temperatures\n\n\n\n\n       1.4 million customers without power\n\nhttps://marierivers.github.io/blackout_analysis/"
   },
   {
     "objectID": "mrivers_presentation.html#approach",
@@ -249,18 +291,18 @@
     "href": "mrivers_presentation.html#project-overview",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Project overview",
-    "text": "Project overview\n\n\n\nLoad satellite imagery\nCreate blackout mask\nIdentify residential buildings within blackout area\nspatially join census data to blackout areas\n\n\n\n\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
+    "text": "Project overview\n\n\n\n\nLoad satellite imagery\n\n\n\n\nCreate blackout mask\n\n\n\n\nIdentify residential buildings within blackout area\n\n\n\n\nspatially join census data to blackout areas\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  +144,000 households without power\n\nhttps://marierivers.github.io/blackout_analysis/\n\n\nhttps://marierivers.github.io/blackout_analysis/"
   },
   {
-    "objectID": "mrivers_presentation.html#section-4",
-    "href": "mrivers_presentation.html#section-4",
+    "objectID": "mrivers_presentation.html#section-5",
+    "href": "mrivers_presentation.html#section-5",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "",
     "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
   },
   {
-    "objectID": "mrivers_presentation.html#section-5",
-    "href": "mrivers_presentation.html#section-5",
+    "objectID": "mrivers_presentation.html#section-6",
+    "href": "mrivers_presentation.html#section-6",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "",
     "text": "Percent white\n\n\nPercent bipoc\n\n\n\n\nhttps://marierivers.github.io/blackout_analysis/"
@@ -319,7 +361,7 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f88c8043610>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f88c8043820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fd49955fac0>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fd49955f8b0>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
   },
   {
     "objectID": "index.html#aggregate-data",

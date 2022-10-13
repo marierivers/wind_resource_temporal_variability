@@ -10,6 +10,7 @@ $presentation-title-slide-text-align: left;
 
 $theme-darkblue: #01364C;
 $theme-blue: #447099;
+$theme-bright_blue: #2094ff;
 $theme-powder_blue: #99D9DD;
 $theme-white: #F7F8F9;
 $theme-yellow: #F4BA02;
@@ -23,6 +24,10 @@ h2 {
 .blue {
   color: $theme-blue;
   font-weight: bold;
+}
+
+.bright_blue {
+  color: $theme-bright_blue;
 }
 
 .powder_blue {
@@ -42,14 +47,106 @@ h2 {
   background-color: $theme-darkblue;
 }
 
-.highlight-blueblue {
-  color: $theme-blue;
-  font-weight: bold;
-}
-
 .text_block {
   background-color: #447099;
-  margin: 10px;
+  font-weight: bold;
+  font-size: 42px;
   border: 1px solid #447099;
-  border-radius: 50px;
+  border-radius: 5px;
+  padding-top: 40px;
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-bottom: 40px;
+}
+
+.text_block_small {
+  background-color: #447099;
+  color: $theme-white;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #447099;
+  border-radius: 5px;
+  padding-top: 20px;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 20px;
+}
+
+.text_block_blue {
+  background-color: #1965b0;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #1965b0;
+  border-radius: 5px;
+  text-align: left;
+  text-shadow: $theme-bright_blue;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
+}
+
+.text_block_blue_lt {
+  background-color: #82b8ed;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #82b8ed;
+  border-radius: 5px;
+  text-align: left;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
+}
+
+.text_block_green {
+  background-color: #4eb265;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #4eb265;
+  border-radius: 5px;
+  text-align: left;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
+}
+
+.text_block_green_lt {
+  background-color: #9cd3a9;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #9cd3a9;
+  border-radius: 5px;
+  text-align: left;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
+}
+
+.text_block_orange {
+  background-color: #e8601c;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #e8601c;
+  border-radius: 5px;
+  text-align: left;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
+}
+
+.text_block_orange_lt {
+  background-color: #f4b190;
+  font-weight: bold;
+  font-size: 24px;
+  border: 1px solid #f4b190;
+  border-radius: 5px;
+  text-align: left;
+  padding-top: 30px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 30px;
 }
