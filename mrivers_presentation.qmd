@@ -785,7 +785,6 @@ fig.update_layout(
     width=1050,
     height=550,
     xaxis=dict(
-        title_text="month",
         titlefont=dict(size=16),
         #dtick = 1,
         tickmode = 'array',
@@ -834,7 +833,6 @@ fig.update_layout(
     #width=1000,
     height=650,
     xaxis=dict(
-        title_text="month",
         titlefont=dict(size=16),
         #dtick = 1,
         tickmode = 'array',
@@ -1058,7 +1056,7 @@ Visualizations are of current snow conditions, and have [limited customization o
 
 Snow cover and albedo files are [hard to find]{.yellow}
 
-Data format may be [challengingfor new users]{.yellow}
+Data format may be [challenging for new users]{.yellow}
 
 Snow metadata is stored in a non-standardized format which is [difficult for some software to interpret]{.yellow} the data
 
@@ -1580,7 +1578,7 @@ fig.update_yaxes(title_text = "<b> Area (Thousands of Square Kilometers) </b>",
 :::
 
 ::: {.column width="55%"}
--   Calcualte total snow cover area and average albedo for entire spatial domain
+-   Calculate total snow cover area and average albedo for entire spatial domain
 -   Perform basic statistical analysis of datasets
 -   Develop interactive charts to compare snow cover area and albedo percentages for each water year
 :::

@@ -60,7 +60,7 @@
     "href": "mrivers_presentation.html#standard-deviation",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Standard Deviation",
-    "text": "Standard Deviation\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nstd_heatmap_month = hourly_std_by_month.columns.tolist()\nstd_heatmap_hour = hourly_std_by_month.index.tolist()\nstd_heatmap_windspeed = hourly_std_by_month.values.tolist()\n\ntrace = go.Heatmap(\n   x = std_heatmap_month,\n   y = std_heatmap_hour,\n   z = std_heatmap_windspeed,\n   type = 'heatmap',\n   colorscale = 'Blues',\n   colorbar=dict(title='Standard Deviation (m/s)')\n)\ndata = [trace]\nfig = go.Figure(data = data)\n\nfig.update_layout(\n    #width=1000,\n    height=650,\n    xaxis=dict(\n        title_text=\"month\",\n        titlefont=dict(size=16),\n        #dtick = 1,\n        tickmode = 'array',\n        # Set tick intervals to correspond with months\n        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],\n        ticktext = ['January', 'February', 'March', 'April', \n                    'May', 'June', 'July', 'August', \n                    'September', 'October', 'November', 'December'],\n        tickfont = dict(size=16)),\n    yaxis=dict(\n        title_text=\"hour (UTC)\",\n        titlefont=dict(size=16),\n        dtick = 1,\n        tickfont = dict(size=16)),\n    title={\n        'text': \"Wind Speed Standard Deviation by Month and Hour\",\n        'y':0.99,\n        'x':0.5,\n        'xanchor': 'center',\n        'yanchor': 'top'},\n    margin=dict(l=20, r=20, t=30, b=20),\n)"
+    "text": "Standard Deviation\n\ngraphcode\n\n\n\n\n                        \n                                            \n\n\n\n\n\nstd_heatmap_month = hourly_std_by_month.columns.tolist()\nstd_heatmap_hour = hourly_std_by_month.index.tolist()\nstd_heatmap_windspeed = hourly_std_by_month.values.tolist()\n\ntrace = go.Heatmap(\n   x = std_heatmap_month,\n   y = std_heatmap_hour,\n   z = std_heatmap_windspeed,\n   type = 'heatmap',\n   colorscale = 'Blues',\n   colorbar=dict(title='Standard Deviation (m/s)')\n)\ndata = [trace]\nfig = go.Figure(data = data)\n\nfig.update_layout(\n    #width=1000,\n    height=650,\n    xaxis=dict(\n        titlefont=dict(size=16),\n        #dtick = 1,\n        tickmode = 'array',\n        # Set tick intervals to correspond with months\n        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],\n        ticktext = ['January', 'February', 'March', 'April', \n                    'May', 'June', 'July', 'August', \n                    'September', 'October', 'November', 'December'],\n        tickfont = dict(size=16)),\n    yaxis=dict(\n        title_text=\"hour (UTC)\",\n        titlefont=dict(size=16),\n        dtick = 1,\n        tickfont = dict(size=16)),\n    title={\n        'text': \"Wind Speed Standard Deviation by Month and Hour\",\n        'y':0.99,\n        'x':0.5,\n        'xanchor': 'center',\n        'yanchor': 'top'},\n    margin=dict(l=20, r=20, t=30, b=20),\n)"
   },
   {
     "objectID": "mrivers_presentation.html#statistical-summary",
@@ -144,7 +144,7 @@
     "href": "mrivers_presentation.html#snow-today-usability",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today: Usability",
-    "text": "Snow Today: Usability\n\n\n\n\nSnow Today can be hard to navigate for new users unfamiliar with the website’s layout\nVisualizations are of current snow conditions, and have limited customization options\nSnow cover and albedo files are hard to find\nData format may be challengingfor new users\nSnow metadata is stored in a non-standardized format which is difficult for some software to interpret the data\nUsers may have trouble processing and analyzing snow data without the help\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today: Usability\n\n\n\n\nSnow Today can be hard to navigate for new users unfamiliar with the website’s layout\nVisualizations are of current snow conditions, and have limited customization options\nSnow cover and albedo files are hard to find\nData format may be challenging for new users\nSnow metadata is stored in a non-standardized format which is difficult for some software to interpret the data\nUsers may have trouble processing and analyzing snow data without the help\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#snow-today-visualizations",
@@ -242,7 +242,7 @@
     "href": "mrivers_presentation.html#tutorials-3",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Tutorials",
-    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nCalcualte total snow cover area and average albedo for entire spatial domain\nPerform basic statistical analysis of datasets\nDevelop interactive charts to compare snow cover area and albedo percentages for each water year\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nCalculate total snow cover area and average albedo for entire spatial domain\nPerform basic statistical analysis of datasets\nDevelop interactive charts to compare snow cover area and albedo percentages for each water year\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation.html#contributions",
@@ -347,7 +347,7 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7a89905640>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7a89905850>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7c5044ea30>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7c5044e820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
   },
   {
     "objectID": "index.html#aggregate-data",
@@ -501,7 +501,7 @@
     "href": "mrivers_presentation2.html#snow-today-usability",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Snow Today: Usability",
-    "text": "Snow Today: Usability\n\n\n\n\nSnow Today can be hard to navigate for new users unfamiliar with the website’s layout\nVisualizations are of current snow conditions, and have limited customization options\nSnow cover and albedo files are hard to find\nData format may be challengingfor new users\nSnow metadata is stored in a non-standardized format which is difficult for some software to interpret the data\nUsers may have trouble processing and analyzing snow data without the help\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Snow Today: Usability\n\n\n\n\nSnow Today can be hard to navigate for new users unfamiliar with the website’s layout\nVisualizations are of current snow conditions, and have limited customization options\nSnow cover and albedo files are hard to find\nData format may be challenging for new users\nSnow metadata is stored in a non-standardized format which is difficult for some software to interpret the data\nUsers may have trouble processing and analyzing snow data without the help\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation2.html#snow-today-visualizations",
@@ -599,7 +599,7 @@
     "href": "mrivers_presentation2.html#tutorials-3",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Tutorials",
-    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nCalcualte total snow cover area and average albedo for entire spatial domain\nPerform basic statistical analysis of datasets\nDevelop interactive charts to compare snow cover area and albedo percentages for each water year\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
+    "text": "Tutorials\n\n\n 1. Download and Explore Datasets     2. Process and Format Data     3. Analyze and Visualize Snow Data\n\n\nCalculate total snow cover area and average albedo for entire spatial domain\nPerform basic statistical analysis of datasets\nDevelop interactive charts to compare snow cover area and albedo percentages for each water year\n\n\n\n\nhttps://shiny.snow.ucsb.edu/snow_today_shiny_app/"
   },
   {
     "objectID": "mrivers_presentation2.html#contributions",
