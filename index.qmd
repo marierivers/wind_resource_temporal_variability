@@ -655,7 +655,16 @@ report_parameters = data.frame(site_name = c("University of Delaware", "Umass Am
 ```
 
 ```{r}
-#| eval: true
+#| include: false
+#| column: page-right
+source(here("R", "render_fun.R"))
+
+param_list <- split(report_parameters, seq(nrow(report_parameters))) %>% 
+  purrr::walk(render_fun)
+```
+
+```{r}
+#| eval: false
 #| column: page-right
 source(here("R", "render_fun.R"))
 
