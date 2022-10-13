@@ -655,7 +655,7 @@ report_parameters = data.frame(site_name = c("University of Delaware", "Umass Am
 ```
 
 ```{r}
-#| eval: false
+#| eval: true
 #| column: page-right
 source(here("R", "render_fun.R"))
 

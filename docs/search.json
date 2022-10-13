@@ -361,7 +361,7 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fd49955fac0>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fd49955f8b0>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fe531046a60>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fe531046850>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
   },
   {
     "objectID": "index.html#aggregate-data",
