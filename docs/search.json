@@ -4,14 +4,14 @@
     "href": "mrivers_presentation.html#environmental-engineering-consultant",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Environmental Engineering Consultant",
-    "text": "Environmental Engineering Consultant\n\nModeled drinking water distribution systems\nIdentified diurnal patterns in water use\nForetasted water demands and compared to future supply projections\nUsed diurnal and seasonal patters for extended period simulation models\nApplied spatial analysis to infrastructure siting projects\n\n\nhttps://marierivers.github.io/"
+    "text": "Environmental Engineering Consultant\n\nModeled drinking water distribution systems\nIdentified diurnal patterns in water use\nForecasted water demands and compared to future supply projections\nUsed diurnal and seasonal patters for extended period simulation models\nApplied spatial analysis to infrastructure siting projects\n\n\nhttps://marierivers.github.io/"
   },
   {
     "objectID": "mrivers_presentation.html#environmental-data-science",
     "href": "mrivers_presentation.html#environmental-data-science",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Environmental Data Science",
-    "text": "Environmental Data Science\n\n\nObtained a Master of Environmental Data Science degree from UC Santa Barbara June 2022\nBesides going to the beach and paddle boarding with my dog, I expanded my technical skills with\n\ngeospatial analysis\nstatistics\nremote sensing\nscientific programming with Python and R\ndata visualization\nmodeling environmental systems\n\n…and fell in love with the concept of reproducible open science\n\n\n\n\n\nhttps://marierivers.github.io/"
+    "text": "Environmental Data Science\n\n\nObtained a Master of Environmental Data Science degree from UC Santa Barbara June 2022\nBesides going to the beach and paddle boarding with my dog, I expanded my technical skills with\n\ngeospatial analysis\nstatistics\nremote sensing\nscientific programming with Python and R\nmodeling environmental systems\ndata visualization\n\n…and fell in love with the concept of reproducible open science\n\n\n\n\n\nhttps://marierivers.github.io/"
   },
   {
     "objectID": "mrivers_presentation.html#data-workflow",
@@ -347,7 +347,7 @@
     "href": "index.html#map",
     "title": "Wind Resource Temporal Variability",
     "section": "Map",
-    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fefb844fa30>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7fefb844f820>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
+    "text": "Map\nThis map shows the location of Mount Washington and the nearest point from the WIND Toolkit.\n\n\ncreate map showing location of site and nearest point\nnearest_site_coords = f[\"coordinates\"][nearest_site[0]][nearest_site[1]]\n\nsite_map = folium.Map(location = site_coords, zoom_start = 10)\nfolium.Marker(site_coords, popup = site_name).add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7a89905640>\n\n\ncreate map showing location of site and nearest point\nfolium.Marker(nearest_site_coords, popup = 'Nearest Site').add_to(site_map)\n\n\n<folium.map.Marker object at 0x7f7a89905850>\n\n\ncreate map showing location of site and nearest point\nsite_map\n\n\nMake this Notebook Trusted to load map: File -> Trust Notebook"
   },
   {
     "objectID": "index.html#aggregate-data",
@@ -361,14 +361,14 @@
     "href": "mrivers_presentation2.html#environmental-engineering-consultant",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Environmental Engineering Consultant",
-    "text": "Environmental Engineering Consultant\n\nModeled drinking water distribution systems\nIdentified diurnal patterns in water use\nForetasted water demands and compared to future supply projections\nUsed diurnal and seasonal patters for extended period simulation models\nApplied spatial analysis to infrastructure siting projects\n\n\nhttps://marierivers.github.io/"
+    "text": "Environmental Engineering Consultant\n\nModeled drinking water distribution systems\nIdentified diurnal patterns in water use\nForecasted water demands and compared to future supply projections\nUsed diurnal and seasonal patters for extended period simulation models\nApplied spatial analysis to infrastructure siting projects\n\n\nhttps://marierivers.github.io/"
   },
   {
     "objectID": "mrivers_presentation2.html#environmental-data-science",
     "href": "mrivers_presentation2.html#environmental-data-science",
     "title": "NREL Geospatial Research Scientist Interview",
     "section": "Environmental Data Science",
-    "text": "Environmental Data Science\n\n\nObtained a Master of Environmental Data Science degree from UC Santa Barbara June 2022\nBesides going to the beach and paddle boarding with my dog, I expanded my technical skills with\n\ngeospatial analysis\nstatistics\nremote sensing\nscientific programming with Python and R\ndata visualization\nmodeling environmental systems\n\n…and fell in love with the concept of reproducible open science\n\n\n\n\n\nhttps://marierivers.github.io/"
+    "text": "Environmental Data Science\n\n\nObtained a Master of Environmental Data Science degree from UC Santa Barbara June 2022\nBesides going to the beach and paddle boarding with my dog, I expanded my technical skills with\n\ngeospatial analysis\nstatistics\nremote sensing\nscientific programming with Python and R\nmodeling environmental systems\ndata visualization\n\n…and fell in love with the concept of reproducible open science\n\n\n\n\n\nhttps://marierivers.github.io/"
   },
   {
     "objectID": "mrivers_presentation2.html#data-workflow",

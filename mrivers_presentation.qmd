@@ -154,7 +154,7 @@ moving_averages_30day = windows_30day.mean()
 
 -   Modeled drinking water distribution systems
 -   Identified diurnal patterns in water use
--   Foretasted water demands and compared to future supply projections
+-   Forecasted water demands and compared to future supply projections
 -   Used diurnal and seasonal patters for extended period simulation models
 -   Applied spatial analysis to infrastructure siting projects
 
@@ -174,8 +174,8 @@ Besides going to the beach and paddle boarding with my dog, I expanded my techni
 -   statistics
 -   remote sensing
 -   scientific programming with Python and R
--   data visualization
 -   modeling environmental systems
+-   data visualization
 
 ...and fell in love with the concept of reproducible open science
 :::
