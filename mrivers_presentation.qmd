@@ -18,6 +18,7 @@ editor: visual
 #| include: false
 library(tidyverse)
 library(leaflet)
+library(kableExtra)
 ```
 
 ```{python}
@@ -143,34 +144,40 @@ windows_30day = windspeed_100m_df.rolling(window_size_30day)
 moving_averages_30day = windows_30day.mean()
 ```
 
-# Intro {.smaller}
+# Overview {.smaller}
 
-xxx...outline of what I'll be talking about today - Professional backgroud - wind variability technical task - Improving usability of snow data through open-source tools - Power outage geospatial analysis
+[Professional background]{.text_block_overview} <br> <br> <br> [Wind variability technical task]{.text_block_overview .fragment} <br> <br> <br> [Improving usability of snow data through open-source tools]{.text_block_overview .fragment} <br> <br> <br> [Geospatial analysis of power outages]{.text_block_overview .fragment}
 
 # Professional Background {background-color="#447099"}
 
-## environmental engineering consultant {.smaller}
+## Environmental Engineering Consultant {.smaller}
 
-modeled drinking water distribution systems - used customer billing data to identify diunal patterns in water consumption - used diurnal patters in extended period simulation models unlike wind patterns, water use is influenced by human activities (dif patterns based on season, weekday/weekend, zoning (residential vs commercial vs industrial)) - predictive modeling
-
-used geospatial analyses to identify and evaluate locations from new infrastructure based on land use data and community demographics
+-   Modeled drinking water distribution systems
+-   Identified diurnal patterns in water use
+-   Foretasted water demands and compared to future supply projections
+-   Used diurnal and seasonal patters for extended period simulation models
+-   Applied spatial analysis to infrastructure siting projects
 
 ::: footer
 <https://marierivers.github.io/>
 :::
 
-## Detour {.smaller}
+## Environmental Data Science {.smaller}
 
 ::: columns
 ::: {.column width="70%"}
--   Master of Environmental Data Science
--   zz..besides [going to the beach]{.yellow}and paddle boarding with my dog, I...
--   learn [geospatial analysis]{.blue}, statistics, and remote sensing with Python and R
--   ...and fell in love with the concept of reproducible open science
+Obtained a Master of Environmental Data Science degree from UC Santa Barbara June 2022
 
-zz..Last year my professional career took a detour
+Besides going to the beach and paddle boarding with my dog, I expanded my technical skills with
 
-zz..talk about why I made this decision
+-   geospatial analysis
+-   statistics
+-   remote sensing
+-   scientific programming with Python and R
+-   data visualization
+-   modeling environmental systems
+
+...and fell in love with the concept of reproducible open science
 :::
 
 ::: {.column width="30%"}
@@ -184,16 +191,16 @@ zz..talk about why I made this decision
 
 # Wind Resource Temporal Variability {background-color="#447099"}
 
-## Overview {.smaller}
+## Data Workflow {.smaller}
 
 ::: columns
 ::: {.column width="60%"}
--   Explore the diurnal and monthly variability of wind resources at Mount Washington in NH
+-   Explored diurnal and monthly variability of wind resources at Mount Washington in NH
 -   Used the [NREL Wind Integration National Dataset (WIND) Toolkit](https://www.nrel.gov/grid/wind-toolkit.html)
 -   Accessed data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](https://github.com/NREL/hsds-examples)
--   subset the for the `windspeed_100,` dataset and year 2012
--   converted to pandas dataframe
--   aggregated data by hourly and monthly groupings to calculate mean, standard deviation, and quartiles
+-   Subset the for the `windspeed_100m,` dataset and year 2012
+-   Converted to pandas dataframe
+-   Aggregated data by hourly and monthly groupings to calculate mean, standard deviation, and quartiles
 :::
 
 ::: {.column width="40%"}
@@ -220,19 +227,20 @@ leaflet(leaflet_df_pres) %>%
 fig = go.Figure([
     go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
               mode = 'lines', legendrank = 1, 
-              name = 'hourly', line=dict(color='blue', width=0.75)),
+              name = 'hourly', line=dict(color='#447099', width=0.75)),
     go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], 
               mode = 'lines', legendrank = 1,
-              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),
+              name = '24 hour avg', line=dict(color='#4eb265', width=1), visible='legendonly'),
     go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], 
               mode = 'lines', legendrank = 1, 
               name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),
     go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], 
               mode = 'lines', legendrank = 1, 
-              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')
+              name = '30 day avg', line=dict(color='#e8601c', width=3), visible='legendonly')
 ])
 
 fig.update_layout(
+    width=1050,
     margin=dict(l=20, r=20, t=30, b=20),
     paper_bgcolor="#FFFFFF",
     plot_bgcolor='#f5f5f5',
@@ -287,10 +295,11 @@ fig.update_layout(
 
 ## Diurnal and Monthly Variability {.smaller}
 
--   both wind speed and electricity demands fluctuate throughout the day
--   both wind speed and electricity demands fluctuate seasonally (by month)
--   when selecting sites for utility scale wind power it is important to have adequate wind speeds at the same time as peak electricity demands
--   the Interquartile range and standard deviation can help quantify the spread of data
+-   Both wind speed and electricity demands fluctuate throughout the day and seasonally
+-   Wind and electricity patterns may not match
+-   Unlike water utilities, electricity providers can't adjust resource availability or store energy during low demands
+-   When selecting sites for utility scale wind power it is important to have adequate wind speeds at the same time as peak electricity demands
+-   Statistics such as the interquartile range and standard deviation can help quantify the spread of data
 
 ## Diurnal and Monthly Variability {.smaller}
 
@@ -504,6 +513,7 @@ fig.update_layout(
 ### graph
 
 ```{python}
+#| include: false
 fig = go.Figure([
     go.Scatter(y = hourly_avg_by_month['1'], x = hourly_avg_by_month.index, 
               mode = 'lines', legendrank = 1, 
@@ -542,9 +552,17 @@ fig = go.Figure([
               mode = 'lines+markers', legendrank = 12, 
               name = 'December', line=dict(color='#d1bbd7', width=2)),
     go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
-              line = dict(color = "black", width = 4))
+              line = dict(color = "black", width = 5))
 
 ])
+
+variables_to_hide = ['February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December']
+fig.for_each_trace(lambda trace: trace.update(visible="legendonly") 
+                   if trace.name in variables_to_hide else ())
+```
+
+```{python}
 fig.update_layout(
     width=1050,
     height=500,
@@ -610,9 +628,15 @@ fig = go.Figure([
               mode = 'lines+markers', legendrank = 12, 
               name = 'December', line=dict(color='#d1bbd7', width=2)),
     go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
-              line = dict(color = "black", width = 4))
+              line = dict(color = "black", width = 5))
 
 ])
+
+variables_to_hide = ['February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December']
+fig.for_each_trace(lambda trace: trace.update(visible="legendonly") 
+                   if trace.name in variables_to_hide else ())
+                   
 fig.update_layout(
     xaxis=dict(
         title_text="hour (UTC)",
@@ -660,7 +684,7 @@ fig.update_layout(
     width=1050,
     height=550,
     xaxis=dict(
-        title_text="month",
+        #title_text="month",
         titlefont=dict(size=16),
         #dtick = 1,
         tickmode = 'array',
@@ -736,41 +760,134 @@ fig.update_layout(
 ```
 :::
 
-## Statistical Analysis {.smaller}
+## Standard Deviation {.smaller}
+
+::: panel-tabset
+### graph
+
+```{python}
+std_heatmap_month = hourly_std_by_month.columns.tolist()
+std_heatmap_hour = hourly_std_by_month.index.tolist()
+std_heatmap_windspeed = hourly_std_by_month.values.tolist()
+
+trace = go.Heatmap(
+   x = std_heatmap_month,
+   y = std_heatmap_hour,
+   z = std_heatmap_windspeed,
+   type = 'heatmap',
+   colorscale = 'Blues',
+   colorbar=dict(title='Standard Deviation (m/s)')
+)
+data = [trace]
+fig = go.Figure(data = data)
+
+fig.update_layout(
+    width=1050,
+    height=550,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        #dtick = 1,
+        tickmode = 'array',
+        # Set tick intervals to correspond with months
+        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ticktext = ['January', 'February', 'March', 'April', 
+                    'May', 'June', 'July', 'August', 
+                    'September', 'October', 'November', 'December'],
+        tickfont = dict(size=16)),
+    yaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 1,
+        tickfont = dict(size=16)),
+    title={
+        'text': "Wind Speed Standard Deviation by Month and Hour",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+)
+```
+
+### code
+
+```{python}
+#| echo: true
+#| eval: false
+std_heatmap_month = hourly_std_by_month.columns.tolist()
+std_heatmap_hour = hourly_std_by_month.index.tolist()
+std_heatmap_windspeed = hourly_std_by_month.values.tolist()
+
+trace = go.Heatmap(
+   x = std_heatmap_month,
+   y = std_heatmap_hour,
+   z = std_heatmap_windspeed,
+   type = 'heatmap',
+   colorscale = 'Blues',
+   colorbar=dict(title='Standard Deviation (m/s)')
+)
+data = [trace]
+fig = go.Figure(data = data)
+
+fig.update_layout(
+    #width=1000,
+    height=650,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        #dtick = 1,
+        tickmode = 'array',
+        # Set tick intervals to correspond with months
+        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ticktext = ['January', 'February', 'March', 'April', 
+                    'May', 'June', 'July', 'August', 
+                    'September', 'October', 'November', 'December'],
+        tickfont = dict(size=16)),
+    yaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 1,
+        tickfont = dict(size=16)),
+    title={
+        'text': "Wind Speed Standard Deviation by Month and Hour",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+)
+```
+:::
+
+## Statistical Summary {.smaller}
 
 |                 | min wind speed (m/s) | max wind speed (m/s) |
 |-----------------|:--------------------:|:--------------------:|
-| Hourly          |         0.12         |        36.66         |
-| Hourly average  |        10.71         |        12.50         |
-| monthly average |         8.78         |        15.81         |
+| hourly          |         0.1          |         36.7         |
+| hourly average  |         10.7         |         12.5         |
+| monthly average |         8.8          |         15.8         |
 |                 |                      |                      |
 
-: Range of wind speed values in 2012
-
-|              | smallest variability | greatest variability | smallest average wind speed | greatest average wind speed |
-|---------------|:-------------:|:-------------:|:-------------:|:-------------:|
-| monthly      |         July         |       November       |           August            |          February           |
-| hourly       |          19          |          13          |             16              |              1              |
-| month & hour |    March, hour 16    |   October, hour 13   |       August, hour 15       |      February, hour 1       |
-|              |                      |                      |                             |                             |
-
-: Summary of stats for monthly and hourly wind speed
++-------------+----------------------+----------------------+-----------------------------+-----------------------------+
+|             | smallest variability | greatest variability | smallest average wind speed | greatest average wind speed |
++=============+:====================:+:====================:+:===========================:+:===========================:+
+| monthly     | July                 | November             | August                      | February                    |
++-------------+----------------------+----------------------+-----------------------------+-----------------------------+
+| hourly      | 19                   | 13                   | 16                          | 1                           |
++-------------+----------------------+----------------------+-----------------------------+-----------------------------+
+|             |                      |                      |                             |                             |
++-------------+----------------------+----------------------+-----------------------------+-----------------------------+
 
 ## Conclusions {.smaller}
 
 -   greatest monthly variability in **November**
--   smallest monthy variability in **July**
+-   smallest monthly variability in **July**
 -   highest wind speeds in **February**
 -   lowest wind speeds in **August**
 -   slower wind speeds mid-day than at night
 -   based on the seasonal variability, this site would be better at meeting high winter demands than summer demands
 -   this site may not be ideal for meeting all daytime demands.
-
-so what does this tell us about the monthly variability? so what does this tell us about the daily variability?
-
-circle back to water diurnal patterns ()
-
-now that we have a good sense of what the data looks like for this location, let's take a closer look at some statistics and quantity the variability
 
 ## Expanded Geographic Scale {.smaller}
 
@@ -830,33 +947,21 @@ param_list <- split(report_parameters, seq(nrow(report_parameters))) %>%
 
 For the specified site, the report answers the following questions:
 
-::: columns
-::: {.column width="70%"}
 -   is the annual average wind speed at least 13 mph (5.8 m/s)? [^1]
 -   how often the wind is below the cut-in speed of 8 mph (3.6 m/s)? [^2]
 -   how often the wind exceed the cut-out speed of 55 mph (24.6 m/s)?
-:::
 
-::: {.column width="30%"}
-![![]()](images/sample_report.png)
-:::
-:::
+[University of Delaware](University of Delaware-report.pdf)
+
+[UMass Amherst](Umass Amherst-report.pdf)
+
+[UC Santa Barbara](UC Santa Barbara-report.pdf)
+
+[NREL - Golden, CO](Golden, CO-report.pdf)
 
 [^1]: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
 
 [^2]: The Office of Energy Efficiency & Renewable Energy notes a typical cut-in speed of 6 to 9 mpg and cut-out speed of 55 mph. <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
-
-## 
-
-So far in this presentation, I have highlighted the code used in the analysis, but when evaluating sites for utility scale wind generation, you're more interested in the conclustions than the analysis steps.
-
-For the given site, this report quickly communicates: - if the annual average wind speed is at least 13 mph (5.8 m/s) *footnote 1 - how often the wind is below the cut-in speed - 8 mph (3.6 m/s)* footnote 2 - how often the wind exceed the cut-out speed - 55 mph (24.6 m/s) \*footnote 2 - does the diurnal pattern match daily electricity demands - does the monthly pattern match seasonal electricity demands
-
-The report could be expand to evaluate a longer time frame (based on user input start/end dates) or compare multiple sites side-by-side. Note: This report only evaluates wind speed data. This report does not evaluate other variables the are important to siting wind power plants such as topography, proximity to populated areas, distance to transmission lines, bird and bat populations ...xxx
-
-footnote1: The U.S. Energy Information Administration recommends an annual average wind speed of at least 9 mph (4 m/s) for small wind turbines and 13 mph (5.8 m/s) for utility-scale turbines. <https://www.eia.gov/energyexplained/wind/where-wind-power-is-harnessed.php#:~:text=Good%20places%20for%20wind%20turbines,)%20for%20utility%2Dscale%20turbines.>
-
-footnote2: <https://www.energy.gov/eere/articles/how-do-wind-turbines-survive-severe-storms>
 
 ## Citations {.smaller}
 
@@ -1634,13 +1739,21 @@ In February 2021 the Houston, TX metropolitan area experienced wide scale power 
 ::: {.column width="50%"}
 **Percent white**
 
-![](images/pct_white_map.png){width="425"}
+::: r-stack
+![](images/pct_white_map.png){.fragment width="425" fragment-index="1"}
+
+![](images/pct_white_blackout_map.png){.fragment fragment-index="2" width="425"}
+:::
 :::
 
 ::: {.column width="50%"}
 **Percent bipoc**
 
-![](images/pct_bipoc_map.png){width="425"}
+::: r-stack
+![](images/pct_bipoc_map.png){.fragment fragment-index="1" width="425"}
+
+![](images/pct_bipoc_blackout_map.png){.fragment fragment-index="2" width="425"}
+:::
 :::
 :::
 
@@ -1648,57 +1761,154 @@ In February 2021 the Houston, TX metropolitan area experienced wide scale power 
 <https://marierivers.github.io/blackout_analysis/>
 :::
 
-## 
+## Statistical Analysis {.smaller}
+
+Linear regression models of percent of households without power vs. census variables
+
++-----------------+----------------------------------+
+| [Race]{.blue}   | percent white                    |
+|                 |                                  |
+|                 | percent black                    |
+|                 |                                  |
+|                 | percent Native American          |
+|                 |                                  |
+|                 | percent Asian                    |
+|                 |                                  |
+|                 | percent Hispanic / Latino        |
++-----------------+----------------------------------+
+| [Age]{.blue}    | 65 and older                     |
+|                 |                                  |
+|                 | children under 18                |
++-----------------+----------------------------------+
+| [Income]{.blue} | percent households below poverty |
+|                 |                                  |
+|                 | median income                    |
++-----------------+----------------------------------+
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Statistical Analysis {.smaller}
+
+```{r}
+#| include: false
+blackout_census_data <- read_csv("data/census_tract_blackout_data_df.csv")
+```
+
+::: panel-tabset
+### graph
+
+```{r}
+# linear regression model
+model_pct_white <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_white)
+
+#plot
+plot_model_pct_white <- ggplot(data = blackout_census_data, aes(x = pct_white, y = pct_houses_that_lost_power)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm, formula = y~x, se = FALSE) +
+  theme_classic() +
+  labs(x = "% white", y = "% of houses that lost power",
+       title = "Linear regression of % households without power vs. % population white")
+plot_model_pct_white
+```
+
+### code
+
+```{r}
+#| echo: true
+#| eval: false
+# linear regression model
+model_pct_white <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_white)
+
+#plot
+plot_model_pct_white <- ggplot(data = blackout_census_data, aes(x = pct_white, y = pct_houses_that_lost_power)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm, formula = y~x, se = FALSE) +
+  theme_classic() +
+  labs(x = "% white", y = "% of houses that lost power",
+       title = "Linear regression of % households without power vs. % population white")
+plot_model_pct_white
+```
+:::
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Statistical Analysis {.smaller}
+
+::: panel-tabset
+### graph
+
+```{r}
+# linear regression model
+model_pct_black <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_black)
+
+# plot
+plot_model_pct_black <- ggplot(data = blackout_census_data, aes(x = pct_black, y = pct_houses_that_lost_power)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm, formula = y~x, se = FALSE) +
+  theme_classic() +
+  labs(x = "% black", y = "% of houses that lost power",
+       title = "Linear regression of % households without power vs. % population black")
+plot_model_pct_black
+```
+
+### code
+
+```{r}
+#| echo: true
+#| eval: false
+# linear regression model
+model_pct_black <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_black)
+
+# plot
+plot_model_pct_black <- ggplot(data = blackout_census_data, aes(x = pct_black, y = pct_houses_that_lost_power)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm, formula = y~x, se = FALSE) +
+  theme_classic() +
+  labs(x = "% black", y = "% of houses that lost power",
+       title = "Linear regression of % households without power vs. % population black")
+plot_model_pct_black
+```
+:::
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Results {.smaller}
+
+::: r-stack
+![](images/blackout_results1.png){.fragment}
+
+![](images/blackout_results2.png){.fragment}
+
+![](images/blackout_results3.png){.fragment}
+:::
+
+::: footer
+<https://marierivers.github.io/blackout_analysis/>
+:::
+
+## Conclusions {.smaller}
 
 ::: columns
-::: {.column width="50%"}
-**Percent white**
-
-![](images/pct_white_blackout_map.png){width="425"}
-:::
-
-::: {.column width="50%"}
-**Percent bipoc**
-
-![](images/pct_bipoc_blackout_map.png){width="424"}
-:::
-:::
-
-::: footer
-<https://marierivers.github.io/blackout_analysis/>
-:::
-
-## Statistical Analysis
-
-::: footer
-<https://marierivers.github.io/blackout_analysis/>
-:::
-
-## Statistical Analysis
-
-::: footer
-<https://marierivers.github.io/blackout_analysis/>
-:::
-
-## Statistical Analysis
-
-::: footer
-<https://marierivers.github.io/blackout_analysis/>
-:::
-
-## Results
-
-::: footer
-<https://marierivers.github.io/blackout_analysis/>
-:::
-
-## Conclusions
-
+::: {.column width="55%"}
 -   While race, age and income accounted for small portions of the overall variance in residential power outages, this analysis suggests some racial and economic inequality.
 
 -   Electric utilities should evaluate infrastructure and asset management plans in areas with higher proportions of people of color and poverty
 
 -   There is a need for more equitable responses to natural disasters
+:::
+
+::: {.column width="40%"}
+![](images/Houston_bmhd_2021038_lrg_Feb_7_2021.jpg) image source[^3]
+:::
+:::
+
+[^3]: https://appliedsciences.nasa.gov/our-impact/news/extreme-winter-weather-causes-us-blackouts
 
 ::: footer
 <https://marierivers.github.io/blackout_analysis/>
@@ -1734,5 +1944,3 @@ Left column
 Right column
 :::
 :::
-
-

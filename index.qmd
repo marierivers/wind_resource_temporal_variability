@@ -214,12 +214,13 @@ hourly_avg_by_month.head()
 ```{python}
 #| column: page-inset-right
 #| code-fold: true
-#| code-summary: "create dataframe of average wind speed for each hour by month"
+#| code-summary: "create dataframe of wind speed standard deviationfor each hour by month"
 hourly_std_by_month = windspeed_100m_df.groupby(["hour", "month"]).std()
 hourly_std_by_month = hourly_std_by_month.reset_index().pivot(index = "hour", columns = str("month"), values = "windspeed_100m")
-hourly_std_by_month.columns = hourly_avg_by_month.columns.astype(str)
+hourly_std_by_month.columns = hourly_std_by_month.columns.astype(str)
 hourly_std_by_month.head()
 ```
+
 :::
 
 ```{python}
@@ -511,6 +512,56 @@ fig.update_layout(
         tickfont = dict(size=16)),
     title={
         'text': "Average Wind Speed by Month and Hour",
+        'y':0.99,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+    margin=dict(l=20, r=20, t=30, b=20),
+)
+```
+
+This next heatmap summarizes the size of the standard deviation varies by hour and month. Wind speed values tend to have a greater spread in the winter than the summer. The hourly pattern for standard deviation is less clear.
+
+```{python}
+#| column: page-right
+#| code-fold: true
+#| code-summary: "code for heatmap of hourly and monthly wind speed standard deviation"
+std_heatmap_month = hourly_std_by_month.columns.tolist()
+std_heatmap_hour = hourly_std_by_month.index.tolist()
+std_heatmap_windspeed = hourly_std_by_month.values.tolist()
+
+trace = go.Heatmap(
+   x = std_heatmap_month,
+   y = std_heatmap_hour,
+   z = std_heatmap_windspeed,
+   type = 'heatmap',
+   colorscale = 'Blues',
+   colorbar=dict(title='Standard Deviation (m/s)')
+)
+data = [trace]
+fig = go.Figure(data = data)
+
+fig.update_layout(
+    #width=1000,
+    height=650,
+    xaxis=dict(
+        title_text="month",
+        titlefont=dict(size=16),
+        #dtick = 1,
+        tickmode = 'array',
+        # Set tick intervals to correspond with months
+        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ticktext = ['January', 'February', 'March', 'April', 
+                    'May', 'June', 'July', 'August', 
+                    'September', 'October', 'November', 'December'],
+        tickfont = dict(size=16)),
+    yaxis=dict(
+        title_text="hour (UTC)",
+        titlefont=dict(size=16),
+        dtick = 1,
+        tickfont = dict(size=16)),
+    title={
+        'text': "Wind Speed Standard Deviation by Month and Hour",
         'y':0.99,
         'x':0.5,
         'xanchor': 'center',
