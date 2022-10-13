@@ -220,9 +220,6 @@ leaflet(leaflet_df_pres) %>%
 
 ## Visualization of full time series
 
-::: panel-tabset
-### graph
-
 ```{python}
 fig = go.Figure([
     go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
@@ -256,43 +253,6 @@ fig.update_layout(
 )
 ```
 
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-fig = go.Figure([
-    go.Scatter(x = windspeed_100m_df.index, y = windspeed_100m_df['windspeed_100m'], 
-              mode = 'lines', legendrank = 1, 
-              name = 'hourly', line=dict(color='blue', width=0.75)),
-    go.Scatter(x = moving_averages_24hr.index, y = moving_averages_24hr['windspeed_100m'], 
-              mode = 'lines', legendrank = 1,
-              name = '24 hour avg', line=dict(color='green', width=1), visible='legendonly'),
-    go.Scatter(x = moving_averages_10day.index, y = moving_averages_10day['windspeed_100m'], 
-              mode = 'lines', legendrank = 1, 
-              name = '10 day avg', line=dict(color='red', width=1), visible='legendonly'),
-    go.Scatter(x = moving_averages_30day.index, y = moving_averages_30day['windspeed_100m'], 
-              mode = 'lines', legendrank = 1, 
-              name = '30 day avg', line=dict(color='yellow', width=3), visible='legendonly')
-])
-
-fig.update_layout(
-    margin=dict(l=20, r=20, t=30, b=20),
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor='#f5f5f5',
-    yaxis=dict(
-        title_text="windspeed (m/s)",
-        titlefont=dict(size=16)),
-    title={
-        'text': "Hourly Wind Speed",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'}
-)
-```
-:::
-
 ## Diurnal and Monthly Variability {.smaller}
 
 -   Both wind speed and electricity demands fluctuate throughout the day and seasonally
@@ -303,13 +263,9 @@ fig.update_layout(
 
 ## Diurnal and Monthly Variability {.smaller}
 
-::: column-screen-right
 ::: columns
 ::: {.column width="50%"}
 **Hourly average**
-
-::: panel-tabset
-### graph
 
 ```{python}
 fig = go.Figure([
@@ -358,62 +314,10 @@ fig.update_layout(
 )
 ```
 
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-fig = go.Figure([
-    go.Scatter(name = 'mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
-              line = dict(color = "blue", width = 4),
-              error_y = dict(type = 'data', array = hourly_avg['std'], visible = True)),
-    go.Scatter(
-        name = 'IQR 75', y = hourly_avg['quantile75'], x = hourly_avg['hour'],
-        mode='lines',
-        marker=dict(color="#444"),
-        line=dict(width=0),
-        #legendgroup = 'IQR',
-        showlegend = False
-    ),
-    # Create IQR 25 fill color
-    go.Scatter(
-        name='IQR', y = hourly_avg['quantile25'], x = hourly_avg['hour'],
-        marker=dict(color="#444"),
-        line=dict(width=0),
-        mode='lines',
-        fillcolor='rgba(68, 68, 68, 0.3)',
-        fill='tonexty', # fill to next y
-        legendgroup = 'IQR',
-        showlegend = True
-    )
-])
-fig.update_layout(
-    xaxis=dict(
-        title_text="hour (UTC)",
-        titlefont=dict(size=16),
-        dtick = 2),
-    yaxis=dict(
-        title_text="windspeed (m/s)",
-        titlefont=dict(size=16)),
-    title={
-        'text': "Average Hourly Wind Speed for the Year 2012",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    margin=dict(l=20, r=20, t=30, b=20),
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor='#f5f5f5'
-)
-```
-:::
 :::
 
 ::: {.column width="50%"}
 **Monthly average**
-
-::: panel-tabset
-### graph
 
 ```{python}
 #| code-fold: true
@@ -459,58 +363,10 @@ fig.update_layout(
 )
 ```
 
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-fig = go.Figure([
-    go.Scatter(name = 'mean', y = monthly_avg['mean'], x = monthly_avg['month'], 
-              mode = 'lines', line = dict(color = "blue", width = 4),
-              error_y = dict(type = 'data', array = monthly_avg['std'], visible = True)),
-    go.Scatter(
-        name = 'IQR 75', y = monthly_avg['quantile75'], x = monthly_avg['month'],
-        mode='lines', marker=dict(color="#444"), line=dict(width=0),
-        showlegend = False
-    ),
-
-    # Create IQR 25 fill color
-    go.Scatter(
-        name='IQR', y = monthly_avg['quantile25'], x = monthly_avg['month'],
-        marker=dict(color="#444"), line=dict(width=0), mode='lines',
-        fillcolor='rgba(68, 68, 68, 0.3)',
-        fill='tonexty', # fill to next y
-        legendgroup = 'IQR',
-        showlegend = True)
-])
-fig.update_layout(
-    xaxis=dict(
-        title_text="month",
-        titlefont=dict(size=16),
-        dtick = 1),
-    yaxis=dict(
-        title_text="windspeed (m/s)",
-        titlefont=dict(size=16)),
-    title={
-        'text': "Average Monthly Wind Speed for the Year 2012",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    margin=dict(l=20, r=20, t=30, b=20),
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor='#f5f5f5'
-)
-```
-:::
-:::
 :::
 :::
 
 ## Diurnal and Monthly Variability {.smaller}
-
-::: panel-tabset
-### graph
 
 ```{python}
 #| include: false
@@ -585,83 +441,7 @@ fig.update_layout(
 )
 ```
 
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-fig = go.Figure([
-    go.Scatter(y = hourly_avg_by_month['1'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 1, 
-              name = 'January', line=dict(color='#DC050C', width=2)),
-    go.Scatter(y = hourly_avg_by_month['2'], x = hourly_avg_by_month.index,
-              mode = 'lines+markers', legendrank = 2, 
-              name = 'February', line=dict(color='#E8601c', width=2)),
-    go.Scatter(y = hourly_avg_by_month['3'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 3, 
-              name = 'March', line=dict(color='#f4a736', width=2)),
-    go.Scatter(y = hourly_avg_by_month['4'], x = hourly_avg_by_month.index, 
-              mode = 'lines+markers', legendrank = 4, 
-              name = 'April', line=dict(color='#f7f056', width=2)),
-    go.Scatter(y = hourly_avg_by_month['5'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 5, 
-              name = 'May', line=dict(color='#cae0ab', width=2)),
-    go.Scatter(y = hourly_avg_by_month['6'], x = hourly_avg_by_month.index, 
-              mode = 'lines+markers', legendrank = 6, 
-              name = 'June', line=dict(color='#4eb265', width=2)),
-    go.Scatter(y = hourly_avg_by_month['7'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 7, 
-              name = 'July', line=dict(color='#7bafde', width=2)),
-    go.Scatter(y = hourly_avg_by_month['8'], x = hourly_avg_by_month.index, 
-              mode = 'lines+markers', legendrank = 8, 
-              name = 'August', line=dict(color='#5289c7', width=2)),
-    go.Scatter(y = hourly_avg_by_month['9'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 9, 
-              name = 'September', line=dict(color='#1965b0', width=2)),
-    go.Scatter(y = hourly_avg_by_month['10'], x = hourly_avg_by_month.index, 
-              mode = 'lines+markers', legendrank = 10, 
-              name = 'October', line=dict(color='#882e72', width=2)),
-    go.Scatter(y = hourly_avg_by_month['11'], x = hourly_avg_by_month.index, 
-              mode = 'lines', legendrank = 11, 
-              name = 'November', line=dict(color='#ae76a3', width=2)),
-    go.Scatter(y = hourly_avg_by_month['12'], x = hourly_avg_by_month.index, 
-              mode = 'lines+markers', legendrank = 12, 
-              name = 'December', line=dict(color='#d1bbd7', width=2)),
-    go.Scatter(name = 'annual mean', y = hourly_avg['mean'], x = hourly_avg['hour'], mode = 'lines',
-              line = dict(color = "black", width = 5))
-
-])
-
-variables_to_hide = ['February', 'March', 'April', 'May', 'June', 'July',
-                    'August', 'September', 'October', 'November', 'December']
-fig.for_each_trace(lambda trace: trace.update(visible="legendonly") 
-                   if trace.name in variables_to_hide else ())
-                   
-fig.update_layout(
-    xaxis=dict(
-        title_text="hour (UTC)",
-        titlefont=dict(size=16),
-        dtick = 4),
-    yaxis=dict(
-        title_text="windspeed (m/s)",
-        titlefont=dict(size=16)),
-    title={
-        'text': "Average Hourly Wind Speed by Month",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    margin=dict(l=20, r=20, t=30, b=20),
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor='#f5f5f5'
-)
-```
-:::
-
 ## Diurnal and Monthly Variability {.smaller}
-
-::: panel-tabset
-### graph
 
 ```{python}
 heatmap_month = hourly_avg_by_month.columns.tolist()
@@ -709,61 +489,7 @@ fig.update_layout(
 )
 ```
 
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-heatmap_month = hourly_avg_by_month.columns.tolist()
-heatmap_hour = hourly_avg_by_month.index.tolist()
-heatmap_windspeed = hourly_avg_by_month.values.tolist()
-
-trace = go.Heatmap(
-   x = heatmap_month,
-   y = heatmap_hour,
-   z = heatmap_windspeed,
-   type = 'heatmap',
-   #colorscale = [(0,"blue"), (1,"red")],
-   colorscale = 'mint',
-   colorbar=dict(title='Wind Speed (m/s)')
-)
-data = [trace]
-fig = go.Figure(data = data)
-
-fig.update_layout(
-    #width=1000,
-    height=650,
-    xaxis=dict(
-        title_text="month",
-        titlefont=dict(size=16),
-        #dtick = 1,
-        tickmode = 'array',
-        # Set tick intervals to correspond with months
-        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        ticktext = ['January', 'February', 'March', 'April', 
-                    'May', 'June', 'July', 'August', 
-                    'September', 'October', 'November', 'December'],
-        tickfont = dict(size=16)),
-    yaxis=dict(
-        title_text="hour (UTC)",
-        titlefont=dict(size=16),
-        dtick = 1,
-        tickfont = dict(size=16)),
-    title={
-        'text': "Average Wind Speed by Month and Hour",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    margin=dict(l=20, r=20, t=30, b=20),
-)
-```
-:::
-
 ## Standard Deviation {.smaller}
-
-::: panel-tabset
-### graph
 
 ```{python}
 std_heatmap_month = hourly_std_by_month.columns.tolist()
@@ -809,56 +535,6 @@ fig.update_layout(
     margin=dict(l=20, r=20, t=30, b=20),
 )
 ```
-
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-std_heatmap_month = hourly_std_by_month.columns.tolist()
-std_heatmap_hour = hourly_std_by_month.index.tolist()
-std_heatmap_windspeed = hourly_std_by_month.values.tolist()
-
-trace = go.Heatmap(
-   x = std_heatmap_month,
-   y = std_heatmap_hour,
-   z = std_heatmap_windspeed,
-   type = 'heatmap',
-   colorscale = 'Blues',
-   colorbar=dict(title='Standard Deviation (m/s)')
-)
-data = [trace]
-fig = go.Figure(data = data)
-
-fig.update_layout(
-    #width=1000,
-    height=650,
-    xaxis=dict(
-        title_text="month",
-        titlefont=dict(size=16),
-        #dtick = 1,
-        tickmode = 'array',
-        # Set tick intervals to correspond with months
-        tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        ticktext = ['January', 'February', 'March', 'April', 
-                    'May', 'June', 'July', 'August', 
-                    'September', 'October', 'November', 'December'],
-        tickfont = dict(size=16)),
-    yaxis=dict(
-        title_text="hour (UTC)",
-        titlefont=dict(size=16),
-        dtick = 1,
-        tickfont = dict(size=16)),
-    title={
-        'text': "Wind Speed Standard Deviation by Month and Hour",
-        'y':0.99,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    margin=dict(l=20, r=20, t=30, b=20),
-)
-```
-:::
 
 ## Statistical Summary {.smaller}
 
@@ -1052,9 +728,9 @@ Improving usability of snow data through web based visualizations and tutorials
 :::
 
 ::: {.column width="60%"}
-Snow Today can be [hard to navigate]{.yellow} for new users unfamiliar with the website's layout 
+Snow Today can be [hard to navigate]{.yellow} for new users unfamiliar with the website's layout
 
-Visualizations are of current snow conditions, and have [limited customization options]{.yellow} 
+Visualizations are of current snow conditions, and have [limited customization options]{.yellow}
 
 Snow cover and albedo files are [hard to find]{.yellow}
 
@@ -1063,7 +739,6 @@ Data format may be [challengingfor new users]{.yellow}
 Snow metadata is stored in a non-standardized format which is [difficult for some software to interpret]{.yellow} the data
 
 Users may have [trouble processing and analyzing snow data]{.yellow} without the help
-
 :::
 :::
 
@@ -1213,9 +888,6 @@ Users may have [trouble processing and analyzing snow data]{.yellow} without the
 
 ## Interactive Visualizations {.smaller}
 
-::: panel-tabset
-### graph
-
 ```{python}
 #| include: false
 snow_cover_df = pd.read_csv('data/snow_cover_df.csv')
@@ -1354,148 +1026,6 @@ fig.update_xaxes(title_text = "", gridcolor = 'lightgrey', gridwidth = 0.1)
 fig.update_yaxes(title_text = "<b> Area (Thousands of Square Kilometers) </b>", 
     title_font = {"size": 15}, gridcolor = 'lightgrey', gridwidth = 0.1)
 ```
-
-### code
-
-```{python}
-#| echo: true
-#| eval: false
-snow_cover_df = pd.read_csv('data/snow_cover_df.csv')
-snow_cover_df = snow_cover_df.fillna(0)
-
-# Create empty list to input with for loop
-IQR_25 = []
-IQR_75 = []
-IQR_50 = []
-days = []
-for i in range(len(snow_cover_df)): 
-    #Takes the IQR of each day (25, 50, 75)
-    Q1 = np.percentile(snow_cover_df.iloc[i], 25)
-    Q2 = np.percentile(snow_cover_df.iloc[i], 50)
-    Q3 = np.percentile(snow_cover_df.iloc[i], 75)
-    #appends list with IQR outputs
-    IQR_25.append(Q1)
-    IQR_50.append(Q2)
-    IQR_75.append(Q3)
-    #Creates day list to append dataset with
-    days.append(i + 1)
-    
-# Next, need to create a single column of mean values. 
-snow_cover_df['Average Snow Cover'] = snow_cover_df.mean(axis = 1)
-
-#Appends list for loop lists
-snow_cover_df['IQR_25'] = IQR_25
-snow_cover_df['IQR_75'] = IQR_75
-snow_cover_df['IQR_50'] = IQR_50
-snow_cover_df['days'] = days
-
-month_day = [31, 30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30]
-new_list = []
-
-j = 0 
-for i in range(0,len(month_day)):
-    j+=month_day[i]
-    new_list.append(j)
-    
-# Create a list of years to graph. legend rank allows lets you order where the lines are located on the chart. 
-for i in range(len(snow_cover_df)):
-    print("""go.Scatter("""
-        """name = '""" + str(i + 2001) + """', """
-        """y = snow_cover_df['"""+ str(i + 2001) + """'], x = snow_cover_df['days'], """
-        """mode = 'lines', legendrank = """ + str(19-i) + """),"""
-    )
-#Plot the figure. 
-fig = go.Figure([
-
-#create median line
-go.Scatter(
-    #Name that appears on legend
-    name = 'Median',
-    # y-dim
-    y = snow_cover_df['IQR_50'],
-    # x-dim
-    x = snow_cover_df['days'],
-    # type of plot
-    mode = 'lines',
-    # Include to select/deselect multiple variables at once
-    legendgroup = 'IQR',
-    # Name of legend group on legend
-    legendgrouptitle_text="<b>Interquartile Range</b>",
-    # Legend position
-    legendrank = 20,
-    # Line color
-    line=dict(color='rgb(31, 119, 180)'),
-),
-#Create IQR 75 line
-go.Scatter(
-        name = 'IQR 75', y = snow_cover_df['IQR_75'], x = snow_cover_df['days'],
-        mode='lines', marker=dict(color="#444"), line=dict(width=0),
-        legendgroup = 'IQR', showlegend = False
-        # Here we 'hide' the name from appearing on the legend since it's lumped in with the legendgroup 'IQR'
-    ),
-    #Create IQR 25 fill color
-    go.Scatter(
-        name='IQR 25', y = snow_cover_df['IQR_25'], x = snow_cover_df['days'],
-        marker=dict(color="#444"), line=dict(width=0),  mode='lines',
-        fillcolor='rgba(68, 68, 68, 0.3)', fill='tonexty',
-        legendgroup = 'IQR', showlegend = False
-    ),
-    #Create mean line
-    go.Scatter(
-        name = 'Average Snow Cover',  y = snow_cover_df['Average Snow Cover'], x = snow_cover_df['days'],
-        mode = 'lines', legendgroup = 'Average',
-        legendgrouptitle_text = '<b>Average</b>', legendrank = 21
-    ),
-#Create lines for each respective year
-go.Scatter(name = '2001', y = snow_cover_df['2001'], x = snow_cover_df['days'], mode = 'lines', legendrank = 19),
-go.Scatter(name = '2002', y = snow_cover_df['2002'], x = snow_cover_df['days'], mode = 'lines', legendrank = 18),
-go.Scatter(name = '2003', y = snow_cover_df['2003'], x = snow_cover_df['days'], mode = 'lines', legendrank = 17),
-go.Scatter(name = '2004', y = snow_cover_df['2004'], x = snow_cover_df['days'], mode = 'lines', legendrank = 16),
-go.Scatter(name = '2005', y = snow_cover_df['2005'], x = snow_cover_df['days'], mode = 'lines', legendrank = 15),
-go.Scatter(name = '2006', y = snow_cover_df['2006'], x = snow_cover_df['days'], mode = 'lines', legendrank = 14),
-go.Scatter(name = '2007', y = snow_cover_df['2007'], x = snow_cover_df['days'], mode = 'lines', legendrank = 13),
-go.Scatter(name = '2008', y = snow_cover_df['2008'], x = snow_cover_df['days'], mode = 'lines', legendrank = 12),
-go.Scatter(name = '2009', y = snow_cover_df['2009'], x = snow_cover_df['days'], mode = 'lines', legendrank = 11),
-go.Scatter(name = '2010', y = snow_cover_df['2010'], x = snow_cover_df['days'], mode = 'lines', legendrank = 10),
-go.Scatter(name = '2011', y = snow_cover_df['2011'], x = snow_cover_df['days'], mode = 'lines', legendrank = 9),
-go.Scatter(name = '2012', y = snow_cover_df['2012'], x = snow_cover_df['days'], mode = 'lines', legendrank = 8),
-go.Scatter(name = '2013', y = snow_cover_df['2013'], x = snow_cover_df['days'], mode = 'lines', legendrank = 7),
-go.Scatter(name = '2014', y = snow_cover_df['2014'], x = snow_cover_df['days'], mode = 'lines', legendrank = 6),
-go.Scatter(name = '2015', y = snow_cover_df['2015'], x = snow_cover_df['days'], mode = 'lines', legendrank = 5),
-go.Scatter(name = '2016', y = snow_cover_df['2016'], x = snow_cover_df['days'], mode = 'lines', legendrank = 4),
-go.Scatter(name = '2017', y = snow_cover_df['2017'], x = snow_cover_df['days'], mode = 'lines', legendrank = 3),
-go.Scatter(name = '2018', y = snow_cover_df['2018'], x = snow_cover_df['days'], mode = 'lines', legendrank = 2),
-go.Scatter(name = '2019', y = snow_cover_df['2019'], x = snow_cover_df['days'], mode = 'lines', legendrank = 1)
-
-])
-# Can change default "off" variables. Right now, the only variable visible is year_2019 and IQR
-variables_to_hide = ['2001', '2002', '2003', '2004', '2005', '2006', '2007', 
-'2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018',
-'Average Snow Cover']
-fig.for_each_trace(lambda trace: trace.update(visible="legendonly") 
-                   if trace.name in variables_to_hide else ())
-fig.update_layout(
-    title = "<b> Annual Snow Cover Area: Sierra Nevada Region </b> <br> <sup>2001-2019</sup></br>",
-    legend_title="<b>Year</b>",
-    autosize=False,
-    width=1200,
-    height=700,
-    template = 'none',
-    font=dict(
-        size=16),
-xaxis = dict(
-        tickmode = 'array',
-        tickvals = [1, 31, 61, 92, 123, 151, 182, 212, 243, 273, 304, 335, 365],
-        ticktext = ['<b>October</b>', '<b>November</b>', '<b>December</b>', '<b>January</b>', '<b>February</b>', '<b>March</b>', '<b>April</b>', '<b>May</b>', 
-        '<b>June</b>', '<b>July', '<b>August</b>', "<b>September</b>", "<b>October</b>"],
-        tickfont = dict(size=12))
-)
-
-fig.update_xaxes(title_text = "", gridcolor = 'lightgrey', gridwidth = 0.1)
-fig.update_yaxes(title_text = "<b> Area (Thousands of Square Kilometers) </b>", 
-    title_font = {"size": 15}, gridcolor = 'lightgrey', gridwidth = 0.1)
-```
-:::
 
 ## Objectives {.smaller}
 
@@ -1787,9 +1317,6 @@ Linear regression models of percent of households without power vs. census varia
 blackout_census_data <- read_csv("data/census_tract_blackout_data_df.csv")
 ```
 
-::: panel-tabset
-### graph
-
 ```{r}
 # linear regression model
 model_pct_white <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_white)
@@ -1803,25 +1330,6 @@ plot_model_pct_white <- ggplot(data = blackout_census_data, aes(x = pct_white, y
        title = "Linear regression of % households without power vs. % population white")
 plot_model_pct_white
 ```
-
-### code
-
-```{r}
-#| echo: true
-#| eval: false
-# linear regression model
-model_pct_white <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_white)
-
-#plot
-plot_model_pct_white <- ggplot(data = blackout_census_data, aes(x = pct_white, y = pct_houses_that_lost_power)) +
-  geom_point(size = 0.5) +
-  geom_smooth(method = lm, formula = y~x, se = FALSE) +
-  theme_classic() +
-  labs(x = "% white", y = "% of houses that lost power",
-       title = "Linear regression of % households without power vs. % population white")
-plot_model_pct_white
-```
-:::
 
 ::: footer
 <https://marierivers.github.io/blackout_analysis/>
@@ -1829,9 +1337,6 @@ plot_model_pct_white
 
 ## Statistical Analysis {.smaller}
 
-::: panel-tabset
-### graph
-
 ```{r}
 # linear regression model
 model_pct_black <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_black)
@@ -1845,25 +1350,6 @@ plot_model_pct_black <- ggplot(data = blackout_census_data, aes(x = pct_black, y
        title = "Linear regression of % households without power vs. % population black")
 plot_model_pct_black
 ```
-
-### code
-
-```{r}
-#| echo: true
-#| eval: false
-# linear regression model
-model_pct_black <- lm(data = blackout_census_data, pct_houses_that_lost_power ~ pct_black)
-
-# plot
-plot_model_pct_black <- ggplot(data = blackout_census_data, aes(x = pct_black, y = pct_houses_that_lost_power)) +
-  geom_point(size = 0.5) +
-  geom_smooth(method = lm, formula = y~x, se = FALSE) +
-  theme_classic() +
-  labs(x = "% black", y = "% of houses that lost power",
-       title = "Linear regression of % households without power vs. % population black")
-plot_model_pct_black
-```
-:::
 
 ::: footer
 <https://marierivers.github.io/blackout_analysis/>
@@ -1904,4 +1390,3 @@ plot_model_pct_black
 ::: footer
 <https://marierivers.github.io/blackout_analysis/>
 :::
-

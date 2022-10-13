@@ -132,7 +132,7 @@ print("Coordinates of nearest point: \t {}".format(f["coordinates"][nearest_site
 
 # Introduction
 
-This report provides an overview of wind resources for `r params$site_name` from `r params$start_date` to `r params$end_date`. This analysis is based on the wind speed at 100 meters dataset within the National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit.
+This report provides an overview of wind resources for `r params$site_name` from `r params$start_date` to `r params$end_date`. This analysis is based on the dataset of wind speed at 100 meters within the National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit.
 
 ```{python}
 #| include: false

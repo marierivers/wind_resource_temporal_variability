@@ -15,7 +15,7 @@ code-block-bg: true
 code-block-border-left: "#31BAE9"
 ---
 
-This tool uses statistical analyses and visualizations to explore the diurnal and monthly variability of wind resources at Mount Washington in New Hampshire using data from the [National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit](https://www.nrel.gov/grid/wind-toolkit.html). Datasets within this tool include meteorological conditions such as temperature, pressure, relative humidity, wind direction, and wind speed. Hourly data is available for the continental United States from 2007 to 2013. This analysis used the wind speed at 100 meters dataset for the year 2012.
+This tool uses statistical analyses and visualizations to explore the diurnal and monthly variability of wind resources at Mount Washington in New Hampshire using data from the [National Renewable Energy Laboratory (NREL) Wind Integration National Dataset (WIND) Toolkit](https://www.nrel.gov/grid/wind-toolkit.html). Datasets within this tool include meteorological conditions such as temperature, pressure, relative humidity, wind direction, and wind speed. Hourly data is available for the continental United States from 2007 to 2013. This analysis used the dataset of wind speed at 100 meters for the year 2012.
 
 ::: {.callout-note}
 ## Note
@@ -24,7 +24,7 @@ Click the drop down to the right of the title to view all code written for this 
 
 # Access data
 
-The code below was used to access the data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](https://github.com/NREL/hsds-examples). The data are stored in the file `wtk_us.h5` with is in HDF5 format. Data are stored in three dimensions `dataset[t, y, x]` where x is the longitudinal index, y is the latitudinal index, and t is the temporal index. Timestamps are in the UTC timezone.
+The code below was used to access the data with the [h5pyd](https://github.com/HDFGroup/h5pyd) Python package and NREL [Highly Scalable Data Service (HSDS)](https://github.com/NREL/hsds-examples). The data are stored in the file `wtk_us.h5` which is in HDF5 format. Data are stored in three dimensions `dataset[t, y, x]` where x is the longitudinal index, y is the latitudinal index, and t is the temporal index. Timestamps are in the UTC time zone.
 
 ```{r}
 #| include: false
@@ -77,7 +77,7 @@ datetime_range = datetime_df.loc[(datetime_df.datetime >= start_date) & (datetim
 
 ## Determine nearest timeseries for given Lat/Lon
 
-The file structure organizes the data into 2 kilometer x 2 kilometer grids. The code below takes the latitude/longitude coordinates of an individual site (in this case Mount Washinton) and finds the indices and coordinates of the nearest site within the dataset. Latitude and longitude coordinates are in a modified Lambert Conic projection.
+The file structure organizes the data into 2 kilometer x 2 kilometer grids. The code below takes the latitude/longitude coordinates of an individual site (in this case Mount Washington) and finds the indices and coordinates of the nearest site within the dataset. Latitude and longitude coordinates are in a modified Lambert Conic projection.
 
 ```{python}
 #| column: page-right
@@ -149,7 +149,7 @@ tseries = windspeed_100m_dset[min(datetime_range):max(datetime_range)+1, nearest
 ```{python}
 #| column: page-right
 #| code-fold: true
-#| code-summary: "convert numpy array to pandas dataframe"
+#| code-summary: "convert NumPy array to pandas dataframe"
 windspeed_100m_df = pd.DataFrame(tseries, columns = ["windspeed_100m"], index = datetime_df.iloc[datetime_range,].datetime)
 
 windspeed_100m_df["year"] = windspeed_100m_df.index.year
@@ -172,7 +172,7 @@ The pandas dataframe was then aggregated to group the data by month and hour and
 ```{python}
 #| column: page-right
 #| code-fold: true
-#| code-summary: "functions to calculate quantiles"
+#| code-summary: "functions to calculate quartiles"
 def quantile25(column):
     return column.quantile(0.25)
 
@@ -250,7 +250,7 @@ moving_averages_30day = windows_30day.mean()
 
 # Statistical analysis
 
-Before beginning the statistical analysis, here is a graph of the full time series to get a general idea of the shape and magnitude of the data for this location. Wind speed seems to fluctuate a lot. Toggle the legend lines on/off to see 24 hour, 10 day, and 30 day rolling averages. From the 30 day average, wind speed seems to be higher in the winter than the summer. Let's explore the monthly and daily wind speed data further to quanitify the variability.
+Before beginning the statistical analysis, here is a graph of the full time series to get a general idea of the shape and magnitude of the data for this location. Wind speed seems to fluctuate a lot. Toggle the legend lines on/off to see 24 hour, 10 day, and 30 day rolling averages. From the 30 day average, wind speed seems to be higher in the winter than the summer. Let's explore the monthly and daily wind speed data further to quantify the variability.
 
 ```{python}
 #| column: page-right
@@ -289,11 +289,11 @@ fig.update_layout(
 ```
 
 <br>
-Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demands peak. To begin looking at the diurnal variability for Mount Washington, the graph on the left shows average hourly wind speed for the year 2012. This graph also presents the interquartile range (IQR) and standard deviation of this data. The IQR illustrates the spread of the middle half of wind speed values. The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spred out the data.
+Diurnal variability is important when selecting potential sites for utility scale wind power because it is important to have adequate wind speeds when electricity demand peaks. To begin looking at the diurnal variability for Mount Washington, the graph on the left shows average hourly wind speed for the year 2012. This graph also presents the interquartile range (IQR) and standard deviation of this data. The IQR illustrates the spread of the middle half of wind speed values. The standard deviation quantifies the spread of the data around the mean. The lower the standard deviation, the more the data is clustered around the mean. The greater the standard deviation, the more spread out the data.
 
-Based on the hourly wind speed visualization, wind speed at Mount Washington seems to be lowest in the middle of the day, but based on the standard deviation bars and interquartile range, there is a large spread to the data. Seasonal diurnal variability will be explored more further down the page.
+Based on the hourly wind speed visualization, wind speed at Mount Washington seems to be lowest in the middle of the day, but based on the standard deviation bars and interquartile range, there is a large spread to the data. Seasonal diurnal variability will be explored further down the page.
 
-The graph on the right shows a similar visual for average monthly wind speed. Here we see that wind speeds then to be lower in the summer than the winter. Low mid-day wind speeds during the summer result in decreased power generation from wind sources. This could be problematic when electricity demands from air conditioning units are high.
+The graph on the right shows a similar visual for average monthly wind speed. Here we see that wind speeds tend to be lower in the summer than the winter. Low mid-day wind speeds during the summer result in decreased power generation from wind sources. This could be problematic when electricity demands from air conditioning units are high.
 
 ::: column-screen-right
 ::: columns
@@ -354,7 +354,7 @@ fig.update_layout(
 
 ```{python}
 #| code-fold: true
-#| code-summary: "hourly averages with IQR and std"
+#| code-summary: "hourly averages with IQR and standard deviation"
 
 fig = go.Figure([
     go.Scatter(name = 'mean', y = monthly_avg['mean'], x = monthly_avg['month'], 
@@ -572,9 +572,9 @@ fig.update_layout(
 
 # Results and Conclusions
 
-This analysis concludes that wind speeds at 100 meteres near Mount Washington in New Hampshire varied based on month and time of day. As summarized in the table below, smallest monthly variability occurred in July and the greatest monthly variability occurred in November. August had the smallest average wind speed and February had the greatest average wind speed. Hourly variability was smallest for hour 19 and largest for hour 13. Average hourly wind speed was smallest for hour 16 and greatest for hour 1. 
+This analysis concludes that wind speeds at 100 meters near Mount Washington in New Hampshire varied based on month and time of day. As summarized in the table below, smallest monthly variability occurred in July and the greatest monthly variability occurred in November. August had the smallest average wind speed and February had the greatest average wind speed. Hourly variability was smallest for hour 19 and largest for hour 13. Average hourly wind speed was smallest for hour 16 and greatest for hour 1. 
 
-Overall, the dirunal wind speed pattern resulted in higher speeds between hours 1-4; from there, wind speed tended to decrease and reach a minimum between hours 13-18; wind speeds generally increased between hours 19-23. Monthly wind speeds tended to be highest during the winter and lowest during the summer.
+Overall, the diurnal wind speed pattern resulted in higher speeds between hours 1-4; from there, wind speed tended to decrease and reach a minimum between hours 13-18; wind speeds generally increased between hours 19-23. Monthly wind speeds tended to be highest during the winter and lowest during the summer.
 
 Based on the seasonal variability, this site would be better at meeting high winter demands than summer demands. This site may not be ideal for meeting all daytime demands.
 
@@ -637,7 +637,7 @@ monthly_avg_max = monthly_avg['mean'].max()
 
 In 2012, wind speed at Mount Washington ranged from 0.12 m/s to 36.66 m/s. Hourly average wind speeds ranged from 10.71 m/s to 12.50 m/s. Monthly average wind speeds ranged from 8.78 m/s to 15.81 m/s.
 
-When planning utility scale wind power plants, it is important to evaluate how the diurnal and season wind speed patterns compare to electricity demand patterns. Is wind genenrated electricity available when people need it? If high wind speeds at a proposed site do not coincide with peak electricity demands, than that site may not be suitable for utility scale wind farms. Renewable energy planners should also consider the frequency with which wind speeds are within the acceptable operating range for a given turbine. For example, how often are wind speeds to slow for turbines to operate, or how often are wind speeds too high?
+When planning utility scale wind power plants, it is important to evaluate how the diurnal and seasonal wind speed patterns compare to electricity demand patterns. Is wind generated electricity available when people need it? If high wind speeds at a proposed site do not coincide with peak electricity demands, than that site may not be suitable for utility scale wind farms. Renewable energy planners should also consider the frequency with which wind speeds are within the acceptable operating range for a given turbine. For example, how often are wind speeds to slow for turbines to operate, or how often are wind speeds too high?
 
 # Expanded geographic scale
 
